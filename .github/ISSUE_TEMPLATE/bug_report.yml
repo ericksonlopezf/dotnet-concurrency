@@ -1,0 +1,38 @@
+name: Bug Report
+description: Create a report to help us improve EricksonLopez.Concurrency
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report an issue!
+  - type: input
+    id: version
+    attributes:
+      label: Package Version
+      description: What version of EricksonLopez.Concurrency.* are you using?
+      placeholder: e.g. 1.0.0
+    validations:
+      required: true
+  - type: input
+    id: runtime
+    attributes:
+      label: .NET Runtime & Database Provider
+      description: Which .NET version and database engine / provider are you targeting?
+      placeholder: .NET 10.0, Npgsql 10.0.3, etc.
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Problem Description
+      description: A clear and concise description of the bug.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal Reproducible Example
+      description: Please provide code or a test case demonstrating the problem.
+    validations:
+      required: true

@@ -1,0 +1,20 @@
+<!-- Copyright © Erickson Lopez. MIT License. -->
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>Core concurrency orchestration, optimistic verification, conflict resolvers, diagnostics, and OpenTelemetry instrumentation for the EricksonLopez.Concurrency ecosystem.</Description>
+    <PackageTags>$(CommonPackageTags);concurrency-control;conflict-resolution;opentelemetry;diagnostics;state-synchronization;compare-and-swap</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EricksonLopez.Concurrency.Abstractions\EricksonLopez.Concurrency.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Options" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+    <PackageReference Include="OpenTelemetry.Api" />
+  </ItemGroup>
+
+</Project>

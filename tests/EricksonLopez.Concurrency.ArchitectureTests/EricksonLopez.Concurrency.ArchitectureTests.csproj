@@ -1,0 +1,38 @@
+<!-- Copyright © Erickson Lopez. MIT License. -->
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net10.0</TargetFrameworks>
+    <RootNamespace>EricksonLopez.Concurrency.ArchitectureTests</RootNamespace>
+    <AssemblyName>EricksonLopez.Concurrency.ArchitectureTests</AssemblyName>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <IsAotCompatible>false</IsAotCompatible>
+    <EnableTrimAnalyzer>false</EnableTrimAnalyzer>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\EricksonLopez.Concurrency.Abstractions\EricksonLopez.Concurrency.Abstractions.csproj" />
+    <ProjectReference Include="..\..\src\EricksonLopez.Concurrency\EricksonLopez.Concurrency.csproj" />
+    <ProjectReference Include="..\..\src\EricksonLopez.Concurrency.Result\EricksonLopez.Concurrency.Result.csproj" />
+    <ProjectReference Include="..\..\src\EricksonLopez.Concurrency.Dapper\EricksonLopez.Concurrency.Dapper.csproj" />
+    <ProjectReference Include="..\..\src\EricksonLopez.Concurrency.PostgreSql\EricksonLopez.Concurrency.PostgreSql.csproj" />
+    <ProjectReference Include="..\..\src\EricksonLopez.Concurrency.SqlServer\EricksonLopez.Concurrency.SqlServer.csproj" />
+    <ProjectReference Include="..\..\src\EricksonLopez.Concurrency.MySql\EricksonLopez.Concurrency.MySql.csproj" />
+    <ProjectReference Include="..\..\src\EricksonLopez.Concurrency.MariaDb\EricksonLopez.Concurrency.MariaDb.csproj" />
+    <ProjectReference Include="..\..\src\EricksonLopez.Concurrency.Oracle\EricksonLopez.Concurrency.Oracle.csproj" />
+    <ProjectReference Include="..\..\src\EricksonLopez.Concurrency.Sqlite\EricksonLopez.Concurrency.Sqlite.csproj" />
+    <ProjectReference Include="..\..\src\EricksonLopez.Concurrency.Mediator\EricksonLopez.Concurrency.Mediator.csproj" />
+    <ProjectReference Include="..\..\src\EricksonLopez.Concurrency.Testing\EricksonLopez.Concurrency.Testing.csproj" />
+    <ProjectReference Include="..\..\src\EricksonLopez.Concurrency.AspNetCore\EricksonLopez.Concurrency.AspNetCore.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="AwesomeAssertions" />
+    <PackageReference Include="NetArchTest.Rules" />
+  </ItemGroup>
+
+</Project>

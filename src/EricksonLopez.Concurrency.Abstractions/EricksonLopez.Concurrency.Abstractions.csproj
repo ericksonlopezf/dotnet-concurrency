@@ -1,0 +1,9 @@
+<!-- Copyright © Erickson Lopez. MIT License. -->
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>Core abstractions, concurrency tokens, versioning contracts, and conflict domain models for the EricksonLopez.Concurrency framework.</Description>
+    <PackageTags>$(CommonPackageTags);abstractions;concurrency-tokens;versioning;compare-and-swap;conflict-detection;contracts</PackageTags>
+  </PropertyGroup>
+
+</Project>

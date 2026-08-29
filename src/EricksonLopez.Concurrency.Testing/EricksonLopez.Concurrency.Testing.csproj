@@ -1,0 +1,13 @@
+<!-- Copyright © Erickson Lopez. MIT License. -->
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>Testing utilities, mock-free test doubles (FakeConcurrencyController), and fluent builders for EricksonLopez.Concurrency.</Description>
+    <PackageTags>$(CommonPackageTags);testing;test-doubles;fakes;unit-testing;in-memory;test-fixtures</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EricksonLopez.Concurrency.Abstractions\EricksonLopez.Concurrency.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,150 @@
+# Copyright © Erickson Lopez. MIT License.
+name: Publish NuGet
+
+# ─── Triggers ─────────────────────────────────────────────────────────────────
+# 1. Automatic: Triggered by Release Please when a release PR is merged.
+#    The workflow_dispatch input 'version' will be set to the new SemVer.
+# 2. Manual: Also triggered by pushing a 'v*.*.*' tag manually (legacy support).
+# 3. Manual dispatch: Via GitHub UI for debugging.
+#
+# Automatic versioning flow:
+#   Commit with Conventional prefix (e.g. 'feat:') →
+#   release-please.yml creates/updates Release PR →
+#   Maintainer merges Release PR →
+#   release-please creates GitHub Release + tag vX.Y.Z →
+#   release-please triggers this workflow via workflow_dispatch →
+#   Verify Mutation Gate (run Stryker if needed) → Pack → Sign → Publish to NuGet.org
+# ─────────────────────────────────────────────────────────────────────────────────
+
+on:
+  push:
+    tags:
+      - "v*.*.*"           # Legacy: manual tag push still works
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to publish (e.g. 1.2.3 — without 'v' prefix)"
+        required: false
+        type: string
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+
+jobs:
+  # ─── Job 1: Verify Stryker Mutation Quality Gate on main ────────────────────
+  mutation-gate-check:
+    name: Verify Mutation Quality Gate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      statuses: read
+      actions: read
+    outputs:
+      needs_stryker: ${{ steps.check.outputs.needs_stryker }}
+      can_proceed: ${{ steps.check.outputs.can_proceed }}
+      evaluated_commit: ${{ steps.check.outputs.evaluated_commit }}
+      mutation_score: ${{ steps.check.outputs.mutation_score }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Evaluate Mutation Quality Gate on main
+        id: check
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const verifyMutationGate = require('./scripts/verify-mutation-gate.js');
+            await verifyMutationGate({ github, context, core });
+
+  # ─── Job 2: Conditional Stryker Execution if needed ────────────────────────
+  stryker-gate:
+    name: Run Stryker Mutation Gate (Conditional)
+    needs: mutation-gate-check
+    if: needs.mutation-gate-check.outputs.needs_stryker == 'true'
+    permissions:
+      contents: read
+      statuses: write
+      actions: read
+    uses: ./.github/workflows/mutation-testing.yml
+    with:
+      mutation-level: "Standard"
+
+  # ─── Job 3: Publish to NuGet (Strict Quality Gate Required) ────────────────
+  publish:
+    name: Pack & Publish
+    needs: [mutation-gate-check, stryker-gate]
+    if: |
+      always() &&
+      (needs.mutation-gate-check.result == 'success') &&
+      (
+        (needs.mutation-gate-check.outputs.needs_stryker == 'false' && needs.mutation-gate-check.outputs.can_proceed == 'true') ||
+        (needs.mutation-gate-check.outputs.needs_stryker == 'true' && needs.stryker-gate.result == 'success')
+      )
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+      statuses: read
+      actions: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # ─── Resolve version ──────────────────────────────────────────────────────
+      # Priority: workflow_dispatch input → git tag → fallback to Directory.Build.props
+      - name: Resolve version
+        id: version
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          if [ -n "$INPUT_VERSION" ]; then
+            echo "VERSION=$INPUT_VERSION" >> $GITHUB_OUTPUT
+            echo "Resolved version from workflow_dispatch input: $INPUT_VERSION"
+          elif [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            VERSION="${GITHUB_REF_NAME#v}"
+            echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+            echo "Resolved version from git tag: $VERSION"
+          else
+            VERSION=$(grep -oP '(?<=<VersionPrefix>)[^<]+' Directory.Build.props || echo "1.0.0")
+            echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+            echo "Resolved version from Directory.Build.props: $VERSION"
+          fi
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      # ─── Strong Name key ──────────────────────────────────────────────────────
+      - name: Restore Strong Name key
+        env:
+          SNK_KEY: ${{ secrets.SNK_KEY }}
+        run: |
+          if [ -n "$SNK_KEY" ]; then
+            echo "$SNK_KEY" | tr -d '\n\r ' | base64 --decode > EricksonLopez.snk
+          fi
+
+      - name: Restore
+        run: dotnet restore EricksonLopez.Concurrency.slnx
+
+      - name: Build Solution (Release)
+        run: dotnet build EricksonLopez.Concurrency.slnx --no-restore --configuration Release
+
+      - name: Pack Packages
+        run: |
+          VERSION="${{ steps.version.outputs.VERSION }}"
+          dotnet pack EricksonLopez.Concurrency.slnx -c Release -o ./artifacts -p:VersionPrefix=$VERSION -p:TreatWarningsAsErrors=true
+
+      - name: Push to NuGet
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        run: |
+          if [ -n "$NUGET_API_KEY" ]; then
+            dotnet nuget push "./artifacts/*.nupkg" --api-key "$NUGET_API_KEY" --source "https://api.nuget.org/v3/index.json" --skip-duplicate
+          fi

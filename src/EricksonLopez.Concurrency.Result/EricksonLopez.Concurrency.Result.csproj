@@ -1,0 +1,15 @@
+<!-- Copyright © Erickson Lopez. MIT License. -->
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>Functional monadic integration bridge between EricksonLopez.Concurrency and EricksonLopez.Result.</Description>
+    <PackageTags>$(CommonPackageTags);result-pattern;functional-programming;railway-oriented-programming;monad;error-handling</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EricksonLopez.Concurrency.Abstractions\EricksonLopez.Concurrency.Abstractions.csproj" />
+    <ProjectReference Include="..\EricksonLopez.Concurrency\EricksonLopez.Concurrency.csproj" />
+    <ProjectReference Include="..\..\..\dotnet-result\src\EricksonLopez.Result\EricksonLopez.Result.csproj" />
+  </ItemGroup>
+
+</Project>
