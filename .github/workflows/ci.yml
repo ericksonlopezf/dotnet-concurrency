@@ -25,6 +25,7 @@ jobs:
     secrets:
       SNK_KEY: ${{ secrets.SNK_KEY }}
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   aot-smoke-test:
     name: Native AOT Smoke Test
