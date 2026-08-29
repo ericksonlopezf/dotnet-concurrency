@@ -8,11 +8,10 @@ Mutation testing for `EricksonLopez.Concurrency` is performed using [Stryker.NET
 
 The `EricksonLopez.Concurrency` framework enforces strict mutation testing quality standards using a **deferred quality gate architecture**:
 
-- **Pull Requests (Fast Path)**: PR CI workflows focus on rapid feedback (compilation, unit testing, code coverage, Native AOT smoke testing) and do **not** run full Stryker mutation testing. This avoids blocking developer merges with long-running jobs (> 1 hour).
-- **`main` Branch (Asynchronous Quality Signal)**: Merges and pushes to `main` trigger full, asynchronous mutation testing runs across all packages. Obsolete runs are canceled automatically via GitHub Actions concurrency controls if new commits arrive.
+- **Quality Gate Architecture**: Stryker mutation testing is decoupled from git pushes to avoid resource saturation and lengthy CI queues. It operates strictly as an asynchronous Quality Gate.
 - **Scheduled Regressions**: Weekly scheduled runs (Sundays at 03:00 UTC) continuously audit the codebase against regressions.
 - **Manual Dispatches**: On-demand manual runs support tier profile selections (`Basic`, `Standard`, `Advanced`).
-- **Release Gate (Pre-Publish Verification)**: Package publishing (`publish.yml`) verifies that the commit SHA being released has achieved a mutation score $\ge 95\%$ on `main` before allowing NuGet package deployment, eliminating the need to re-run long Stryker runs during release.
+- **Release Gate (Pre-Publish Verification)**: Package publishing (`publish.yml`) verifies that the commit SHA being released has achieved a mutation score $\ge 95\%$ on `main` before allowing NuGet package deployment. If fresh evidence is missing or expired (>7 days), Stryker executes conditionally as a mandatory pre-release gate.
 
 ### Mutation Thresholds
 

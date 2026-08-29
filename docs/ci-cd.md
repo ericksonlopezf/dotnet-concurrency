@@ -8,21 +8,20 @@ This document describes all GitHub Actions workflows in the `EricksonLopez.Concu
 
 ```mermaid
 flowchart TD
-    Push["Push / PR to main or develop"] --> CI["ci.yml (Orchestrator)"]
+    Push["Push / PR to main or develop"] --> CI["ci.yml (Fast CI Orchestrator)"]
     CI --> Compliance["repo-compliance.yml"]
     Compliance --> BuildTest["dotnet-build-test.yml"]
     BuildTest --> AotSmoke["aot-smoke-test.yml"]
 
-    MainPush["Push to main"] --> AsyncMutation["mutation-testing.yml (Asynchronous)"]
-    MainPush --> ReleasePlease["release-please.yml"]
+    MainPush["Push to main"] --> ReleasePlease["release-please.yml"]
 
     Tag["GitHub Release Published"] --> Publish["publish.yml"]
-    Publish --> VerifyGate["verify-mutation-gate (Checks Commit Status >= 95%)"]
+    Publish --> VerifyGate["verify-mutation-gate (Checks Quality Gate >= 95%)"]
     VerifyGate --> PackPush["Pack & Push to NuGet"]
 
     PR["PR to main or develop (src/ or benchmarks/ changed)"] --> BenchmarkGate["benchmark-regression-gate.yml"]
 
-    Schedule_Sun_3am["Cron: Sunday 03:00 UTC"] --> MutationTest["mutation-testing.yml (Advanced Profile)"]
+    Schedule_Sun_3am["Cron: Sunday 03:00 UTC / Manual / Pre-Publish Gate"] --> MutationGate["mutation-testing.yml (Quality Gate)"]
     Schedule_Sun_2am["Cron: Sunday 02:00 UTC"] --> WeeklyBenchmarks["weekly-benchmarks.yml"]
 ```
 
@@ -118,7 +117,7 @@ flowchart TD
 ### `mutation-testing.yml` — Stryker Mutation Testing (Deferred Quality Gate)
 
 **File**: `.github/workflows/mutation-testing.yml`  
-**Trigger**: `push` to `main` (paths-ignore: `**.md`, `docs/**`); `schedule` (every Sunday at 03:00 UTC); `workflow_dispatch` (with `level` tier profile choice).  
+**Trigger**: `schedule` (every Sunday at 03:00 UTC); `workflow_dispatch` (on-demand with tier profile choice); `workflow_call` (invoked by `publish.yml` as pre-release quality gate).  
 **Concurrency**: `mutation-testing-${{ github.workflow }}-${{ github.ref }}` (`cancel-in-progress: true` to prevent resource waste on superseded commits).  
 **Runner**: `ubuntu-latest`, timeout 120 min per matrix job (accommodates deep multi-TFM mutation analysis without artificial terminations).
 

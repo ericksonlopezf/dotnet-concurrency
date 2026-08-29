@@ -43,11 +43,6 @@ on:
         required: false
         default: "Standard"
         type: string
-  push:
-    branches: [ main ]
-    paths-ignore:
-      - '**.md'
-      - 'docs/**'
   # Weekly scheduled execution (Sunday 03:00 UTC) to catch regressions early
   schedule:
     - cron: "0 3 * * 0"
