@@ -15,7 +15,7 @@
     <!-- Data & Providers -->
     <PackageVersion Include="Dapper" Version="2.1.79" />
     <PackageVersion Include="Npgsql" Version="10.0.3" />
-    <PackageVersion Include="Microsoft.Data.SqlClient" Version="5.2.2" />
+    <PackageVersion Include="Microsoft.Data.SqlClient" Version="7.0.2" />
     <PackageVersion Include="MySqlConnector" Version="2.4.0" />
     <PackageVersion Include="Oracle.ManagedDataAccess.Core" Version="23.7.0" />
     <PackageVersion Include="Microsoft.Data.Sqlite" Version="10.0.3" />
