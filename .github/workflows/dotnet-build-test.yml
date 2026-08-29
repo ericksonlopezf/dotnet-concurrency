@@ -24,8 +24,21 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Check SonarCloud Token Availability
+        id: sonar-check
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          if [ -n "$SONAR_TOKEN" ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+            echo "SonarCloud token detected. SonarCloud analysis will be executed."
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "SonarCloud token is not set. Skipping SonarCloud analysis."
+          fi
+
       - name: Setup Java (SonarCloud Scanner requirement)
-        if: ${{ secrets.SONAR_TOKEN != '' }}
+        if: steps.sonar-check.outputs.enabled == 'true'
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
@@ -48,11 +61,11 @@ jobs:
           fi
 
       - name: Install SonarScanner .NET Global Tool
-        if: ${{ secrets.SONAR_TOKEN != '' }}
+        if: steps.sonar-check.outputs.enabled == 'true'
         run: dotnet tool install --global dotnet-sonarscanner
 
       - name: Begin SonarCloud Analysis
-        if: ${{ secrets.SONAR_TOKEN != '' }}
+        if: steps.sonar-check.outputs.enabled == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -83,7 +96,7 @@ jobs:
           -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover,cobertura
 
       - name: End SonarCloud Analysis
-        if: ${{ secrets.SONAR_TOKEN != '' && (success() || failure()) }}
+        if: steps.sonar-check.outputs.enabled == 'true' && (success() || failure())
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
