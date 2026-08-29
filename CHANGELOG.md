@@ -4,6 +4,14 @@ All notable changes to `EricksonLopez.Concurrency` will be documented in this fi
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1](https://github.com/ericksonlopezf/dotnet-concurrency/compare/v1.0.0...v1.0.1) (2026-08-29)
+
+
+### 🐛 Bug Fixes
+
+* **aot:** configure explicit net10.0 framework target for native AOT smoke test ([268cb85](https://github.com/ericksonlopezf/dotnet-concurrency/commit/268cb85c8d672ee234973d92ba60a0db25fc3326))
+* **build:** resolve external project references to nuget packages and normalize pipeline triggers ([4517546](https://github.com/ericksonlopezf/dotnet-concurrency/commit/4517546fb9f111fcc89e580820f5cd917d30e316))
+
 ## [Unreleased]
 
 <!-- Changes verified in the current development branch that have not yet been released. -->
