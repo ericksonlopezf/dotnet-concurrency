@@ -4,6 +4,13 @@ All notable changes to `EricksonLopez.Concurrency` will be documented in this fi
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1](https://github.com/ericksonlopezf/dotnet-concurrency/compare/v1.0.0...v1.0.1) (2026-08-29)
+
+
+### 📖 Documentation
+
+* update mutation score badge to 100% [skip ci] ([ab8ebf3](https://github.com/ericksonlopezf/dotnet-concurrency/commit/ab8ebf3126c284d2f021e48aaf3b0c15ebd47214))
+
 ## [Unreleased]
 
 <!-- Changes verified in the current development branch that have not yet been released. -->
