@@ -9,10 +9,10 @@
   <ItemGroup>
     <ProjectReference Include="..\EricksonLopez.Concurrency.Abstractions\EricksonLopez.Concurrency.Abstractions.csproj" />
     <ProjectReference Include="..\EricksonLopez.Concurrency\EricksonLopez.Concurrency.csproj" />
-    <ProjectReference Include="..\..\..\dotnet-mediator\src\EricksonLopez.Mediator\EricksonLopez.Mediator.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="EricksonLopez.Mediator" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
   </ItemGroup>
 
