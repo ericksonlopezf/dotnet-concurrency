@@ -4,6 +4,13 @@ All notable changes to `EricksonLopez.Concurrency` will be documented in this fi
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1](https://github.com/ericksonlopezf/dotnet-concurrency/compare/v1.0.0...v1.0.1) (2026-08-29)
+
+
+### 🐛 Bug Fixes
+
+* **quality:** resolve all 8 SonarCloud security and reliability issues ([0c97bbb](https://github.com/ericksonlopezf/dotnet-concurrency/commit/0c97bbbce791058b69264972639e6b73617de58c))
+
 ## [Unreleased]
 
 <!-- Changes verified in the current development branch that have not yet been released. -->
