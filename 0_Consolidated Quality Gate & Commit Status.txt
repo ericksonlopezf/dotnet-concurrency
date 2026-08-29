@@ -1,0 +1,384 @@
+﻿2026-08-29T13:25:52.6693400Z Current runner version: '2.336.0'
+2026-08-29T13:25:52.6717051Z ##[group]Runner Image Provisioner
+2026-08-29T13:25:52.6718011Z Hosted Compute Agent
+2026-08-29T13:25:52.6718676Z Version: 20260819.586
+2026-08-29T13:25:52.6719482Z Commit: 3cc4a88dfa507ef76119ad1bb3eccc6378bb2b76
+2026-08-29T13:25:52.6720531Z Build Date: 2026-08-18T23:20:18Z
+2026-08-29T13:25:52.6721235Z Worker ID: {e009aa6a-dddc-4152-ad62-1f9e83a1cf62}
+2026-08-29T13:25:52.6722052Z Azure Region: westcentralus
+2026-08-29T13:25:52.6722670Z ##[endgroup]
+2026-08-29T13:25:52.6724201Z ##[group]Operating System
+2026-08-29T13:25:52.6724879Z Ubuntu
+2026-08-29T13:25:52.6725411Z 24.04.4
+2026-08-29T13:25:52.6726025Z LTS
+2026-08-29T13:25:52.6726597Z ##[endgroup]
+2026-08-29T13:25:52.6727300Z ##[group]Runner Image
+2026-08-29T13:25:52.6727929Z Image: ubuntu-24.04
+2026-08-29T13:25:52.6728542Z Version: 20260823.283.1
+2026-08-29T13:25:52.6729998Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260823.283/images/ubuntu/Ubuntu2404-Readme.md
+2026-08-29T13:25:52.6731664Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260823.283
+2026-08-29T13:25:52.6732673Z ##[endgroup]
+2026-08-29T13:25:52.6733917Z ##[group]GITHUB_TOKEN Permissions
+2026-08-29T13:25:52.6735952Z Actions: read
+2026-08-29T13:25:52.6736611Z Contents: write
+2026-08-29T13:25:52.6737599Z Metadata: read
+2026-08-29T13:25:52.6738198Z Statuses: write
+2026-08-29T13:25:52.6738766Z ##[endgroup]
+2026-08-29T13:25:52.6741368Z Secret source: Actions
+2026-08-29T13:25:52.6742482Z Prepare workflow directory
+2026-08-29T13:25:52.7249159Z Prepare all required actions
+2026-08-29T13:25:52.7295920Z Getting action download info
+2026-08-29T13:25:53.0128087Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-08-29T13:25:53.8077589Z Download action repository 'actions/download-artifact@v4' (SHA:d3f86a106a0bac45b974a628896c90dbdf5c8093)
+2026-08-29T13:25:54.4080211Z Download action repository 'actions/github-script@v7' (SHA:f28e40c7f34bde8b3046d885e986cb6290c5673b)
+2026-08-29T13:25:54.9875931Z Complete job name: Consolidated Quality Gate & Commit Status
+2026-08-29T13:25:55.0634905Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-08-29T13:25:55.0643093Z ##[group]Run actions/checkout@v4
+2026-08-29T13:25:55.0643565Z with:
+2026-08-29T13:25:55.0643780Z   fetch-depth: 0
+2026-08-29T13:25:55.0646641Z   token: ***
+2026-08-29T13:25:55.0646953Z   repository: ericksonlopezf/dotnet-concurrency
+2026-08-29T13:25:55.0647273Z   ssh-strict: true
+2026-08-29T13:25:55.0647489Z   ssh-user: git
+2026-08-29T13:25:55.0647711Z   persist-credentials: true
+2026-08-29T13:25:55.0647956Z   clean: true
+2026-08-29T13:25:55.0648189Z   sparse-checkout-cone-mode: true
+2026-08-29T13:25:55.0648458Z   fetch-tags: false
+2026-08-29T13:25:55.0648705Z   show-progress: true
+2026-08-29T13:25:55.0648929Z   lfs: false
+2026-08-29T13:25:55.0649173Z   submodules: false
+2026-08-29T13:25:55.0649404Z   set-safe-directory: true
+2026-08-29T13:25:55.0649895Z   allow-unsafe-pr-checkout: false
+2026-08-29T13:25:55.0650427Z env:
+2026-08-29T13:25:55.0650643Z   DOTNET_NOLOGO: true
+2026-08-29T13:25:55.0650900Z   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+2026-08-29T13:25:55.0651188Z ##[endgroup]
+2026-08-29T13:25:55.1659275Z Syncing repository: ericksonlopezf/dotnet-concurrency
+2026-08-29T13:25:55.1661473Z ##[group]Getting Git version info
+2026-08-29T13:25:55.1662231Z Working directory is '/home/runner/work/dotnet-concurrency/dotnet-concurrency'
+2026-08-29T13:25:55.1663326Z [command]/usr/bin/git version
+2026-08-29T13:25:55.1724179Z git version 2.55.0
+2026-08-29T13:25:55.1747315Z ##[endgroup]
+2026-08-29T13:25:55.1763119Z Temporarily overriding HOME='/home/runner/work/_temp/be244233-7e6b-432f-91ea-df43887392b3' before making global git config changes
+2026-08-29T13:25:55.1764821Z Adding repository directory to the temporary git global config as a safe directory
+2026-08-29T13:25:55.1768590Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/dotnet-concurrency/dotnet-concurrency
+2026-08-29T13:25:55.1827405Z Deleting the contents of '/home/runner/work/dotnet-concurrency/dotnet-concurrency'
+2026-08-29T13:25:55.1831377Z ##[group]Initializing the repository
+2026-08-29T13:25:55.1836865Z [command]/usr/bin/git init /home/runner/work/dotnet-concurrency/dotnet-concurrency
+2026-08-29T13:25:55.1971636Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-08-29T13:25:55.1972751Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-08-29T13:25:55.1973812Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-08-29T13:25:55.1974507Z hint: call:
+2026-08-29T13:25:55.1974726Z hint:
+2026-08-29T13:25:55.1975058Z hint: 	git config --global init.defaultBranch <name>
+2026-08-29T13:25:55.1975465Z hint:
+2026-08-29T13:25:55.1975830Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-08-29T13:25:55.1976430Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-08-29T13:25:55.1976956Z hint:
+2026-08-29T13:25:55.1977324Z hint: 	git branch -m <name>
+2026-08-29T13:25:55.1977738Z hint:
+2026-08-29T13:25:55.1978277Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-08-29T13:25:55.1979012Z Initialized empty Git repository in /home/runner/work/dotnet-concurrency/dotnet-concurrency/.git/
+2026-08-29T13:25:55.1988600Z [command]/usr/bin/git remote add origin https://github.com/ericksonlopezf/dotnet-concurrency
+2026-08-29T13:25:55.2039546Z ##[endgroup]
+2026-08-29T13:25:55.2040565Z ##[group]Disabling automatic garbage collection
+2026-08-29T13:25:55.2044301Z [command]/usr/bin/git config --local gc.auto 0
+2026-08-29T13:25:55.2075866Z ##[endgroup]
+2026-08-29T13:25:55.2076627Z ##[group]Setting up auth
+2026-08-29T13:25:55.2084663Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-08-29T13:25:55.2117928Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-08-29T13:25:55.2511938Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-08-29T13:25:55.2556380Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-08-29T13:25:55.2784195Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-08-29T13:25:55.2820941Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-08-29T13:25:55.3038516Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-08-29T13:25:55.3077230Z ##[endgroup]
+2026-08-29T13:25:55.3077700Z ##[group]Fetching the repository
+2026-08-29T13:25:55.3087344Z [command]/usr/bin/git -c protocol.version=2 fetch --prune --no-recurse-submodules origin +refs/heads/*:refs/remotes/origin/* +refs/tags/*:refs/tags/*
+2026-08-29T13:25:56.0603235Z From https://github.com/ericksonlopezf/dotnet-concurrency
+2026-08-29T13:25:56.0604550Z  * [new branch]      dependabot/github_actions/actions/attest-build-provenance-e8998f949152b193b063cb0ec769d69d929409be -> origin/dependabot/github_actions/actions/attest-build-provenance-e8998f949152b193b063cb0ec769d69d929409be
+2026-08-29T13:25:56.0605859Z  * [new branch]      dependabot/github_actions/actions/setup-java-6 -> origin/dependabot/github_actions/actions/setup-java-6
+2026-08-29T13:25:56.0607427Z  * [new branch]      dependabot/github_actions/codecov/codecov-action-7.0.0 -> origin/dependabot/github_actions/codecov/codecov-action-7.0.0
+2026-08-29T13:25:56.0609869Z  * [new branch]      dependabot/github_actions/googleapis/release-please-action-5.0.0 -> origin/dependabot/github_actions/googleapis/release-please-action-5.0.0
+2026-08-29T13:25:56.0611251Z  * [new branch]      dependabot/github_actions/softprops/action-gh-release-3.0.2 -> origin/dependabot/github_actions/softprops/action-gh-release-3.0.2
+2026-08-29T13:25:56.0612197Z  * [new branch]      dependabot/nuget/MySqlConnector-2.6.2 -> origin/dependabot/nuget/MySqlConnector-2.6.2
+2026-08-29T13:25:56.0613013Z  * [new branch]      dependabot/nuget/OpenTelemetry.Api-1.18.0 -> origin/dependabot/nuget/OpenTelemetry.Api-1.18.0
+2026-08-29T13:25:56.0614169Z  * [new branch]      dependabot/nuget/Oracle.ManagedDataAccess.Core-23.26.300 -> origin/dependabot/nuget/Oracle.ManagedDataAccess.Core-23.26.300
+2026-08-29T13:25:56.0615283Z  * [new branch]      dependabot/nuget/xunit.runner.visualstudio-4.0.0 -> origin/dependabot/nuget/xunit.runner.visualstudio-4.0.0
+2026-08-29T13:25:56.0616310Z  * [new branch]      main       -> origin/main
+2026-08-29T13:25:56.0616968Z  * [new branch]      release-please--branches--main--components--core -> origin/release-please--branches--main--components--core
+2026-08-29T13:25:56.0618396Z [command]/usr/bin/git branch --list --remote origin/main
+2026-08-29T13:25:56.0648251Z   origin/main
+2026-08-29T13:25:56.0658273Z [command]/usr/bin/git rev-parse refs/remotes/origin/main
+2026-08-29T13:25:56.0684362Z 4b5a22da401118130f9b15baade22892418d04ae
+2026-08-29T13:25:56.0688256Z ##[endgroup]
+2026-08-29T13:25:56.0688701Z ##[group]Determining the checkout info
+2026-08-29T13:25:56.0690656Z ##[endgroup]
+2026-08-29T13:25:56.0697107Z [command]/usr/bin/git sparse-checkout disable
+2026-08-29T13:25:56.0769751Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-08-29T13:25:56.0801363Z ##[group]Checking out the ref
+2026-08-29T13:25:56.0805720Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+2026-08-29T13:25:56.1017556Z Switched to a new branch 'main'
+2026-08-29T13:25:56.1024205Z branch 'main' set up to track 'origin/main'.
+2026-08-29T13:25:56.1029845Z ##[endgroup]
+2026-08-29T13:25:56.1071558Z [command]/usr/bin/git log -1 --format=%H
+2026-08-29T13:25:56.1097469Z 4b5a22da401118130f9b15baade22892418d04ae
+2026-08-29T13:25:56.1317167Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-08-29T13:25:56.1318853Z ##[group]Run actions/download-artifact@v4
+2026-08-29T13:25:56.1319138Z with:
+2026-08-29T13:25:56.1319349Z   pattern: stryker-summary-*
+2026-08-29T13:25:56.1319873Z   path: ./all-summaries
+2026-08-29T13:25:56.1320112Z   merge-multiple: true
+2026-08-29T13:25:56.1320386Z   repository: ericksonlopezf/dotnet-concurrency
+2026-08-29T13:25:56.1320689Z   run-id: 33254627660
+2026-08-29T13:25:56.1320917Z env:
+2026-08-29T13:25:56.1321110Z   DOTNET_NOLOGO: true
+2026-08-29T13:25:56.1321345Z   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+2026-08-29T13:25:56.1321617Z ##[endgroup]
+2026-08-29T13:25:56.2949550Z (node:2250) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-08-29T13:25:56.2951230Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-08-29T13:25:56.4884787Z Found 13 artifact(s)
+2026-08-29T13:25:56.4891894Z Filtering artifacts by pattern 'stryker-summary-*'
+2026-08-29T13:25:56.4893701Z Preparing to download the following artifacts:
+2026-08-29T13:25:56.4895458Z - stryker-summary-MySql (ID: 9715523347, Size: 429, Expected Digest: sha256:d432007d02b982d6cdc79eca404664ee3773bda10e356f3e528c740330a541c8)
+2026-08-29T13:25:56.4897865Z - stryker-summary-MariaDb (ID: 9715521302, Size: 433, Expected Digest: sha256:043826adad2c04966155e39c9fd122a0229bb9b9f47fcdebe0a0d17b2c4772cf)
+2026-08-29T13:25:56.4900738Z - stryker-summary-Abstractions (ID: 9715519211, Size: 443, Expected Digest: sha256:a82d89518f0df87cb0484363e9381fb1a075ecb1fa021a2f2bc3296a00560f82)
+2026-08-29T13:25:56.4902125Z - stryker-summary-Result (ID: 9715514321, Size: 430, Expected Digest: sha256:0a15287d17a463c968a1be73c8bfeefdce57e4a21d731d8805aefb50f692af61)
+2026-08-29T13:25:56.4903383Z - stryker-summary-Mediator (ID: 9715513110, Size: 435, Expected Digest: sha256:a03a421636aafd29eac03610c4042f446409159062a8f9f34674710252b060b4)
+2026-08-29T13:25:56.4904866Z - stryker-summary-PostgreSql (ID: 9715511807, Size: 443, Expected Digest: sha256:8ae60a637e07aa99516221a99c06deb2a6d3617eb6c7e939aec6e70ea11f74a6)
+2026-08-29T13:25:56.4907358Z - stryker-summary-Sqlite (ID: 9715500750, Size: 430, Expected Digest: sha256:8493bb5976a23e16885a7f409840a3a3e5d65991449aba2264dc19c35c42d343)
+2026-08-29T13:25:56.4910125Z - stryker-summary-Core (ID: 9715499247, Size: 424, Expected Digest: sha256:2efbea168455750d6b62d102933de53c098da06d2046d2b3f332a0a8467e252a)
+2026-08-29T13:25:56.4912724Z - stryker-summary-SqlServer (ID: 9715489427, Size: 438, Expected Digest: sha256:6a107b5d9940da09fb619e4b1e2a9bab2a305a3c1b9e0276c737c6ae26a6571f)
+2026-08-29T13:25:56.4915236Z - stryker-summary-AspNetCore (ID: 9715481078, Size: 441, Expected Digest: sha256:233a6587277c5abe97df96fb3fded2ac81f4319a3f7e58c12b026e189c9218b2)
+2026-08-29T13:25:56.4917676Z - stryker-summary-Oracle (ID: 9715474531, Size: 429, Expected Digest: sha256:abf8c0de1e278086958a390d788785a08f9f8efbc4f76ff678ebc525c7df60e4)
+2026-08-29T13:25:56.4920306Z - stryker-summary-Dapper (ID: 9715472160, Size: 429, Expected Digest: sha256:73e456e65d70f1053d2b46abac1d7ca899f519b4c40b8ad3dc4101237e9b0b6f)
+2026-08-29T13:25:56.4922693Z - stryker-summary-Testing (ID: 9715440505, Size: 432, Expected Digest: sha256:cd8105a9fe698492c6ff2d48f20698d47d694489dd8925bf3eeaa46f038af2df)
+2026-08-29T13:25:56.6734704Z Redirecting to blob download url: https://productionresultssa6.blob.core.windows.net/actions-results/4c6387c5-c552-4e72-8e95-7d8a75c1ea43/workflow-job-run-bf99de25-fd85-5047-b374-ab5808d6a313/artifacts/6252b672f693763458415d82f260ffc065e6612ed16cf3be29666efac9cb3bb0.zip
+2026-08-29T13:25:56.6737576Z Starting download of artifact to: /home/runner/work/dotnet-concurrency/dotnet-concurrency/all-summaries
+2026-08-29T13:25:56.7891427Z Redirecting to blob download url: https://productionresultssa6.blob.core.windows.net/actions-results/4c6387c5-c552-4e72-8e95-7d8a75c1ea43/workflow-job-run-78dc71b3-e09b-5642-bb37-b6c083b90e9c/artifacts/f588756f7b710d13417fef0850f1ee7a9faf04ebb9518386fdf44fd7dcfc4a39.zip
+2026-08-29T13:25:56.7894508Z Starting download of artifact to: /home/runner/work/dotnet-concurrency/dotnet-concurrency/all-summaries
+2026-08-29T13:25:56.7912924Z Redirecting to blob download url: https://productionresultssa6.blob.core.windows.net/actions-results/4c6387c5-c552-4e72-8e95-7d8a75c1ea43/workflow-job-run-edf5849e-b0d3-507e-9763-e1173e49d3a8/artifacts/b724ac619f6d2297f15919ed3502922815852ad383be4d8bc9f593ce0f9f6498.zip
+2026-08-29T13:25:56.7915557Z Starting download of artifact to: /home/runner/work/dotnet-concurrency/dotnet-concurrency/all-summaries
+2026-08-29T13:25:56.7973167Z Redirecting to blob download url: https://productionresultssa6.blob.core.windows.net/actions-results/4c6387c5-c552-4e72-8e95-7d8a75c1ea43/workflow-job-run-617ddf86-86c5-5e0a-a2c4-6687c62bbe72/artifacts/9f71b9594a19186924331e39ca9f73f55c96455594e8640952ff5139f80ba353.zip
+2026-08-29T13:25:56.7975792Z Starting download of artifact to: /home/runner/work/dotnet-concurrency/dotnet-concurrency/all-summaries
+2026-08-29T13:25:56.8007889Z Redirecting to blob download url: https://productionresultssa6.blob.core.windows.net/actions-results/4c6387c5-c552-4e72-8e95-7d8a75c1ea43/workflow-job-run-697e580c-bd0d-52ae-bf0b-74ef0f57d031/artifacts/219cbc16d84a65473d348f190d9595f14100354e298fe139eea9b65c91c983b9.zip
+2026-08-29T13:25:56.8010985Z Starting download of artifact to: /home/runner/work/dotnet-concurrency/dotnet-concurrency/all-summaries
+2026-08-29T13:25:56.8017360Z Redirecting to blob download url: https://productionresultssa6.blob.core.windows.net/actions-results/4c6387c5-c552-4e72-8e95-7d8a75c1ea43/workflow-job-run-5ccf4b4c-93ef-5217-9595-061fa392cb81/artifacts/9ffa5bb87f023368180af8a45176d4ee81240505e6555c8b8e5e6a6ceb41e1f7.zip
+2026-08-29T13:25:56.8020412Z Starting download of artifact to: /home/runner/work/dotnet-concurrency/dotnet-concurrency/all-summaries
+2026-08-29T13:25:56.8024583Z Redirecting to blob download url: https://productionresultssa6.blob.core.windows.net/actions-results/4c6387c5-c552-4e72-8e95-7d8a75c1ea43/workflow-job-run-38367ed2-2228-568c-8dd6-b288a1286756/artifacts/19dad40b47d4390097df14a197fa80acf1b21cb49bfad3d794f6da09b92f0d03.zip
+2026-08-29T13:25:56.8027169Z Starting download of artifact to: /home/runner/work/dotnet-concurrency/dotnet-concurrency/all-summaries
+2026-08-29T13:25:56.8073239Z Redirecting to blob download url: https://productionresultssa6.blob.core.windows.net/actions-results/4c6387c5-c552-4e72-8e95-7d8a75c1ea43/workflow-job-run-cf2254f4-15c4-55be-928e-9a0e4f00de1c/artifacts/412cc9f9cea75b1de2876e25aad68ca400f0d5d58987fd032087af4fed132cf8.zip
+2026-08-29T13:25:56.8076125Z Starting download of artifact to: /home/runner/work/dotnet-concurrency/dotnet-concurrency/all-summaries
+2026-08-29T13:25:56.8096048Z Redirecting to blob download url: https://productionresultssa6.blob.core.windows.net/actions-results/4c6387c5-c552-4e72-8e95-7d8a75c1ea43/workflow-job-run-26a905be-a5c4-5731-b106-cd0dd87b52df/artifacts/d4e2952250d85afe05655bb1080f58ce229948894bab67809cba2e53756ad3b3.zip
+2026-08-29T13:25:56.8098898Z Starting download of artifact to: /home/runner/work/dotnet-concurrency/dotnet-concurrency/all-summaries
+2026-08-29T13:25:56.8129983Z Redirecting to blob download url: https://productionresultssa6.blob.core.windows.net/actions-results/4c6387c5-c552-4e72-8e95-7d8a75c1ea43/workflow-job-run-9111c182-4992-5bbc-a171-a86112f32d40/artifacts/9df967979663e6ca088971601b475f2ad1e58b0ec854d0283044646bc01f0c9c.zip
+2026-08-29T13:25:56.8132828Z Starting download of artifact to: /home/runner/work/dotnet-concurrency/dotnet-concurrency/all-summaries
+2026-08-29T13:25:56.8144675Z Redirecting to blob download url: https://productionresultssa6.blob.core.windows.net/actions-results/4c6387c5-c552-4e72-8e95-7d8a75c1ea43/workflow-job-run-ecffd577-475c-5212-b39e-221983b77327/artifacts/947782261a20207cdab06e81c18316dc828b4a443fd23b069c8cdcec26953fb2.zip
+2026-08-29T13:25:56.8147445Z Starting download of artifact to: /home/runner/work/dotnet-concurrency/dotnet-concurrency/all-summaries
+2026-08-29T13:25:56.8268958Z Redirecting to blob download url: https://productionresultssa6.blob.core.windows.net/actions-results/4c6387c5-c552-4e72-8e95-7d8a75c1ea43/workflow-job-run-c1fdc3e4-56a8-51be-a871-20134751f4bc/artifacts/21e63f4463eb8186f477ef9faf88a458b30fac6a2b8d1dd2d7c2af30ab8aa357.zip
+2026-08-29T13:25:56.8272178Z Starting download of artifact to: /home/runner/work/dotnet-concurrency/dotnet-concurrency/all-summaries
+2026-08-29T13:25:56.8279250Z Redirecting to blob download url: https://productionresultssa6.blob.core.windows.net/actions-results/4c6387c5-c552-4e72-8e95-7d8a75c1ea43/workflow-job-run-6032a669-74d8-5f88-982c-33098876e89e/artifacts/4383597fcac47975095314ba3bd0d2378cb5ceb1116569c16158ae44d2d38d90.zip
+2026-08-29T13:25:56.8283162Z Starting download of artifact to: /home/runner/work/dotnet-concurrency/dotnet-concurrency/all-summaries
+2026-08-29T13:25:56.8750519Z (node:2250) [DEP0005] DeprecationWarning: Buffer() is deprecated due to security and usability issues. Please use the Buffer.alloc(), Buffer.allocUnsafe(), or Buffer.from() methods instead.
+2026-08-29T13:25:56.8805163Z SHA256 digest of downloaded artifact is d432007d02b982d6cdc79eca404664ee3773bda10e356f3e528c740330a541c8
+2026-08-29T13:25:56.8806213Z Artifact download completed successfully.
+2026-08-29T13:25:56.9963504Z SHA256 digest of downloaded artifact is 8ae60a637e07aa99516221a99c06deb2a6d3617eb6c7e939aec6e70ea11f74a6
+2026-08-29T13:25:56.9964479Z Artifact download completed successfully.
+2026-08-29T13:25:56.9974807Z SHA256 digest of downloaded artifact is a03a421636aafd29eac03610c4042f446409159062a8f9f34674710252b060b4
+2026-08-29T13:25:56.9976635Z Artifact download completed successfully.
+2026-08-29T13:25:57.0026056Z SHA256 digest of downloaded artifact is 6a107b5d9940da09fb619e4b1e2a9bab2a305a3c1b9e0276c737c6ae26a6571f
+2026-08-29T13:25:57.0027335Z Artifact download completed successfully.
+2026-08-29T13:25:57.0028497Z SHA256 digest of downloaded artifact is abf8c0de1e278086958a390d788785a08f9f8efbc4f76ff678ebc525c7df60e4
+2026-08-29T13:25:57.0029910Z Artifact download completed successfully.
+2026-08-29T13:25:57.0038243Z SHA256 digest of downloaded artifact is a82d89518f0df87cb0484363e9381fb1a075ecb1fa021a2f2bc3296a00560f82
+2026-08-29T13:25:57.0039466Z Artifact download completed successfully.
+2026-08-29T13:25:57.0050090Z SHA256 digest of downloaded artifact is 73e456e65d70f1053d2b46abac1d7ca899f519b4c40b8ad3dc4101237e9b0b6f
+2026-08-29T13:25:57.0051272Z Artifact download completed successfully.
+2026-08-29T13:25:57.0055008Z SHA256 digest of downloaded artifact is 233a6587277c5abe97df96fb3fded2ac81f4319a3f7e58c12b026e189c9218b2
+2026-08-29T13:25:57.0056214Z Artifact download completed successfully.
+2026-08-29T13:25:57.0111346Z SHA256 digest of downloaded artifact is 0a15287d17a463c968a1be73c8bfeefdce57e4a21d731d8805aefb50f692af61
+2026-08-29T13:25:57.0112553Z Artifact download completed successfully.
+2026-08-29T13:25:57.0251965Z SHA256 digest of downloaded artifact is 2efbea168455750d6b62d102933de53c098da06d2046d2b3f332a0a8467e252a
+2026-08-29T13:25:57.0253392Z Artifact download completed successfully.
+2026-08-29T13:25:57.0290981Z SHA256 digest of downloaded artifact is 8493bb5976a23e16885a7f409840a3a3e5d65991449aba2264dc19c35c42d343
+2026-08-29T13:25:57.0291659Z Artifact download completed successfully.
+2026-08-29T13:25:57.0315131Z SHA256 digest of downloaded artifact is cd8105a9fe698492c6ff2d48f20698d47d694489dd8925bf3eeaa46f038af2df
+2026-08-29T13:25:57.0316238Z Artifact download completed successfully.
+2026-08-29T13:25:57.0317613Z SHA256 digest of downloaded artifact is 043826adad2c04966155e39c9fd122a0229bb9b9f47fcdebe0a0d17b2c4772cf
+2026-08-29T13:25:57.0318969Z Artifact download completed successfully.
+2026-08-29T13:25:57.0320221Z Total of 13 artifact(s) downloaded
+2026-08-29T13:25:57.0324706Z Download artifact has finished successfully
+2026-08-29T13:25:57.0517082Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-08-29T13:25:57.0518501Z ##[group]Run actions/github-script@v7
+2026-08-29T13:25:57.0518862Z with:
+2026-08-29T13:25:57.0522051Z   github-token: ***
+2026-08-29T13:25:57.0540479Z   script: const fs = require('fs');
+const path = require('path');
+
+const summariesDir = path.join(process.cwd(), 'all-summaries');
+let summaryFiles = [];
+if (fs.existsSync(summariesDir)) {
+  summaryFiles = fs.readdirSync(summariesDir).filter(f => f.startsWith('summary-') && f.endsWith('.json'));
+}
+
+console.log(`Found ${summaryFiles.length} summary files in ${summariesDir}`);
+
+const packages = [];
+let totalKilled = 0;
+let totalMutants = 0;
+let allPassed = summaryFiles.length > 0;
+let breakThreshold = 95;
+
+for (const file of summaryFiles) {
+  try {
+    const data = JSON.parse(fs.readFileSync(path.join(summariesDir, file), 'utf8'));
+    packages.push(data);
+    totalKilled += data.mutants_killed || data.killed || 0;
+    totalMutants += data.total_mutants || data.total || 0;
+    if (!data.passed_break && !data.passed) {
+      allPassed = false;
+    }
+    if (data.threshold_break || data.break) {
+      breakThreshold = data.threshold_break || data.break;
+    }
+  } catch (e) {
+    console.error(`Error reading ${file}:`, e.message);
+    allPassed = false;
+  }
+}
+
+const overallScore = totalMutants > 0 ? ((totalKilled / totalMutants) * 100).toFixed(2) : "0.00";
+const numScore = parseFloat(overallScore);
+
+let statusLabel = '❌ FAILED';
+if (allPassed && totalMutants > 0 && numScore >= 100) {
+  statusLabel = '✅ HIGH';
+} else if (allPassed && totalMutants > 0 && numScore >= 98) {
+  statusLabel = '🟡 LOW';
+} else if (allPassed && totalMutants > 0 && numScore >= breakThreshold) {
+  statusLabel = '🟠 WARNING';
+} else {
+  statusLabel = '❌ FAILED';
+  allPassed = false;
+}
+
+console.log(`Consolidated Score: ${overallScore}%`);
+const execDate = new Date().toISOString();
+
+// Append Consolidated Summary Table to Step Summary
+let md = `\n# 🛡️ Consolidated Stryker Mutation Testing Gate\n\n`;
+md += `| Metric | Value |\n`;
+md += `|--------|-------|\n`;
+md += `| **Overall Mutation Score** | **${overallScore}%** |\n`;
+md += `| **Mutants Killed** | ${totalKilled} |\n`;
+md += `| **Total Mutants** | ${totalMutants} |\n`;
+md += `| **Threshold High** | ≥100% |\n`;
+md += `| **Threshold Low** | ≥98% |\n`;
+md += `| **Threshold Break** | ≥${breakThreshold}% |\n`;
+md += `| **Overall Status** | ${statusLabel} |\n`;
+md += `| **Commit SHA** | \`${context.sha.substring(0, 7)}\` (\`${context.sha}\`) |\n`;
+md += `| **Execution Date** | ${execDate} |\n\n`;
+
+md += `### Package Breakdown\n\n`;
+md += `| Package | Score | Killed / Total | Status |\n`;
+md += `|---------|-------|----------------|--------|\n`;
+for (const p of packages) {
+  md += `| **${p.package}** | **${p.mutation_score || p.score}%** | ${p.mutants_killed || p.killed}/${p.total_mutants || p.total} | ${p.status} |\n`;
+}
+md += `| **OVERALL** | **${overallScore}%** | **${totalKilled}/${totalMutants}** | **${statusLabel}** |\n\n`;
+md += `**Gate Verdict**: ${allPassed ? '✅ PASSED' : '❌ FAILED'} (Break Threshold: ≥${breakThreshold}%)\n`;
+
+const summaryPath = process.env.GITHUB_STEP_SUMMARY;
+if (summaryPath && fs.existsSync(path.dirname(summaryPath))) {
+  fs.appendFileSync(summaryPath, md, 'utf8');
+}
+
+// Post GitHub Commit Status
+const targetSha = context.sha;
+const state = allPassed ? 'success' : 'failure';
+const description = `Score: ${overallScore}% (${packages.filter(p => p.passed_break || p.passed).length}/${packages.length} packages >= ${breakThreshold}%) - ${statusLabel}`;
+
+console.log(`Publishing commit status for ${targetSha}: state=${state}, description="${description}"`);
+
+try {
+  await github.rest.repos.createCommitStatus({
+    owner: context.repo.owner,
+    repo: context.repo.repo,
+    sha: targetSha,
+    state: state,
+    context: 'mutation-testing/stryker',
+    description: description.substring(0, 140),
+    target_url: `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
+  });
+  console.log('✅ Successfully created commit status mutation-testing/stryker');
+} catch (err) {
+  console.error('⚠️ Failed to create commit status:', err.message);
+}
+
+// Update README.md badge with rounded-up integer score if gate passed
+if (allPassed) {
+  const roundedScore = Math.ceil(parseFloat(overallScore));
+  const badgeColor = roundedScore >= 98 ? 'brightgreen' : (roundedScore >= 90 ? 'green' : 'yellow');
+  const readmePath = 'README.md';
+  if (fs.existsSync(readmePath)) {
+    const readme = fs.readFileSync(readmePath, 'utf8');
+    const updatedReadme = readme.replace(
+      /(img\.shields\.io\/badge\/Mutation_Score-)[^?-]+-[a-z]+(\?[^)\s]*)/g,
+      (m, p1, p2) => `${p1}${roundedScore}%25-${badgeColor}${p2}`
+    );
+
+    if (updatedReadme !== readme) {
+      fs.writeFileSync(readmePath, updatedReadme, 'utf8');
+      console.log(`📝 Updated README.md with Mutation Score: ${roundedScore}%`);
+      try {
+        const { execSync } = require('child_process');
+        execSync('git config user.name "github-actions[bot]"', { stdio: 'inherit' });
+        execSync('git config user.email "github-actions[bot]@users.noreply.github.com"', { stdio: 'inherit' });
+        execSync('git add README.md', { stdio: 'inherit' });
+        execSync(`git commit -m "docs: update mutation score badge to ${roundedScore}% [skip ci]"`, { stdio: 'inherit' });
+        execSync('git push origin HEAD:main', { stdio: 'inherit' });
+        console.log(`🚀 Successfully committed and pushed README.md mutation score badge (${roundedScore}%)`);
+      } catch (gitErr) {
+        console.error('⚠️ Could not push README update:', gitErr.message);
+      }
+    } else {
+      console.log(`ℹ️ README.md already contains mutation score badge for ${roundedScore}%`);
+    }
+  }
+}
+
+if (!allPassed) {
+  core.setFailed(`Consolidated Stryker Mutation Testing Gate failed: score=${overallScore}%, passed=${allPassed}`);
+}
+
+2026-08-29T13:25:57.0566608Z   debug: false
+2026-08-29T13:25:57.0566927Z   user-agent: actions/github-script
+2026-08-29T13:25:57.0567295Z   result-encoding: json
+2026-08-29T13:25:57.0567602Z   retries: 0
+2026-08-29T13:25:57.0567967Z   retry-exempt-status-codes: 400,401,403,404,422
+2026-08-29T13:25:57.0568359Z env:
+2026-08-29T13:25:57.0568623Z   DOTNET_NOLOGO: true
+2026-08-29T13:25:57.0568945Z   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+2026-08-29T13:25:57.0569303Z ##[endgroup]
+2026-08-29T13:25:57.1355400Z Found 13 summary files in /home/runner/work/dotnet-concurrency/dotnet-concurrency/all-summaries
+2026-08-29T13:25:57.1362772Z Consolidated Score: 0.00%
+2026-08-29T13:25:57.1367462Z Publishing commit status for 4b5a22da401118130f9b15baade22892418d04ae: state=failure, description="Score: 0.00% (0/13 packages >= 95%) - ❌ FAILED"
+2026-08-29T13:25:57.8771856Z ✅ Successfully created commit status mutation-testing/stryker
+2026-08-29T13:25:57.8794727Z ##[error]Consolidated Stryker Mutation Testing Gate failed: score=0.00%, passed=false
+2026-08-29T13:25:57.9229215Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-08-29T13:25:57.9230786Z Post job cleanup.
+2026-08-29T13:25:58.0060366Z [command]/usr/bin/git version
+2026-08-29T13:25:58.0110494Z git version 2.55.0
+2026-08-29T13:25:58.0150856Z Temporarily overriding HOME='/home/runner/work/_temp/ecc3a267-2a74-4175-b35b-27ab731ca139' before making global git config changes
+2026-08-29T13:25:58.0152750Z Adding repository directory to the temporary git global config as a safe directory
+2026-08-29T13:25:58.0174057Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/dotnet-concurrency/dotnet-concurrency
+2026-08-29T13:25:58.0187124Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-08-29T13:25:58.0245457Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-08-29T13:25:58.0485832Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-08-29T13:25:58.0517448Z http.https://github.com/.extraheader
+2026-08-29T13:25:58.0534837Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-08-29T13:25:58.0568618Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-08-29T13:25:58.0818767Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-08-29T13:25:58.0854578Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-08-29T13:25:58.1236673Z Cleaning up orphan processes
+2026-08-29T13:25:58.1557072Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/download-artifact@v4, actions/github-script@v7. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

@@ -1,0 +1,408 @@
+﻿2026-08-29T13:23:32.6784081Z Current runner version: '2.336.0'
+2026-08-29T13:23:32.6807555Z ##[group]Runner Image Provisioner
+2026-08-29T13:23:32.6808707Z Hosted Compute Agent
+2026-08-29T13:23:32.6809322Z Version: 20260819.586
+2026-08-29T13:23:32.6809970Z Commit: 3cc4a88dfa507ef76119ad1bb3eccc6378bb2b76
+2026-08-29T13:23:32.6810806Z Build Date: 2026-08-18T23:20:18Z
+2026-08-29T13:23:32.6811531Z Worker ID: {f2d8b619-f73d-4777-a4d2-ff8aeaee081c}
+2026-08-29T13:23:32.6812354Z Azure Region: westus2
+2026-08-29T13:23:32.6812992Z ##[endgroup]
+2026-08-29T13:23:32.6814552Z ##[group]Operating System
+2026-08-29T13:23:32.6815340Z Ubuntu
+2026-08-29T13:23:32.6816160Z 24.04.4
+2026-08-29T13:23:32.6816824Z LTS
+2026-08-29T13:23:32.6817373Z ##[endgroup]
+2026-08-29T13:23:32.6817937Z ##[group]Runner Image
+2026-08-29T13:23:32.6818597Z Image: ubuntu-24.04
+2026-08-29T13:23:32.6819173Z Version: 20260823.283.1
+2026-08-29T13:23:32.6820893Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260823.283/images/ubuntu/Ubuntu2404-Readme.md
+2026-08-29T13:23:32.6822559Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260823.283
+2026-08-29T13:23:32.6823602Z ##[endgroup]
+2026-08-29T13:23:32.6824797Z ##[group]GITHUB_TOKEN Permissions
+2026-08-29T13:23:32.6827014Z Contents: read
+2026-08-29T13:23:32.6827719Z Metadata: read
+2026-08-29T13:23:32.6828343Z ##[endgroup]
+2026-08-29T13:23:32.6830532Z Secret source: Actions
+2026-08-29T13:23:32.6831747Z Prepare workflow directory
+2026-08-29T13:23:32.7279592Z Prepare all required actions
+2026-08-29T13:23:32.7338596Z Getting action download info
+2026-08-29T13:23:33.0746853Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-08-29T13:23:33.2293747Z Download action repository 'actions/setup-dotnet@v4' (SHA:67a3573c9a986a3f9c594539f4ab511d57bb3ce9)
+2026-08-29T13:23:33.5158637Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-08-29T13:23:33.7378772Z Complete job name: Stryker — PostgreSql
+2026-08-29T13:23:33.8096552Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-08-29T13:23:33.8105239Z ##[group]Run actions/checkout@v4
+2026-08-29T13:23:33.8106422Z with:
+2026-08-29T13:23:33.8106939Z   repository: ericksonlopezf/dotnet-concurrency
+2026-08-29T13:23:33.8110668Z   token: ***
+2026-08-29T13:23:33.8111101Z   ssh-strict: true
+2026-08-29T13:23:33.8111538Z   ssh-user: git
+2026-08-29T13:23:33.8111982Z   persist-credentials: true
+2026-08-29T13:23:33.8112466Z   clean: true
+2026-08-29T13:23:33.8112902Z   sparse-checkout-cone-mode: true
+2026-08-29T13:23:33.8113416Z   fetch-depth: 1
+2026-08-29T13:23:33.8113840Z   fetch-tags: false
+2026-08-29T13:23:33.8114280Z   show-progress: true
+2026-08-29T13:23:33.8114725Z   lfs: false
+2026-08-29T13:23:33.8115185Z   submodules: false
+2026-08-29T13:23:33.8115941Z   set-safe-directory: true
+2026-08-29T13:23:33.8116482Z   allow-unsafe-pr-checkout: false
+2026-08-29T13:23:33.8117602Z env:
+2026-08-29T13:23:33.8118042Z   DOTNET_NOLOGO: true
+2026-08-29T13:23:33.8118541Z   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+2026-08-29T13:23:33.8119095Z ##[endgroup]
+2026-08-29T13:23:33.9109545Z Syncing repository: ericksonlopezf/dotnet-concurrency
+2026-08-29T13:23:33.9112120Z ##[group]Getting Git version info
+2026-08-29T13:23:33.9113415Z Working directory is '/home/runner/work/dotnet-concurrency/dotnet-concurrency'
+2026-08-29T13:23:33.9115242Z [command]/usr/bin/git version
+2026-08-29T13:23:33.9223246Z git version 2.55.0
+2026-08-29T13:23:33.9269767Z ##[endgroup]
+2026-08-29T13:23:33.9287046Z Temporarily overriding HOME='/home/runner/work/_temp/a436ed6c-2591-43ff-ad21-f86e3cec48d5' before making global git config changes
+2026-08-29T13:23:33.9289381Z Adding repository directory to the temporary git global config as a safe directory
+2026-08-29T13:23:33.9292975Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/dotnet-concurrency/dotnet-concurrency
+2026-08-29T13:23:33.9352285Z Deleting the contents of '/home/runner/work/dotnet-concurrency/dotnet-concurrency'
+2026-08-29T13:23:33.9357123Z ##[group]Initializing the repository
+2026-08-29T13:23:33.9362706Z [command]/usr/bin/git init /home/runner/work/dotnet-concurrency/dotnet-concurrency
+2026-08-29T13:23:33.9484325Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-08-29T13:23:33.9486336Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-08-29T13:23:33.9487852Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-08-29T13:23:33.9489106Z hint: call:
+2026-08-29T13:23:33.9489794Z hint:
+2026-08-29T13:23:33.9490613Z hint: 	git config --global init.defaultBranch <name>
+2026-08-29T13:23:33.9491586Z hint:
+2026-08-29T13:23:33.9492566Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-08-29T13:23:33.9494112Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-08-29T13:23:33.9495354Z hint:
+2026-08-29T13:23:33.9496271Z hint: 	git branch -m <name>
+2026-08-29T13:23:33.9497026Z hint:
+2026-08-29T13:23:33.9498046Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-08-29T13:23:33.9499938Z Initialized empty Git repository in /home/runner/work/dotnet-concurrency/dotnet-concurrency/.git/
+2026-08-29T13:23:33.9502830Z [command]/usr/bin/git remote add origin https://github.com/ericksonlopezf/dotnet-concurrency
+2026-08-29T13:23:33.9552262Z ##[endgroup]
+2026-08-29T13:23:33.9553466Z ##[group]Disabling automatic garbage collection
+2026-08-29T13:23:33.9556373Z [command]/usr/bin/git config --local gc.auto 0
+2026-08-29T13:23:33.9590749Z ##[endgroup]
+2026-08-29T13:23:33.9591720Z ##[group]Setting up auth
+2026-08-29T13:23:33.9598205Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-08-29T13:23:33.9632019Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-08-29T13:23:34.0058491Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-08-29T13:23:34.0094810Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-08-29T13:23:34.0322481Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-08-29T13:23:34.0359001Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-08-29T13:23:34.0583468Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-08-29T13:23:34.0623136Z ##[endgroup]
+2026-08-29T13:23:34.0623992Z ##[group]Fetching the repository
+2026-08-29T13:23:34.0635985Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +4b5a22da401118130f9b15baade22892418d04ae:refs/remotes/origin/main
+2026-08-29T13:23:34.5052180Z From https://github.com/ericksonlopezf/dotnet-concurrency
+2026-08-29T13:23:34.5054067Z  * [new ref]         4b5a22da401118130f9b15baade22892418d04ae -> origin/main
+2026-08-29T13:23:34.5058292Z ##[endgroup]
+2026-08-29T13:23:34.5059762Z ##[group]Determining the checkout info
+2026-08-29T13:23:34.5064348Z ##[endgroup]
+2026-08-29T13:23:34.5066029Z [command]/usr/bin/git sparse-checkout disable
+2026-08-29T13:23:34.5119105Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-08-29T13:23:34.5151414Z ##[group]Checking out the ref
+2026-08-29T13:23:34.5156252Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+2026-08-29T13:23:34.5371538Z Switched to a new branch 'main'
+2026-08-29T13:23:34.5378845Z branch 'main' set up to track 'origin/main'.
+2026-08-29T13:23:34.5385983Z ##[endgroup]
+2026-08-29T13:23:34.5436539Z [command]/usr/bin/git log -1 --format=%H
+2026-08-29T13:23:34.5462493Z 4b5a22da401118130f9b15baade22892418d04ae
+2026-08-29T13:23:34.5846312Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-08-29T13:23:34.5851925Z ##[group]Run actions/setup-dotnet@v4
+2026-08-29T13:23:34.5853015Z with:
+2026-08-29T13:23:34.5853796Z   dotnet-version: 10.0.x
+2026-08-29T13:23:34.5854750Z   cache: false
+2026-08-29T13:23:34.5855545Z env:
+2026-08-29T13:23:34.5856620Z   DOTNET_NOLOGO: true
+2026-08-29T13:23:34.5857632Z   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+2026-08-29T13:23:34.5858822Z ##[endgroup]
+2026-08-29T13:23:34.7284414Z (node:2245) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-08-29T13:23:34.7289619Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-08-29T13:23:34.7339833Z [command]/home/runner/work/_actions/actions/setup-dotnet/v4/externals/install-dotnet.sh --skip-non-versioned-files --runtime dotnet --channel LTS
+2026-08-29T13:23:35.0824232Z dotnet-install: .NET Core Runtime with version '10.0.11' is already installed.
+2026-08-29T13:23:35.0853892Z [command]/home/runner/work/_actions/actions/setup-dotnet/v4/externals/install-dotnet.sh --skip-non-versioned-files --channel 10.0
+2026-08-29T13:23:35.3258743Z dotnet-install: .NET Core SDK with version '10.0.400' is already installed.
+2026-08-29T13:23:35.3422837Z ##[group]Run if [ -n "$SNK_KEY" ]; then
+2026-08-29T13:23:35.3423521Z [36;1mif [ -n "$SNK_KEY" ]; then[0m
+2026-08-29T13:23:35.3424182Z [36;1m  echo "$SNK_KEY" | tr -d '\n\r ' | base64 --decode > EricksonLopez.snk[0m
+2026-08-29T13:23:35.3424834Z [36;1mfi[0m
+2026-08-29T13:23:35.3468038Z shell: /usr/bin/bash -e {0}
+2026-08-29T13:23:35.3468553Z env:
+2026-08-29T13:23:35.3468960Z   DOTNET_NOLOGO: true
+2026-08-29T13:23:35.3469434Z   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+2026-08-29T13:23:35.3469969Z   DOTNET_ROOT: /usr/share/dotnet
+2026-08-29T13:23:35.3470433Z   SNK_KEY: 
+2026-08-29T13:23:35.3470821Z ##[endgroup]
+2026-08-29T13:23:35.3598278Z ##[group]Run dotnet restore EricksonLopez.Concurrency.slnx
+2026-08-29T13:23:35.3598964Z [36;1mdotnet restore EricksonLopez.Concurrency.slnx[0m
+2026-08-29T13:23:35.3635354Z shell: /usr/bin/bash -e {0}
+2026-08-29T13:23:35.3635993Z env:
+2026-08-29T13:23:35.3636387Z   DOTNET_NOLOGO: true
+2026-08-29T13:23:35.3636814Z   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+2026-08-29T13:23:35.3637299Z   DOTNET_ROOT: /usr/share/dotnet
+2026-08-29T13:23:35.3637724Z ##[endgroup]
+2026-08-29T13:23:41.0854365Z   Determining projects to restore...
+2026-08-29T13:23:50.2009265Z   Restored /home/runner/work/dotnet-concurrency/dotnet-concurrency/src/EricksonLopez.Concurrency/EricksonLopez.Concurrency.csproj (in 3.21 sec).
+2026-08-29T13:23:50.2027471Z   Restored /home/runner/work/dotnet-concurrency/dotnet-concurrency/src/EricksonLopez.Concurrency.MySql/EricksonLopez.Concurrency.MySql.csproj (in 3.21 sec).
+2026-08-29T13:23:50.2087792Z   Restored /home/runner/work/dotnet-concurrency/dotnet-concurrency/tests/EricksonLopez.Concurrency.MariaDb.Tests/EricksonLopez.Concurrency.MariaDb.Tests.csproj (in 3.24 sec).
+2026-08-29T13:23:50.2117179Z   Restored /home/runner/work/dotnet-concurrency/dotnet-concurrency/tests/EricksonLopez.Concurrency.Tests/EricksonLopez.Concurrency.Tests.csproj (in 3.23 sec).
+2026-08-29T13:23:50.2341879Z   Restored /home/runner/work/dotnet-concurrency/dotnet-concurrency/tests/EricksonLopez.Concurrency.Testing.Tests/EricksonLopez.Concurrency.Testing.Tests.csproj (in 16 ms).
+2026-08-29T13:23:50.3402791Z   Restored /home/runner/work/dotnet-concurrency/dotnet-concurrency/tests/EricksonLopez.Concurrency.Result.Tests/EricksonLopez.Concurrency.Result.Tests.csproj (in 105 ms).
+2026-08-29T13:23:50.7977847Z   Restored /home/runner/work/dotnet-concurrency/dotnet-concurrency/tests/EricksonLopez.Concurrency.PostgreSql.Tests/EricksonLopez.Concurrency.PostgreSql.Tests.csproj (in 540 ms).
+2026-08-29T13:23:50.8376751Z   Restored /home/runner/work/dotnet-concurrency/dotnet-concurrency/tests/EricksonLopez.Concurrency.MySql.Tests/EricksonLopez.Concurrency.MySql.Tests.csproj (in 16 ms).
+2026-08-29T13:23:50.8727751Z   Restored /home/runner/work/dotnet-concurrency/dotnet-concurrency/tests/EricksonLopez.Concurrency.Sqlite.Tests/EricksonLopez.Concurrency.Sqlite.Tests.csproj (in 649 ms).
+2026-08-29T13:23:50.9418663Z   Restored /home/runner/work/dotnet-concurrency/dotnet-concurrency/tests/EricksonLopez.Concurrency.Oracle.Tests/EricksonLopez.Concurrency.Oracle.Tests.csproj (in 580 ms).
+2026-08-29T13:23:51.0347803Z   Restored /home/runner/work/dotnet-concurrency/dotnet-concurrency/tests/EricksonLopez.Concurrency.Dapper.Tests/EricksonLopez.Concurrency.Dapper.Tests.csproj (in 70 ms).
+2026-08-29T13:23:51.1307971Z   Restored /home/runner/work/dotnet-concurrency/dotnet-concurrency/tests/EricksonLopez.Concurrency.IntegrationTests/EricksonLopez.Concurrency.IntegrationTests.csproj (in 232 ms).
+2026-08-29T13:23:51.1641090Z   Restored /home/runner/work/dotnet-concurrency/dotnet-concurrency/tests/EricksonLopez.Concurrency.Mediator.Tests/EricksonLopez.Concurrency.Mediator.Tests.csproj (in 302 ms).
+2026-08-29T13:23:51.1892474Z   Restored /home/runner/work/dotnet-concurrency/dotnet-concurrency/tests/EricksonLopez.Concurrency.AspNetCore.Tests/EricksonLopez.Concurrency.AspNetCore.Tests.csproj (in 19 ms).
+2026-08-29T13:23:51.2255101Z   Restored /home/runner/work/dotnet-concurrency/dotnet-concurrency/tests/EricksonLopez.Concurrency.Abstractions.Tests/EricksonLopez.Concurrency.Abstractions.Tests.csproj (in 13 ms).
+2026-08-29T13:23:51.2472848Z   Restored /home/runner/work/dotnet-concurrency/dotnet-concurrency/src/EricksonLopez.Concurrency.Testing/EricksonLopez.Concurrency.Testing.csproj (in 7 ms).
+2026-08-29T13:23:51.2711452Z   Restored /home/runner/work/dotnet-concurrency/dotnet-concurrency/src/EricksonLopez.Concurrency.Sqlite/EricksonLopez.Concurrency.Sqlite.csproj (in 10 ms).
+2026-08-29T13:23:51.6519224Z   Restored /home/runner/work/dotnet-concurrency/dotnet-concurrency/tests/EricksonLopez.Concurrency.ArchitectureTests/EricksonLopez.Concurrency.ArchitectureTests.csproj (in 442 ms).
+2026-08-29T13:23:51.6583569Z   Restored /home/runner/work/dotnet-concurrency/dotnet-concurrency/src/EricksonLopez.Concurrency.SqlServer/EricksonLopez.Concurrency.SqlServer.csproj (in 356 ms).
+2026-08-29T13:23:51.6727685Z   Restored /home/runner/work/dotnet-concurrency/dotnet-concurrency/tests/EricksonLopez.Concurrency.SqlServer.Tests/EricksonLopez.Concurrency.SqlServer.Tests.csproj (in 1.43 sec).
+2026-08-29T13:23:51.6986072Z   Restored /home/runner/work/dotnet-concurrency/dotnet-concurrency/src/EricksonLopez.Concurrency.Result/EricksonLopez.Concurrency.Result.csproj (in 16 ms).
+2026-08-29T13:23:51.7338171Z   Restored /home/runner/work/dotnet-concurrency/dotnet-concurrency/src/EricksonLopez.Concurrency.PostgreSql/EricksonLopez.Concurrency.PostgreSql.csproj (in 14 ms).
+2026-08-29T13:23:51.7597791Z   Restored /home/runner/work/dotnet-concurrency/dotnet-concurrency/src/EricksonLopez.Concurrency.Oracle/EricksonLopez.Concurrency.Oracle.csproj (in 9 ms).
+2026-08-29T13:23:51.7925158Z   Restored /home/runner/work/dotnet-concurrency/dotnet-concurrency/src/EricksonLopez.Concurrency.Mediator/EricksonLopez.Concurrency.Mediator.csproj (in 20 ms).
+2026-08-29T13:23:51.8227352Z   Restored /home/runner/work/dotnet-concurrency/dotnet-concurrency/src/EricksonLopez.Concurrency.MariaDb/EricksonLopez.Concurrency.MariaDb.csproj (in 16 ms).
+2026-08-29T13:23:51.8477471Z   Restored /home/runner/work/dotnet-concurrency/dotnet-concurrency/src/EricksonLopez.Concurrency.AspNetCore/EricksonLopez.Concurrency.AspNetCore.csproj (in 11 ms).
+2026-08-29T13:23:51.8650533Z   Restored /home/runner/work/dotnet-concurrency/dotnet-concurrency/src/EricksonLopez.Concurrency.Dapper/EricksonLopez.Concurrency.Dapper.csproj (in 26 ms).
+2026-08-29T13:23:51.8698282Z   Restored /home/runner/work/dotnet-concurrency/dotnet-concurrency/src/EricksonLopez.Concurrency.Abstractions/EricksonLopez.Concurrency.Abstractions.csproj (in 10 ms).
+2026-08-29T13:23:52.0317803Z   Restored /home/runner/work/dotnet-concurrency/dotnet-concurrency/samples/EricksonLopez.Concurrency.Showcase/EricksonLopez.Concurrency.Showcase.csproj (in 109 ms).
+2026-08-29T13:23:52.8111761Z   Restored /home/runner/work/dotnet-concurrency/dotnet-concurrency/tests/EricksonLopez.Concurrency.AotSmokeTest/EricksonLopez.Concurrency.AotSmokeTest.csproj (in 1.61 sec).
+2026-08-29T13:23:52.9936886Z   Restored /home/runner/work/dotnet-concurrency/dotnet-concurrency/benchmarks/EricksonLopez.Concurrency.Benchmarks/EricksonLopez.Concurrency.Benchmarks.csproj (in 1.11 sec).
+2026-08-29T13:23:53.0638021Z ##[group]Run dotnet build EricksonLopez.Concurrency.slnx --no-restore --configuration Release
+2026-08-29T13:23:53.0638785Z [36;1mdotnet build EricksonLopez.Concurrency.slnx --no-restore --configuration Release[0m
+2026-08-29T13:23:53.0677828Z shell: /usr/bin/bash -e {0}
+2026-08-29T13:23:53.0678074Z env:
+2026-08-29T13:23:53.0678266Z   DOTNET_NOLOGO: true
+2026-08-29T13:23:53.0678505Z   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+2026-08-29T13:23:53.0678797Z   DOTNET_ROOT: /usr/share/dotnet
+2026-08-29T13:23:53.0679036Z ##[endgroup]
+2026-08-29T13:24:04.3593647Z   EricksonLopez.Concurrency.Abstractions -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/src/EricksonLopez.Concurrency.Abstractions/bin/Release/net10.0/EricksonLopez.Concurrency.Abstractions.dll
+2026-08-29T13:24:04.3625820Z   EricksonLopez.Concurrency.Abstractions -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/src/EricksonLopez.Concurrency.Abstractions/bin/Release/net9.0/EricksonLopez.Concurrency.Abstractions.dll
+2026-08-29T13:24:04.3658940Z   EricksonLopez.Concurrency.Abstractions -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/src/EricksonLopez.Concurrency.Abstractions/bin/Release/net8.0/EricksonLopez.Concurrency.Abstractions.dll
+2026-08-29T13:24:04.9356111Z   EricksonLopez.Concurrency.MySql -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/src/EricksonLopez.Concurrency.MySql/bin/Release/net8.0/EricksonLopez.Concurrency.MySql.dll
+2026-08-29T13:24:06.2770173Z   EricksonLopez.Concurrency.MariaDb -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/src/EricksonLopez.Concurrency.MariaDb/bin/Release/net9.0/EricksonLopez.Concurrency.MariaDb.dll
+2026-08-29T13:24:06.4980774Z   EricksonLopez.Concurrency.Abstractions.Tests -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/tests/EricksonLopez.Concurrency.Abstractions.Tests/bin/Release/net8.0/EricksonLopez.Concurrency.Abstractions.Tests.dll
+2026-08-29T13:24:06.6297981Z   EricksonLopez.Concurrency.AspNetCore -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/src/EricksonLopez.Concurrency.AspNetCore/bin/Release/net8.0/EricksonLopez.Concurrency.AspNetCore.dll
+2026-08-29T13:24:06.7343167Z   EricksonLopez.Concurrency.SqlServer -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/src/EricksonLopez.Concurrency.SqlServer/bin/Release/net9.0/EricksonLopez.Concurrency.SqlServer.dll
+2026-08-29T13:24:07.0039554Z   EricksonLopez.Concurrency.SqlServer -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/src/EricksonLopez.Concurrency.SqlServer/bin/Release/net8.0/EricksonLopez.Concurrency.SqlServer.dll
+2026-08-29T13:24:07.2007076Z   EricksonLopez.Concurrency -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/src/EricksonLopez.Concurrency/bin/Release/net8.0/EricksonLopez.Concurrency.dll
+2026-08-29T13:24:08.4529719Z   EricksonLopez.Concurrency.Dapper -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/src/EricksonLopez.Concurrency.Dapper/bin/Release/net8.0/EricksonLopez.Concurrency.Dapper.dll
+2026-08-29T13:24:08.4809230Z   EricksonLopez.Concurrency.AspNetCore -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/src/EricksonLopez.Concurrency.AspNetCore/bin/Release/net9.0/EricksonLopez.Concurrency.AspNetCore.dll
+2026-08-29T13:24:08.4948339Z   EricksonLopez.Concurrency.MariaDb -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/src/EricksonLopez.Concurrency.MariaDb/bin/Release/net8.0/EricksonLopez.Concurrency.MariaDb.dll
+2026-08-29T13:24:08.8623428Z   EricksonLopez.Concurrency.Mediator -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/src/EricksonLopez.Concurrency.Mediator/bin/Release/net8.0/EricksonLopez.Concurrency.Mediator.dll
+2026-08-29T13:24:09.0358777Z   EricksonLopez.Concurrency -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/src/EricksonLopez.Concurrency/bin/Release/net9.0/EricksonLopez.Concurrency.dll
+2026-08-29T13:24:09.4288277Z   EricksonLopez.Concurrency.Oracle -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/src/EricksonLopez.Concurrency.Oracle/bin/Release/net9.0/EricksonLopez.Concurrency.Oracle.dll
+2026-08-29T13:24:09.5837935Z   EricksonLopez.Concurrency.MariaDb -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/src/EricksonLopez.Concurrency.MariaDb/bin/Release/net10.0/EricksonLopez.Concurrency.MariaDb.dll
+2026-08-29T13:24:10.1877786Z   EricksonLopez.Concurrency.Oracle -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/src/EricksonLopez.Concurrency.Oracle/bin/Release/net10.0/EricksonLopez.Concurrency.Oracle.dll
+2026-08-29T13:24:11.3917893Z   EricksonLopez.Concurrency.MySql -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/src/EricksonLopez.Concurrency.MySql/bin/Release/net9.0/EricksonLopez.Concurrency.MySql.dll
+2026-08-29T13:24:11.3944857Z   EricksonLopez.Concurrency.Testing -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/src/EricksonLopez.Concurrency.Testing/bin/Release/net10.0/EricksonLopez.Concurrency.Testing.dll
+2026-08-29T13:24:11.4105391Z   EricksonLopez.Concurrency -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/src/EricksonLopez.Concurrency/bin/Release/net10.0/EricksonLopez.Concurrency.dll
+2026-08-29T13:24:11.4214515Z   EricksonLopez.Concurrency.Abstractions.Tests -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/tests/EricksonLopez.Concurrency.Abstractions.Tests/bin/Release/net10.0/EricksonLopez.Concurrency.Abstractions.Tests.dll
+2026-08-29T13:24:11.4467698Z   EricksonLopez.Concurrency.MariaDb.Tests -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/tests/EricksonLopez.Concurrency.MariaDb.Tests/bin/Release/net9.0/EricksonLopez.Concurrency.MariaDb.Tests.dll
+2026-08-29T13:24:11.4677809Z   EricksonLopez.Concurrency.MySql.Tests -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/tests/EricksonLopez.Concurrency.MySql.Tests/bin/Release/net8.0/EricksonLopez.Concurrency.MySql.Tests.dll
+2026-08-29T13:24:11.7599640Z   EricksonLopez.Concurrency.Sqlite -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/src/EricksonLopez.Concurrency.Sqlite/bin/Release/net8.0/EricksonLopez.Concurrency.Sqlite.dll
+2026-08-29T13:24:11.9304343Z   EricksonLopez.Concurrency.Oracle -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/src/EricksonLopez.Concurrency.Oracle/bin/Release/net8.0/EricksonLopez.Concurrency.Oracle.dll
+2026-08-29T13:24:13.3638047Z   EricksonLopez.Concurrency.Dapper -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/src/EricksonLopez.Concurrency.Dapper/bin/Release/net10.0/EricksonLopez.Concurrency.Dapper.dll
+2026-08-29T13:24:13.3747853Z   EricksonLopez.Concurrency.PostgreSql -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/src/EricksonLopez.Concurrency.PostgreSql/bin/Release/net10.0/EricksonLopez.Concurrency.PostgreSql.dll
+2026-08-29T13:24:13.4480549Z   EricksonLopez.Concurrency.Tests -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/tests/EricksonLopez.Concurrency.Tests/bin/Release/net10.0/EricksonLopez.Concurrency.Tests.dll
+2026-08-29T13:24:13.5081038Z   EricksonLopez.Concurrency.Mediator -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/src/EricksonLopez.Concurrency.Mediator/bin/Release/net10.0/EricksonLopez.Concurrency.Mediator.dll
+2026-08-29T13:24:13.9887809Z   EricksonLopez.Concurrency.SqlServer -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/src/EricksonLopez.Concurrency.SqlServer/bin/Release/net10.0/EricksonLopez.Concurrency.SqlServer.dll
+2026-08-29T13:24:14.0082999Z   EricksonLopez.Concurrency.Result -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/src/EricksonLopez.Concurrency.Result/bin/Release/net10.0/EricksonLopez.Concurrency.Result.dll
+2026-08-29T13:24:14.1123903Z   EricksonLopez.Concurrency.AspNetCore.Tests -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/tests/EricksonLopez.Concurrency.AspNetCore.Tests/bin/Release/net8.0/EricksonLopez.Concurrency.AspNetCore.Tests.dll
+2026-08-29T13:24:14.3826626Z   EricksonLopez.Concurrency.Testing.Tests -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/tests/EricksonLopez.Concurrency.Testing.Tests/bin/Release/net10.0/EricksonLopez.Concurrency.Testing.Tests.dll
+2026-08-29T13:24:14.6791921Z   EricksonLopez.Concurrency.PostgreSql -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/src/EricksonLopez.Concurrency.PostgreSql/bin/Release/net9.0/EricksonLopez.Concurrency.PostgreSql.dll
+2026-08-29T13:24:14.7157194Z   EricksonLopez.Concurrency.Dapper -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/src/EricksonLopez.Concurrency.Dapper/bin/Release/net9.0/EricksonLopez.Concurrency.Dapper.dll
+2026-08-29T13:24:15.3739748Z   EricksonLopez.Concurrency.Result -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/src/EricksonLopez.Concurrency.Result/bin/Release/net9.0/EricksonLopez.Concurrency.Result.dll
+2026-08-29T13:24:15.4147133Z   EricksonLopez.Concurrency.Testing -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/src/EricksonLopez.Concurrency.Testing/bin/Release/net8.0/EricksonLopez.Concurrency.Testing.dll
+2026-08-29T13:24:15.4320316Z   EricksonLopez.Concurrency.PostgreSql -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/src/EricksonLopez.Concurrency.PostgreSql/bin/Release/net8.0/EricksonLopez.Concurrency.PostgreSql.dll
+2026-08-29T13:24:15.4555373Z   EricksonLopez.Concurrency.Result -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/src/EricksonLopez.Concurrency.Result/bin/Release/net8.0/EricksonLopez.Concurrency.Result.dll
+2026-08-29T13:24:15.7810019Z   EricksonLopez.Concurrency.Mediator.Tests -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/tests/EricksonLopez.Concurrency.Mediator.Tests/bin/Release/net10.0/EricksonLopez.Concurrency.Mediator.Tests.dll
+2026-08-29T13:24:15.8177950Z   EricksonLopez.Concurrency.Testing -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/src/EricksonLopez.Concurrency.Testing/bin/Release/net9.0/EricksonLopez.Concurrency.Testing.dll
+2026-08-29T13:24:15.9741845Z   EricksonLopez.Concurrency.MySql.Tests -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/tests/EricksonLopez.Concurrency.MySql.Tests/bin/Release/net9.0/EricksonLopez.Concurrency.MySql.Tests.dll
+2026-08-29T13:24:15.9893051Z   EricksonLopez.Concurrency.Sqlite.Tests -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/tests/EricksonLopez.Concurrency.Sqlite.Tests/bin/Release/net8.0/EricksonLopez.Concurrency.Sqlite.Tests.dll
+2026-08-29T13:24:16.5854977Z   EricksonLopez.Concurrency.Result.Tests -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/tests/EricksonLopez.Concurrency.Result.Tests/bin/Release/net8.0/EricksonLopez.Concurrency.Result.Tests.dll
+2026-08-29T13:24:16.6001895Z   EricksonLopez.Concurrency.PostgreSql.Tests -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/tests/EricksonLopez.Concurrency.PostgreSql.Tests/bin/Release/net8.0/EricksonLopez.Concurrency.PostgreSql.Tests.dll
+2026-08-29T13:24:17.0342329Z   EricksonLopez.Concurrency.Testing.Tests -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/tests/EricksonLopez.Concurrency.Testing.Tests/bin/Release/net8.0/EricksonLopez.Concurrency.Testing.Tests.dll
+2026-08-29T13:24:17.4157690Z   EricksonLopez.Concurrency.Testing.Tests -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/tests/EricksonLopez.Concurrency.Testing.Tests/bin/Release/net9.0/EricksonLopez.Concurrency.Testing.Tests.dll
+2026-08-29T13:24:17.8267731Z   EricksonLopez.Concurrency.Oracle.Tests -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/tests/EricksonLopez.Concurrency.Oracle.Tests/bin/Release/net9.0/EricksonLopez.Concurrency.Oracle.Tests.dll
+2026-08-29T13:24:18.1189408Z   EricksonLopez.Concurrency.Dapper.Tests -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/tests/EricksonLopez.Concurrency.Dapper.Tests/bin/Release/net9.0/EricksonLopez.Concurrency.Dapper.Tests.dll
+2026-08-29T13:24:18.9418162Z   EricksonLopez.Concurrency.Oracle.Tests -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/tests/EricksonLopez.Concurrency.Oracle.Tests/bin/Release/net8.0/EricksonLopez.Concurrency.Oracle.Tests.dll
+2026-08-29T13:24:19.2751446Z   EricksonLopez.Concurrency.PostgreSql.Tests -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/tests/EricksonLopez.Concurrency.PostgreSql.Tests/bin/Release/net9.0/EricksonLopez.Concurrency.PostgreSql.Tests.dll
+2026-08-29T13:24:19.2898762Z   EricksonLopez.Concurrency.Result.Tests -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/tests/EricksonLopez.Concurrency.Result.Tests/bin/Release/net9.0/EricksonLopez.Concurrency.Result.Tests.dll
+2026-08-29T13:24:20.4683976Z   EricksonLopez.Concurrency.Tests -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/tests/EricksonLopez.Concurrency.Tests/bin/Release/net9.0/EricksonLopez.Concurrency.Tests.dll
+2026-08-29T13:24:20.4786381Z   EricksonLopez.Concurrency.PostgreSql.Tests -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/tests/EricksonLopez.Concurrency.PostgreSql.Tests/bin/Release/net10.0/EricksonLopez.Concurrency.PostgreSql.Tests.dll
+2026-08-29T13:24:20.8093130Z   EricksonLopez.Concurrency.Dapper.Tests -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/tests/EricksonLopez.Concurrency.Dapper.Tests/bin/Release/net10.0/EricksonLopez.Concurrency.Dapper.Tests.dll
+2026-08-29T13:24:21.4624984Z   EricksonLopez.Concurrency.IntegrationTests -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/tests/EricksonLopez.Concurrency.IntegrationTests/bin/Release/net10.0/EricksonLopez.Concurrency.IntegrationTests.dll
+2026-08-29T13:24:21.4737153Z   EricksonLopez.Concurrency.Result.Tests -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/tests/EricksonLopez.Concurrency.Result.Tests/bin/Release/net10.0/EricksonLopez.Concurrency.Result.Tests.dll
+2026-08-29T13:24:22.3190923Z   EricksonLopez.Concurrency.Oracle.Tests -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/tests/EricksonLopez.Concurrency.Oracle.Tests/bin/Release/net10.0/EricksonLopez.Concurrency.Oracle.Tests.dll
+2026-08-29T13:24:22.3305056Z   EricksonLopez.Concurrency.MariaDb.Tests -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/tests/EricksonLopez.Concurrency.MariaDb.Tests/bin/Release/net10.0/EricksonLopez.Concurrency.MariaDb.Tests.dll
+2026-08-29T13:24:22.3438515Z   EricksonLopez.Concurrency.Abstractions.Tests -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/tests/EricksonLopez.Concurrency.Abstractions.Tests/bin/Release/net9.0/EricksonLopez.Concurrency.Abstractions.Tests.dll
+2026-08-29T13:24:23.3520783Z   EricksonLopez.Concurrency.AspNetCore.Tests -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/tests/EricksonLopez.Concurrency.AspNetCore.Tests/bin/Release/net9.0/EricksonLopez.Concurrency.AspNetCore.Tests.dll
+2026-08-29T13:24:23.3669251Z   EricksonLopez.Concurrency.Mediator.Tests -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/tests/EricksonLopez.Concurrency.Mediator.Tests/bin/Release/net8.0/EricksonLopez.Concurrency.Mediator.Tests.dll
+2026-08-29T13:24:24.1027755Z   EricksonLopez.Concurrency.Tests -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/tests/EricksonLopez.Concurrency.Tests/bin/Release/net8.0/EricksonLopez.Concurrency.Tests.dll
+2026-08-29T13:24:24.4008011Z   EricksonLopez.Concurrency.MariaDb.Tests -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/tests/EricksonLopez.Concurrency.MariaDb.Tests/bin/Release/net8.0/EricksonLopez.Concurrency.MariaDb.Tests.dll
+2026-08-29T13:24:25.1501596Z   EricksonLopez.Concurrency.SqlServer.Tests -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/tests/EricksonLopez.Concurrency.SqlServer.Tests/bin/Release/net9.0/EricksonLopez.Concurrency.SqlServer.Tests.dll
+2026-08-29T13:24:25.1618718Z   EricksonLopez.Concurrency.Dapper.Tests -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/tests/EricksonLopez.Concurrency.Dapper.Tests/bin/Release/net8.0/EricksonLopez.Concurrency.Dapper.Tests.dll
+2026-08-29T13:24:26.3677561Z   EricksonLopez.Concurrency.AspNetCore -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/src/EricksonLopez.Concurrency.AspNetCore/bin/Release/net10.0/EricksonLopez.Concurrency.AspNetCore.dll
+2026-08-29T13:24:26.6096911Z   EricksonLopez.Concurrency.Benchmarks -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/benchmarks/EricksonLopez.Concurrency.Benchmarks/bin/Release/net10.0/EricksonLopez.Concurrency.Benchmarks.dll
+2026-08-29T13:24:27.3158250Z   EricksonLopez.Concurrency.AspNetCore.Tests -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/tests/EricksonLopez.Concurrency.AspNetCore.Tests/bin/Release/net10.0/EricksonLopez.Concurrency.AspNetCore.Tests.dll
+2026-08-29T13:24:27.7617259Z   EricksonLopez.Concurrency.SqlServer.Tests -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/tests/EricksonLopez.Concurrency.SqlServer.Tests/bin/Release/net10.0/EricksonLopez.Concurrency.SqlServer.Tests.dll
+2026-08-29T13:24:27.9420296Z   EricksonLopez.Concurrency.Sqlite -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/src/EricksonLopez.Concurrency.Sqlite/bin/Release/net9.0/EricksonLopez.Concurrency.Sqlite.dll
+2026-08-29T13:24:28.2580959Z   EricksonLopez.Concurrency.Sqlite.Tests -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/tests/EricksonLopez.Concurrency.Sqlite.Tests/bin/Release/net9.0/EricksonLopez.Concurrency.Sqlite.Tests.dll
+2026-08-29T13:24:28.3826596Z   EricksonLopez.Concurrency.Sqlite -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/src/EricksonLopez.Concurrency.Sqlite/bin/Release/net10.0/EricksonLopez.Concurrency.Sqlite.dll
+2026-08-29T13:24:28.6736373Z   EricksonLopez.Concurrency.Sqlite.Tests -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/tests/EricksonLopez.Concurrency.Sqlite.Tests/bin/Release/net10.0/EricksonLopez.Concurrency.Sqlite.Tests.dll
+2026-08-29T13:24:28.8465563Z   EricksonLopez.Concurrency.MySql -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/src/EricksonLopez.Concurrency.MySql/bin/Release/net10.0/EricksonLopez.Concurrency.MySql.dll
+2026-08-29T13:24:29.3958391Z   EricksonLopez.Concurrency.AotSmokeTest -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/tests/EricksonLopez.Concurrency.AotSmokeTest/bin/Release/net10.0/EricksonLopez.Concurrency.AotSmokeTest.dll
+2026-08-29T13:24:29.6158010Z   EricksonLopez.Concurrency.Showcase -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/samples/EricksonLopez.Concurrency.Showcase/bin/Release/net10.0/EricksonLopez.Concurrency.Showcase.dll
+2026-08-29T13:24:29.8038286Z   EricksonLopez.Concurrency.MySql.Tests -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/tests/EricksonLopez.Concurrency.MySql.Tests/bin/Release/net10.0/EricksonLopez.Concurrency.MySql.Tests.dll
+2026-08-29T13:24:30.0902967Z   EricksonLopez.Concurrency.ArchitectureTests -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/tests/EricksonLopez.Concurrency.ArchitectureTests/bin/Release/net10.0/EricksonLopez.Concurrency.ArchitectureTests.dll
+2026-08-29T13:24:30.2636078Z   EricksonLopez.Concurrency.Mediator -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/src/EricksonLopez.Concurrency.Mediator/bin/Release/net9.0/EricksonLopez.Concurrency.Mediator.dll
+2026-08-29T13:24:30.6196520Z   EricksonLopez.Concurrency.Mediator.Tests -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/tests/EricksonLopez.Concurrency.Mediator.Tests/bin/Release/net9.0/EricksonLopez.Concurrency.Mediator.Tests.dll
+2026-08-29T13:24:31.0696177Z   EricksonLopez.Concurrency.SqlServer.Tests -> /home/runner/work/dotnet-concurrency/dotnet-concurrency/tests/EricksonLopez.Concurrency.SqlServer.Tests/bin/Release/net8.0/EricksonLopez.Concurrency.SqlServer.Tests.dll
+2026-08-29T13:24:31.1010712Z 
+2026-08-29T13:24:31.1011467Z Build succeeded.
+2026-08-29T13:24:31.1012235Z     0 Warning(s)
+2026-08-29T13:24:31.1012780Z     0 Error(s)
+2026-08-29T13:24:31.1013765Z 
+2026-08-29T13:24:31.1014474Z Time Elapsed 00:00:37.71
+2026-08-29T13:24:31.1621226Z ##[group]Run dotnet tool install --global dotnet-stryker
+2026-08-29T13:24:31.1621666Z [36;1mdotnet tool install --global dotnet-stryker[0m
+2026-08-29T13:24:31.1659727Z shell: /usr/bin/bash -e {0}
+2026-08-29T13:24:31.1659989Z env:
+2026-08-29T13:24:31.1660178Z   DOTNET_NOLOGO: true
+2026-08-29T13:24:31.1660420Z   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+2026-08-29T13:24:31.1660719Z   DOTNET_ROOT: /usr/share/dotnet
+2026-08-29T13:24:31.1660959Z ##[endgroup]
+2026-08-29T13:24:33.5154664Z You can invoke the tool using the following command: dotnet-stryker
+2026-08-29T13:24:33.5156123Z Tool 'dotnet-stryker' (version '4.16.0') was successfully installed.
+2026-08-29T13:24:33.5411176Z ##[group]Run set +e
+2026-08-29T13:24:33.5411458Z [36;1mset +e[0m
+2026-08-29T13:24:33.5411672Z [36;1mdotnet-stryker \[0m
+2026-08-29T13:24:33.5412005Z [36;1m  --config-file stryker-postgresql-config.json \[0m
+2026-08-29T13:24:33.5412368Z [36;1m  --mutation-level Advanced \[0m
+2026-08-29T13:24:33.5412640Z [36;1m  --concurrency 2 \[0m
+2026-08-29T13:24:33.5413110Z [36;1m  --output /home/runner/work/dotnet-concurrency/dotnet-concurrency/StrykerOutput/postgresql[0m
+2026-08-29T13:24:33.5413602Z [36;1mSTRYKER_EXIT_CODE=$?[0m
+2026-08-29T13:24:33.5413904Z [36;1mecho "exit_code=$STRYKER_EXIT_CODE" >> $GITHUB_OUTPUT[0m
+2026-08-29T13:24:33.5414326Z [36;1mecho "Stryker finished with exit code: $STRYKER_EXIT_CODE"[0m
+2026-08-29T13:24:33.5414673Z [36;1mexit 0[0m
+2026-08-29T13:24:33.5451020Z shell: /usr/bin/bash -e {0}
+2026-08-29T13:24:33.5451275Z env:
+2026-08-29T13:24:33.5451466Z   DOTNET_NOLOGO: true
+2026-08-29T13:24:33.5451716Z   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+2026-08-29T13:24:33.5452051Z   DOTNET_ROOT: /usr/share/dotnet
+2026-08-29T13:24:33.5452293Z ##[endgroup]
+2026-08-29T13:24:35.4523048Z [38;5;11mStryker.NET failed to mutate your project. For more information see the logs [0m
+2026-08-29T13:24:35.4524255Z [38;5;11mbelow:[0m
+2026-08-29T13:24:35.4548761Z 
+2026-08-29T13:24:35.4549011Z 
+2026-08-29T13:24:35.4549373Z Config file not found at 
+2026-08-29T13:24:35.4550162Z /home/runner/work/dotnet-concurrency/dotnet-concurrency/tests/EricksonLopez.Conc
+2026-08-29T13:24:35.4552330Z urrency.PostgreSql.Tests/stryker-postgresql-config.json
+2026-08-29T13:24:35.4553172Z 
+2026-08-29T13:24:35.4553202Z 
+2026-08-29T13:24:35.4599055Z Stryker finished with exit code: 1
+2026-08-29T13:24:35.4686727Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-08-29T13:24:35.4688067Z ##[group]Run actions/upload-artifact@v4
+2026-08-29T13:24:35.4688332Z with:
+2026-08-29T13:24:35.4688558Z   name: stryker-report-postgresql-33254627660
+2026-08-29T13:24:35.4688861Z   path: StrykerOutput/postgresql/
+2026-08-29T13:24:35.4689130Z   retention-days: 30
+2026-08-29T13:24:35.4689357Z   if-no-files-found: warn
+2026-08-29T13:24:35.4689593Z   compression-level: 6
+2026-08-29T13:24:35.4689816Z   overwrite: false
+2026-08-29T13:24:35.4690027Z   include-hidden-files: false
+2026-08-29T13:24:35.4690256Z env:
+2026-08-29T13:24:35.4690432Z   DOTNET_NOLOGO: true
+2026-08-29T13:24:35.4690658Z   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+2026-08-29T13:24:35.4690975Z   DOTNET_ROOT: /usr/share/dotnet
+2026-08-29T13:24:35.4691209Z ##[endgroup]
+2026-08-29T13:24:35.6377213Z (node:2873) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-08-29T13:24:35.6378826Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-08-29T13:24:35.6432730Z ##[warning]No files were found with the provided path: StrykerOutput/postgresql/. No artifacts will be uploaded.
+2026-08-29T13:24:35.6641678Z ##[group]Run node scripts/record-stryker-result.js "StrykerOutput/postgresql" "PostgreSql" "tests/EricksonLopez.Concurrency.PostgreSql.Tests/stryker-postgresql-config.json"
+2026-08-29T13:24:35.6644146Z [36;1mnode scripts/record-stryker-result.js "StrykerOutput/postgresql" "PostgreSql" "tests/EricksonLopez.Concurrency.PostgreSql.Tests/stryker-postgresql-config.json"[0m
+2026-08-29T13:24:35.6699404Z shell: /usr/bin/bash -e {0}
+2026-08-29T13:24:35.6699847Z env:
+2026-08-29T13:24:35.6700266Z   DOTNET_NOLOGO: true
+2026-08-29T13:24:35.6700701Z   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+2026-08-29T13:24:35.6701248Z   DOTNET_ROOT: /usr/share/dotnet
+2026-08-29T13:24:35.6701676Z ##[endgroup]
+2026-08-29T13:24:38.1952449Z ============================================================
+2026-08-29T13:24:38.1956801Z   STRYKER MUTATION TEST SUMMARY: PostgreSql
+2026-08-29T13:24:38.1957924Z ============================================================
+2026-08-29T13:24:38.1959031Z Mutation Score  : 0% (❌ FAILED)
+2026-08-29T13:24:38.1959529Z Mutants Killed  : 0 / 0
+2026-08-29T13:24:38.1966682Z Break Threshold : ≥95%
+2026-08-29T13:24:38.1967676Z Gate Status     : ❌ FAILED
+2026-08-29T13:24:38.1968763Z Summary Output  : StrykerOutput/summary-PostgreSql.json
+2026-08-29T13:24:38.1969615Z ============================================================
+2026-08-29T13:24:38.1970167Z 
+2026-08-29T13:24:38.2182046Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-08-29T13:24:38.2183336Z ##[group]Run actions/upload-artifact@v4
+2026-08-29T13:24:38.2183597Z with:
+2026-08-29T13:24:38.2183797Z   name: stryker-summary-PostgreSql
+2026-08-29T13:24:38.2184112Z   path: StrykerOutput/summary-PostgreSql.json
+2026-08-29T13:24:38.2184409Z   retention-days: 30
+2026-08-29T13:24:38.2184627Z   if-no-files-found: warn
+2026-08-29T13:24:38.2184855Z   compression-level: 6
+2026-08-29T13:24:38.2185068Z   overwrite: false
+2026-08-29T13:24:38.2185276Z   include-hidden-files: false
+2026-08-29T13:24:38.2185504Z env:
+2026-08-29T13:24:38.2185903Z   DOTNET_NOLOGO: true
+2026-08-29T13:24:38.2186144Z   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+2026-08-29T13:24:38.2186472Z   DOTNET_ROOT: /usr/share/dotnet
+2026-08-29T13:24:38.2186714Z ##[endgroup]
+2026-08-29T13:24:38.3822658Z (node:2893) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-08-29T13:24:38.3824089Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-08-29T13:24:38.3882375Z With the provided path, there will be 1 file uploaded
+2026-08-29T13:24:38.3916647Z Artifact name is valid!
+2026-08-29T13:24:38.3917354Z Root directory input is valid!
+2026-08-29T13:24:38.7844329Z Beginning upload of artifact content to blob storage
+2026-08-29T13:24:38.8037282Z (node:2893) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-08-29T13:24:39.0920483Z Uploaded bytes 443
+2026-08-29T13:24:39.1768173Z Finished uploading artifact content to blob storage!
+2026-08-29T13:24:39.1769690Z SHA256 digest of uploaded artifact zip is 8ae60a637e07aa99516221a99c06deb2a6d3617eb6c7e939aec6e70ea11f74a6
+2026-08-29T13:24:39.1771041Z Finalizing artifact upload
+2026-08-29T13:24:39.4378465Z Artifact stryker-summary-PostgreSql.zip successfully finalized. Artifact ID 9715511807
+2026-08-29T13:24:39.4380369Z Artifact stryker-summary-PostgreSql has been successfully uploaded! Final size is 443 bytes. Artifact ID is 9715511807
+2026-08-29T13:24:39.4407382Z Artifact download URL: https://github.com/ericksonlopezf/dotnet-concurrency/actions/runs/33254627660/artifacts/9715511807
+2026-08-29T13:24:39.4552658Z ##[group]Run if [ "1" != "0" ]; then
+2026-08-29T13:24:39.4553192Z [36;1mif [ "1" != "0" ]; then[0m
+2026-08-29T13:24:39.4553874Z [36;1m  echo "❌ Stryker execution failed for PostgreSql with exit code 1"[0m
+2026-08-29T13:24:39.4554590Z [36;1m  exit 1[0m
+2026-08-29T13:24:39.4554952Z [36;1mfi[0m
+2026-08-29T13:24:39.4608773Z shell: /usr/bin/bash -e {0}
+2026-08-29T13:24:39.4609220Z env:
+2026-08-29T13:24:39.4609553Z   DOTNET_NOLOGO: true
+2026-08-29T13:24:39.4609975Z   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+2026-08-29T13:24:39.4610489Z   DOTNET_ROOT: /usr/share/dotnet
+2026-08-29T13:24:39.4610923Z ##[endgroup]
+2026-08-29T13:24:39.4692060Z ❌ Stryker execution failed for PostgreSql with exit code 1
+2026-08-29T13:24:39.4696786Z ##[error]Process completed with exit code 1.
+2026-08-29T13:24:39.4802811Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-08-29T13:24:39.4804168Z Post job cleanup.
+2026-08-29T13:24:39.5735935Z [command]/usr/bin/git version
+2026-08-29T13:24:39.5808739Z git version 2.55.0
+2026-08-29T13:24:39.5866831Z Temporarily overriding HOME='/home/runner/work/_temp/658a0af0-c5e3-4253-bab4-c8bcbea0951c' before making global git config changes
+2026-08-29T13:24:39.5868444Z Adding repository directory to the temporary git global config as a safe directory
+2026-08-29T13:24:39.5894181Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/dotnet-concurrency/dotnet-concurrency
+2026-08-29T13:24:39.5929814Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-08-29T13:24:39.5978645Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-08-29T13:24:39.6326996Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-08-29T13:24:39.6357618Z http.https://github.com/.extraheader
+2026-08-29T13:24:39.6372590Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-08-29T13:24:39.6411268Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-08-29T13:24:39.6675941Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-08-29T13:24:39.6731237Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-08-29T13:24:39.7352822Z Cleaning up orphan processes
+2026-08-29T13:24:39.7666227Z Terminate orphan process: pid (2468) (dotnet)
+2026-08-29T13:24:39.7701655Z Terminate orphan process: pid (2469) (dotnet)
+2026-08-29T13:24:39.7737824Z Terminate orphan process: pid (2470) (dotnet)
+2026-08-29T13:24:39.7776174Z Terminate orphan process: pid (2630) (VBCSCompiler)
+2026-08-29T13:24:39.7797990Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-dotnet@v4, actions/upload-artifact@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

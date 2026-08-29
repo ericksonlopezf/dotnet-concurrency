@@ -55,6 +55,7 @@ _ReSharper*/
 *.dmp
 *.dump
 *.crash
+*.log
 [Tt]humbs.db
 [Dd]esktop.ini
 .DS_Store

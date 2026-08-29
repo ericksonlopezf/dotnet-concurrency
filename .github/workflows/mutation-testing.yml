@@ -43,14 +43,9 @@ on:
         required: false
         default: "Standard"
         type: string
-  push:
-    branches: [ main ]
-    paths-ignore:
-      - '**.md'
-      - 'docs/**'
-  # Weekly scheduled execution (Sunday 03:00 UTC) to catch regressions early
+  # Weekly scheduled execution (Monday 04:00 UTC) to catch regressions early
   schedule:
-    - cron: "0 3 * * 0"
+    - cron: "0 4 * * 1"
 
 concurrency:
   group: mutation-testing-${{ github.ref }}
@@ -67,61 +62,73 @@ jobs:
   mutation-test:
     name: Stryker — ${{ matrix.name }}
     runs-on: ubuntu-latest
-    # Timeout set to 120 minutes per matrix job to accommodate multi-TFM mutation analysis without artificial limits
-    timeout-minutes: 120
+    timeout-minutes: 180
     strategy:
       fail-fast: false
       matrix:
         include:
           - name: Core
+            working-dir: tests/EricksonLopez.Concurrency.Tests
             config: stryker-core-config.json
             output-dir: StrykerOutput/core
             artifact-name: stryker-report-core
           - name: Abstractions
+            working-dir: tests/EricksonLopez.Concurrency.Abstractions.Tests
             config: stryker-abstractions-config.json
             output-dir: StrykerOutput/abstractions
             artifact-name: stryker-report-abstractions
           - name: AspNetCore
+            working-dir: tests/EricksonLopez.Concurrency.AspNetCore.Tests
             config: stryker-aspnetcore-config.json
             output-dir: StrykerOutput/aspnetcore
             artifact-name: stryker-report-aspnetcore
           - name: Dapper
+            working-dir: tests/EricksonLopez.Concurrency.Dapper.Tests
             config: stryker-dapper-config.json
             output-dir: StrykerOutput/dapper
             artifact-name: stryker-report-dapper
           - name: MariaDb
+            working-dir: tests/EricksonLopez.Concurrency.MariaDb.Tests
             config: stryker-mariadb-config.json
             output-dir: StrykerOutput/mariadb
             artifact-name: stryker-report-mariadb
           - name: Mediator
+            working-dir: tests/EricksonLopez.Concurrency.Mediator.Tests
             config: stryker-mediator-config.json
             output-dir: StrykerOutput/mediator
             artifact-name: stryker-report-mediator
           - name: MySql
+            working-dir: tests/EricksonLopez.Concurrency.MySql.Tests
             config: stryker-mysql-config.json
             output-dir: StrykerOutput/mysql
             artifact-name: stryker-report-mysql
           - name: Oracle
+            working-dir: tests/EricksonLopez.Concurrency.Oracle.Tests
             config: stryker-oracle-config.json
             output-dir: StrykerOutput/oracle
             artifact-name: stryker-report-oracle
           - name: PostgreSql
+            working-dir: tests/EricksonLopez.Concurrency.PostgreSql.Tests
             config: stryker-postgresql-config.json
             output-dir: StrykerOutput/postgresql
             artifact-name: stryker-report-postgresql
           - name: Result
+            working-dir: tests/EricksonLopez.Concurrency.Result.Tests
             config: stryker-result-config.json
             output-dir: StrykerOutput/result
             artifact-name: stryker-report-result
           - name: Sqlite
+            working-dir: tests/EricksonLopez.Concurrency.Sqlite.Tests
             config: stryker-sqlite-config.json
             output-dir: StrykerOutput/sqlite
             artifact-name: stryker-report-sqlite
           - name: SqlServer
+            working-dir: tests/EricksonLopez.Concurrency.SqlServer.Tests
             config: stryker-sqlserver-config.json
             output-dir: StrykerOutput/sqlserver
             artifact-name: stryker-report-sqlserver
           - name: Testing
+            working-dir: tests/EricksonLopez.Concurrency.Testing.Tests
             config: stryker-testing-config.json
             output-dir: StrykerOutput/testing
             artifact-name: stryker-report-testing
@@ -154,10 +161,11 @@ jobs:
 
       - name: Run Stryker (${{ matrix.name }})
         id: stryker
+        working-directory: ${{ matrix.working-dir }}
         run: |
           set +e
           dotnet-stryker \
-            --config-file ${{ matrix.config }} \
+            --config-file ${{ github.workspace }}/${{ matrix.config }} \
             --mutation-level ${{ inputs.mutation-level || 'Standard' }} \
             --concurrency 2 \
             --output ${{ github.workspace }}/${{ matrix.output-dir }}

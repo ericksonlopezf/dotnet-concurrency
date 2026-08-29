@@ -9,7 +9,10 @@
   <ItemGroup>
     <ProjectReference Include="..\EricksonLopez.Concurrency.Abstractions\EricksonLopez.Concurrency.Abstractions.csproj" />
     <ProjectReference Include="..\EricksonLopez.Concurrency\EricksonLopez.Concurrency.csproj" />
-    <ProjectReference Include="..\..\..\dotnet-result\src\EricksonLopez.Result\EricksonLopez.Result.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="EricksonLopez.Result" />
   </ItemGroup>
 
 </Project>
