@@ -25,13 +25,13 @@ jobs:
       contents: write
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           fetch-depth: 0
           ref: ${{ github.head_ref || github.ref_name }}
 
       - name: Setup .NET (multi-version for cross-TFM benchmarks)
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@3950428444364be15760307301183192a7783213 # v4.2.0
         with:
           dotnet-version: |
             8.0.x
@@ -67,7 +67,7 @@ jobs:
 
       - name: Upload benchmark results as artifact
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4.6.1
         with:
           name: weekly-benchmark-results-${{ github.run_id }}
           path: benchmarks/results/
