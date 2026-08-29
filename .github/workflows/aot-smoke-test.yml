@@ -72,6 +72,7 @@ jobs:
           dotnet publish
           tests/EricksonLopez.Concurrency.AotSmokeTest/EricksonLopez.Concurrency.AotSmokeTest.csproj
           --configuration Release
+          --framework net10.0
           --runtime linux-x64
           --self-contained
           -p:TreatWarningsAsErrors=true
