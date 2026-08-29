@@ -1,0 +1,18 @@
+<!-- Copyright © Erickson Lopez. MIT License. -->
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>MySQL concurrency dialect, error classification, and row locking extensions for the EricksonLopez.Concurrency ecosystem.</Description>
+    <PackageTags>$(CommonPackageTags);mysql;deadlock;row-locking;pessimistic-locking;error-classifier;sql</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EricksonLopez.Concurrency.Abstractions\EricksonLopez.Concurrency.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MySqlConnector" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+  </ItemGroup>
+
+</Project>

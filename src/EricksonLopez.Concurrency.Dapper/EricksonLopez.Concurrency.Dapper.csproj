@@ -1,0 +1,19 @@
+<!-- Copyright © Erickson Lopez. MIT License. -->
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>High-performance Dapper optimistic concurrency extensions and SQL versioning adapters for the EricksonLopez.Concurrency framework.</Description>
+    <PackageTags>$(CommonPackageTags);dapper;sql;conditional-update;query-builder;ado-net;zero-roundtrip</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EricksonLopez.Concurrency.Abstractions\EricksonLopez.Concurrency.Abstractions.csproj" />
+    <ProjectReference Include="..\EricksonLopez.Concurrency\EricksonLopez.Concurrency.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Dapper" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+  </ItemGroup>
+
+</Project>

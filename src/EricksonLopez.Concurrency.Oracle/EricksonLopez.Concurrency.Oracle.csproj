@@ -1,0 +1,18 @@
+<!-- Copyright © Erickson Lopez. MIT License. -->
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>Oracle concurrency dialect, error classification, ORA_ROWSCN tokens, and locking extensions for the EricksonLopez.Concurrency ecosystem.</Description>
+    <PackageTags>$(CommonPackageTags);oracle;ora-rowscn;deadlock;row-locking;pessimistic-locking;error-classifier;sql</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EricksonLopez.Concurrency.Abstractions\EricksonLopez.Concurrency.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Oracle.ManagedDataAccess.Core" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+  </ItemGroup>
+
+</Project>

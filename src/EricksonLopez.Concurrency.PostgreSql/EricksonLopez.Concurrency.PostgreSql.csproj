@@ -1,0 +1,19 @@
+<!-- Copyright © Erickson Lopez. MIT License. -->
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>PostgreSQL-specific concurrency error classifier, xmin concurrency tokens, and row-level locking utilities for the EricksonLopez.Concurrency framework.</Description>
+    <PackageTags>$(CommonPackageTags);postgresql;npgsql;xmin;deadlock;row-locking;pessimistic-locking;error-classifier;sql</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EricksonLopez.Concurrency.Abstractions\EricksonLopez.Concurrency.Abstractions.csproj" />
+    <ProjectReference Include="..\EricksonLopez.Concurrency\EricksonLopez.Concurrency.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Npgsql" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+  </ItemGroup>
+
+</Project>
