@@ -1,0 +1,41 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/EricksonLopez.Concurrency.Abstractions/EricksonLopez.Concurrency.Abstractions.csproj" />
+    <Project Path="src/EricksonLopez.Concurrency/EricksonLopez.Concurrency.csproj" />
+    <Project Path="src/EricksonLopez.Concurrency.Result/EricksonLopez.Concurrency.Result.csproj" />
+    <Project Path="src/EricksonLopez.Concurrency.Dapper/EricksonLopez.Concurrency.Dapper.csproj" />
+    <Project Path="src/EricksonLopez.Concurrency.PostgreSql/EricksonLopez.Concurrency.PostgreSql.csproj" />
+    <Project Path="src/EricksonLopez.Concurrency.SqlServer/EricksonLopez.Concurrency.SqlServer.csproj" />
+    <Project Path="src/EricksonLopez.Concurrency.MySql/EricksonLopez.Concurrency.MySql.csproj" />
+    <Project Path="src/EricksonLopez.Concurrency.MariaDb/EricksonLopez.Concurrency.MariaDb.csproj" />
+    <Project Path="src/EricksonLopez.Concurrency.Oracle/EricksonLopez.Concurrency.Oracle.csproj" />
+    <Project Path="src/EricksonLopez.Concurrency.Sqlite/EricksonLopez.Concurrency.Sqlite.csproj" />
+    <Project Path="src/EricksonLopez.Concurrency.Mediator/EricksonLopez.Concurrency.Mediator.csproj" />
+    <Project Path="src/EricksonLopez.Concurrency.Testing/EricksonLopez.Concurrency.Testing.csproj" />
+    <Project Path="src/EricksonLopez.Concurrency.AspNetCore/EricksonLopez.Concurrency.AspNetCore.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/EricksonLopez.Concurrency.Abstractions.Tests/EricksonLopez.Concurrency.Abstractions.Tests.csproj" />
+    <Project Path="tests/EricksonLopez.Concurrency.Tests/EricksonLopez.Concurrency.Tests.csproj" />
+    <Project Path="tests/EricksonLopez.Concurrency.Result.Tests/EricksonLopez.Concurrency.Result.Tests.csproj" />
+    <Project Path="tests/EricksonLopez.Concurrency.Dapper.Tests/EricksonLopez.Concurrency.Dapper.Tests.csproj" />
+    <Project Path="tests/EricksonLopez.Concurrency.PostgreSql.Tests/EricksonLopez.Concurrency.PostgreSql.Tests.csproj" />
+    <Project Path="tests/EricksonLopez.Concurrency.SqlServer.Tests/EricksonLopez.Concurrency.SqlServer.Tests.csproj" />
+    <Project Path="tests/EricksonLopez.Concurrency.MySql.Tests/EricksonLopez.Concurrency.MySql.Tests.csproj" />
+    <Project Path="tests/EricksonLopez.Concurrency.MariaDb.Tests/EricksonLopez.Concurrency.MariaDb.Tests.csproj" />
+    <Project Path="tests/EricksonLopez.Concurrency.Oracle.Tests/EricksonLopez.Concurrency.Oracle.Tests.csproj" />
+    <Project Path="tests/EricksonLopez.Concurrency.Sqlite.Tests/EricksonLopez.Concurrency.Sqlite.Tests.csproj" />
+    <Project Path="tests/EricksonLopez.Concurrency.Mediator.Tests/EricksonLopez.Concurrency.Mediator.Tests.csproj" />
+    <Project Path="tests/EricksonLopez.Concurrency.Testing.Tests/EricksonLopez.Concurrency.Testing.Tests.csproj" />
+    <Project Path="tests/EricksonLopez.Concurrency.AspNetCore.Tests/EricksonLopez.Concurrency.AspNetCore.Tests.csproj" />
+    <Project Path="tests/EricksonLopez.Concurrency.ArchitectureTests/EricksonLopez.Concurrency.ArchitectureTests.csproj" />
+    <Project Path="tests/EricksonLopez.Concurrency.IntegrationTests/EricksonLopez.Concurrency.IntegrationTests.csproj" />
+    <Project Path="tests/EricksonLopez.Concurrency.AotSmokeTest/EricksonLopez.Concurrency.AotSmokeTest.csproj" />
+  </Folder>
+  <Folder Name="/benchmarks/">
+    <Project Path="benchmarks/EricksonLopez.Concurrency.Benchmarks/EricksonLopez.Concurrency.Benchmarks.csproj" />
+  </Folder>
+  <Folder Name="/samples/">
+    <Project Path="samples/EricksonLopez.Concurrency.Showcase/EricksonLopez.Concurrency.Showcase.csproj" />
+  </Folder>
+</Solution>

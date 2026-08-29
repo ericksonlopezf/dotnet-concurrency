@@ -1,0 +1,106 @@
+# Copyright © Erickson Lopez. MIT License.
+name: Build and Test
+
+on:
+  workflow_call:
+    secrets:
+      SNK_KEY:
+        required: false
+      CODECOV_TOKEN:
+        required: false
+      SONAR_TOKEN:
+        required: false
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    name: Build, Test & Coverage
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Java (SonarCloud Scanner requirement)
+        if: ${{ secrets.SONAR_TOKEN != '' }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Setup .NET SDKs
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+            9.0.x
+            10.0.x
+
+      - name: Restore Strong Name key
+        env:
+          SNK_KEY: ${{ secrets.SNK_KEY }}
+        run: |
+          if [ -n "$SNK_KEY" ]; then
+            echo "$SNK_KEY" | tr -d '\n\r ' | base64 --decode > EricksonLopez.snk
+          fi
+
+      - name: Install SonarScanner .NET Global Tool
+        if: ${{ secrets.SONAR_TOKEN != '' }}
+        run: dotnet tool install --global dotnet-sonarscanner
+
+      - name: Begin SonarCloud Analysis
+        if: ${{ secrets.SONAR_TOKEN != '' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: >
+          dotnet-sonarscanner begin
+          /k:"ericksonlopezf_dotnet-concurrency"
+          /o:"ericksonlopezf"
+          /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+          /d:sonar.host.url="https://sonarcloud.io"
+          /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml"
+          /d:sonar.coverage.exclusions="**/tests/**,**/benchmarks/**,**/samples/**,**/*.Tests/**"
+
+      - name: Restore dependencies
+        run: dotnet restore EricksonLopez.Concurrency.slnx
+
+      - name: Build Solution (Release)
+        run: dotnet build EricksonLopez.Concurrency.slnx --no-restore --configuration Release
+
+      - name: Run Tests with Coverage
+        run: >
+          dotnet test EricksonLopez.Concurrency.slnx
+          --no-build
+          --configuration Release
+          --settings .runsettings
+          --collect:"XPlat Code Coverage"
+          --results-directory ./TestResults
+          --logger "trx;LogFileName=test_results.trx"
+          -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover,cobertura
+
+      - name: End SonarCloud Analysis
+        if: ${{ secrets.SONAR_TOKEN != '' && (success() || failure()) }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ github.run_id }}
+          path: ./TestResults
+          if-no-files-found: warn
+
+      - name: Upload coverage reports to Codecov
+        if: always()
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          directory: ./TestResults
+          fail_ci_if_error: false

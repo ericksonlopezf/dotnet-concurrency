@@ -1,0 +1,18 @@
+<!-- Copyright © Erickson Lopez. MIT License. -->
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>Microsoft SQL Server concurrency dialect, error classification, rowversion tokens, and table hints for the EricksonLopez.Concurrency ecosystem.</Description>
+    <PackageTags>$(CommonPackageTags);sqlserver;mssql;rowversion;table-hints;deadlock;row-locking;error-classifier;t-sql</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EricksonLopez.Concurrency.Abstractions\EricksonLopez.Concurrency.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Data.SqlClient" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+  </ItemGroup>
+
+</Project>

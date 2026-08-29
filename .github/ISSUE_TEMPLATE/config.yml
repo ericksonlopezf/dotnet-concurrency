@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: GitHub Discussions
+    url: https://github.com/ericksonlopezf/dotnet-concurrency/discussions
+    about: Ask questions and discuss architectural patterns with the community.
+  - name: Security Reports
+    url: mailto:ericksonlopezf@gmail.com
+    about: Report security vulnerabilities privately.
