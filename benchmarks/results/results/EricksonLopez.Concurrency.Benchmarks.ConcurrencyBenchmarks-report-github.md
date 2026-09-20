@@ -1,7 +1,7 @@
 ```
 
 BenchmarkDotNet v0.15.8, Linux Ubuntu 24.04.5 LTS (Noble Numbat)
-AMD EPYC 7763 2.45GHz, 1 CPU, 4 logical and 2 physical cores
+AMD EPYC 7763 3.15GHz, 1 CPU, 4 logical and 2 physical cores
 .NET SDK 10.0.401
   [Host]    : .NET 10.0.12 (10.0.12, 10.0.1226.42308), X64 RyuJIT x86-64-v3
   .NET 10.0 : .NET 10.0.12 (10.0.12, 10.0.1226.42308), X64 RyuJIT x86-64-v3
@@ -10,11 +10,11 @@ AMD EPYC 7763 2.45GHz, 1 CPU, 4 logical and 2 physical cores
 ```
 | Method                    | Job       | Runtime   | Mean        | Error     | StdDev    | Ratio | RatioSD | Gen0   | Allocated | Alloc Ratio |
 |-------------------------- |---------- |---------- |------------:|----------:|----------:|------:|--------:|-------:|----------:|------------:|
-| DirectVersionComparison   | .NET 10.0 | .NET 10.0 |   0.1373 ns | 0.0038 ns | 0.0034 ns |     ? |       ? |      - |         - |           ? |
-| CheckerCheckVersion       | .NET 10.0 | .NET 10.0 |   0.4691 ns | 0.0117 ns | 0.0110 ns |     ? |       ? |      - |         - |           ? |
-| CheckerCheckToken         | .NET 10.0 | .NET 10.0 |  22.3628 ns | 0.2514 ns | 0.2352 ns |     ? |       ? | 0.0038 |      64 B |           ? |
-| ControllerExecuteCasAsync | .NET 10.0 | .NET 10.0 | 182.8646 ns | 0.1885 ns | 0.1764 ns |     ? |       ? |      - |         - |           ? |
-| ResultConversion          | .NET 10.0 | .NET 10.0 |   3.4495 ns | 0.0054 ns | 0.0048 ns |     ? |       ? |      - |         - |           ? |
+| DirectVersionComparison   | .NET 10.0 | .NET 10.0 |   0.1350 ns | 0.0035 ns | 0.0033 ns |     ? |       ? |      - |         - |           ? |
+| CheckerCheckVersion       | .NET 10.0 | .NET 10.0 |   0.5336 ns | 0.0080 ns | 0.0063 ns |     ? |       ? |      - |         - |           ? |
+| CheckerCheckToken         | .NET 10.0 | .NET 10.0 |  22.8653 ns | 0.1349 ns | 0.1262 ns |     ? |       ? | 0.0038 |      64 B |           ? |
+| ControllerExecuteCasAsync | .NET 10.0 | .NET 10.0 | 182.1842 ns | 0.0962 ns | 0.0803 ns |     ? |       ? |      - |         - |           ? |
+| ResultConversion          | .NET 10.0 | .NET 10.0 |   3.4445 ns | 0.0051 ns | 0.0047 ns |     ? |       ? |      - |         - |           ? |
 | DirectVersionComparison   | .NET 8.0  | .NET 8.0  |          NA |        NA |        NA |     ? |       ? |     NA |        NA |           ? |
 | CheckerCheckVersion       | .NET 8.0  | .NET 8.0  |          NA |        NA |        NA |     ? |       ? |     NA |        NA |           ? |
 | CheckerCheckToken         | .NET 8.0  | .NET 8.0  |          NA |        NA |        NA |     ? |       ? |     NA |        NA |           ? |
