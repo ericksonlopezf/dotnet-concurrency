@@ -9,19 +9,28 @@ This document describes all GitHub Actions workflows in the `EricksonLopez.Concu
 ```mermaid
 flowchart TD
     Push["Push / PR to main or develop"] --> CI["ci.yml (Fast CI Orchestrator)"]
-    CI --> Compliance["repo-compliance.yml"]
-    Compliance --> BuildTest["dotnet-build-test.yml"]
-    BuildTest --> AotSmoke["aot-smoke-test.yml"]
+    CI --> BuildTest["dotnet-build-test.yml (Build, Test, SonarCloud, Coverage)"]
+    CI --> AotSmoke["aot-smoke-test.yml (NativeAOT Smoke Test)"]
+
+    ComplianceTrigger["Push / PR to main / Manual"] --> Compliance["repo-compliance.yml (Architecture & Rule Gate)"]
 
     MainPush["Push to main"] --> ReleasePlease["release-please.yml"]
+    ReleasePlease -->|On Release Created| PublishDispatch["publish.yml (workflow_dispatch)"]
 
-    Tag["GitHub Release Published"] --> Publish["publish.yml"]
-    Publish --> VerifyGate["verify-mutation-gate (Checks Quality Gate >= 95%)"]
-    VerifyGate --> PackPush["Pack & Push to NuGet"]
+    Tag["Manual Tag Push (v*.*.*)"] --> Publish["publish.yml"]
+    PublishDispatch --> Publish
+
+    subgraph PublishPipeline ["publish.yml Pipeline"]
+        MutationCheck["mutation-gate-check (verify-mutation-gate.js)"] -->|If needed| StrykerGate["stryker-gate (mutation-testing.yml)"]
+        MutationCheck -->|If valid / cached| PublishJob["publish (Pack, Sign, Attest, Push)"]
+        StrykerGate -->|Success >= 95%| PublishJob
+        PublishJob --> Attest["Sigstore Attestation"]
+        PublishJob --> OIDC["NuGet OIDC Login"]
+        PublishJob --> PushNuGet["Push to NuGet.org"]
+    end
 
     PR["PR to main or develop (src/ or benchmarks/ changed)"] --> BenchmarkGate["benchmark-regression-gate.yml"]
-
-    Schedule_Sun_3am["Cron: Sunday 03:00 UTC / Manual / Pre-Publish Gate"] --> MutationGate["mutation-testing.yml (Quality Gate)"]
+    Schedule_Sun_3am["Cron: Sunday 03:00 UTC / Manual"] --> MutationGate["mutation-testing.yml (Scheduled / Manual)"]
     Schedule_Sun_2am["Cron: Sunday 02:00 UTC"] --> WeeklyBenchmarks["weekly-benchmarks.yml"]
 ```
 
@@ -32,44 +41,48 @@ flowchart TD
 ### `ci.yml` — Continuous Integration Orchestrator
 
 **File**: `.github/workflows/ci.yml`  
-**Trigger**: `push` to `main` / `develop` (ignores `**.md` and `docs/**`); `pull_request` to `main` / `develop` (same path-ignore).
+**Trigger**: `push` to `main` / `develop`; `pull_request` to `main` / `develop`.
 
-**Jobs** (sequential):
-1. `compliance` — calls `repo-compliance.yml` (reusable)
-2. `build-and-test` — calls `dotnet-build-test.yml` (reusable), requires `compliance` to pass
-3. `aot-smoke-test` — calls `aot-smoke-test.yml` (reusable), requires `build-and-test` to pass
+**Jobs**:
+1. `build-and-test` — calls `dotnet-build-test.yml` (reusable) with `artifact-name: test-results`.
+2. `aot-smoke-test` — calls `aot-smoke-test.yml` (reusable).
 
-> **Note on PR Decoupling**: Pull Request CI exclusively runs fast checks (governance compliance, build, unit testing, code coverage, Native AOT smoke testing). It **never** runs Stryker mutation testing, preventing merge delays while ensuring rapid developer feedback.
+> **Note on PR Decoupling**: Pull Request CI exclusively runs fast verification checks (build, test, coverage, SonarCloud, Native AOT smoke testing). It **never** executes full mutation testing on PR builds, preventing merge latency while providing rapid developer feedback.
 
 **Secrets passed**:
 - `SNK_KEY` — Strong Name Key (base64-encoded, optional)
 - `CODECOV_TOKEN` — Codecov upload token (optional)
+- `SONAR_TOKEN` — SonarCloud analysis token (optional)
 
 ---
 
-### `dotnet-build-test.yml` — Build, Test & Coverage
+### `dotnet-build-test.yml` — Build, Test, SonarCloud & Coverage
 
 **File**: `.github/workflows/dotnet-build-test.yml`  
 **Trigger**: `workflow_call` (from `ci.yml`), `workflow_dispatch`  
-**Runner**: `ubuntu-latest`, timeout 30 min
+**Runner**: `ubuntu-latest`
 
 **Steps**:
-1. Checkout repository (`fetch-depth: 0` for full history)
-2. Setup .NET SDKs: `8.0.x`, `9.0.x`, `10.0.x`
-3. Restore Strong Name key from `SNK_KEY` secret (conditional, base64 decode)
-4. `dotnet restore EricksonLopez.Concurrency.slnx`
-5. `dotnet build` — Release configuration, no-restore
-6. `dotnet test` — with Coverlet Code Coverage in Cobertura format → `./TestResults/`
-7. Upload test results artifact (`test-results-{run_id}`, always)
-8. Upload coverage to Codecov (using `CODECOV_TOKEN`, `fail_ci_if_error: false`)
+1. Checkout repository (`fetch-depth: 0` for full git history and SonarCloud analysis)
+2. Setup .NET SDK: configurable (default `10.0.x`)
+3. Restore Strong Name key from `SNK_KEY` secret (conditional, base64 decode to `EricksonLopez.snk`)
+4. Setup Java 17 (Zulu distribution, required for SonarScanner)
+5. Install `dotnet-sonarscanner` global tool
+6. Begin Sonar analysis (if `SONAR_TOKEN` is present): targets project `ericksonlopezf_dotnet-concurrency`, organization `ericksonlopezf`, reports OpenCover paths
+7. `dotnet build EricksonLopez.Concurrency.slnx --configuration Release`
+8. `dotnet test` — with Coverlet Code Coverage emitting OpenCover and Cobertura formats to `./test-results/`
+9. End Sonar analysis (if `SONAR_TOKEN` is present)
+10. Upload test results artifact (`test-results`, always)
+11. Upload coverage to Codecov using `codecov/codecov-action@v7.0.0` with `CODECOV_TOKEN`
 
-**Artifacts produced**: `test-results-{run_id}` (test `.trx` and coverage XMLs)
+**Artifacts produced**: `test-results` (test `.trx`, coverage reports)
 
 **Secrets required**:
 | Secret | Required | Purpose |
 |---|---|---|
 | `SNK_KEY` | No | Strong name signing (base64 `.snk` content) |
 | `CODECOV_TOKEN` | No | Codecov coverage upload authentication |
+| `SONAR_TOKEN` | No | SonarCloud project analysis authentication |
 
 ---
 
@@ -95,20 +108,25 @@ flowchart TD
 ### `repo-compliance.yml` — Repository Compliance Auditor
 
 **File**: `.github/workflows/repo-compliance.yml`  
-**Trigger**: `workflow_call` (from `ci.yml`), `workflow_dispatch`, `pull_request` to `main` / `develop`  
-**Runner**: `ubuntu-latest`
+**Trigger**: `push` to `main`, `pull_request` to `main`, `workflow_dispatch`  
+**Runner**: `ubuntu-latest`, timeout 15 min
 
 **Steps**:
 1. Checkout repository
-2. Run `scripts/verify-compliance.ps1` using PowerShell
+2. Setup .NET 10 SDK (`10.0.x`)
+3. Run architecture & rules compliance script: `pwsh ./scripts/verify-compliance.ps1`
+4. `dotnet restore EricksonLopez.Concurrency.slnx`
+5. `dotnet build EricksonLopez.Concurrency.slnx --no-restore --configuration Release` (with strict diagnostics / `TreatWarningsAsErrors`)
+6. `dotnet test EricksonLopez.Concurrency.slnx --no-build --configuration Release --verbosity normal --filter "FullyQualifiedName!~IntegrationTests"`
+7. `dotnet pack EricksonLopez.Concurrency.slnx --no-build --configuration Release -o artifacts/`
 
-**Validated invariants** (8 checks):
+**Validated invariants** (8 compliance checks in `verify-compliance.ps1`):
 1. All files in `docs/` use `kebab-case.md` naming
 2. Zero `[Obsolete]` attribute usages in `src/`
 3. Canonical MIT copyright header present in all `.cs` files
 4. One top-level type per file in `src/`
 5. `Directory.Build.props` references `ericksonlopezf/dotnet-concurrency`
-6. `SECURITY.md` references the canonical email `ericksonlopezf@gmail.com`
+6. `SECURITY.md` references canonical email `ericksonlopezf@gmail.com`
 7. Zero prohibited compiler warning suppressions (`CS1591`, `CS0618`, `CS0619`)
 8. NuGet package icon metadata & asset presence in `Directory.Build.props`
 
@@ -117,14 +135,14 @@ flowchart TD
 ### `mutation-testing.yml` — Stryker Mutation Testing (Deferred Quality Gate)
 
 **File**: `.github/workflows/mutation-testing.yml`  
-**Trigger**: `schedule` (every Sunday at 03:00 UTC); `workflow_dispatch` (on-demand with tier profile choice); `workflow_call` (invoked by `publish.yml` as pre-release quality gate).  
-**Concurrency**: `mutation-testing-${{ github.workflow }}-${{ github.ref }}` (`cancel-in-progress: true` to prevent resource waste on superseded commits).  
-**Runner**: `ubuntu-latest`, timeout 120 min per matrix job (accommodates deep multi-TFM mutation analysis without artificial terminations).
+**Trigger**: `schedule` (every Sunday at 03:00 UTC); `workflow_dispatch` (with tier profile choice); `workflow_call` (invoked conditionally by `publish.yml` as pre-release quality gate).  
+**Concurrency**: `mutation-testing-${{ github.workflow }}-${{ github.ref }}` (`cancel-in-progress: true`).  
+**Runner**: `ubuntu-latest`, timeout 120 min per matrix job.
 
 **Jobs**:
-1. `setup` — Resolves dynamic package matrix based on the tier profile (`Basic`, `Standard`, `Advanced`).
-2. `mutate` — Executes `dotnet-stryker` in parallel across packages (`fail-fast: false`), runs `scripts/record-stryker-result.js` to enforce break threshold ($\ge 95\%$), and uploads report and summary artifacts.
-3. `finalize-gate` — Consolidates all package summaries via `scripts/consolidate-stryker-gate.js`, publishes a unified Step Summary, uploads `stryker-mutation-manifest-{sha}` artifact, and registers a GitHub Commit Status attestation (`quality-gate/stryker-mutation`).
+1. `setup` — Resolves dynamic package matrix based on tier profile (`Basic`, `Standard`, `Advanced`).
+2. `mutate` — Executes `dotnet-stryker` in parallel across packages using dedicated per-package configuration files (`stryker-<package>-config.json`), runs `scripts/record-stryker-result.js` to enforce break threshold ($\ge 95\%$), and uploads report artifacts.
+3. `finalize-gate` — Consolidates package summaries via `scripts/consolidate-stryker-gate.js`, publishes a unified Step Summary, uploads `stryker-mutation-manifest-{sha}` artifact, and registers a GitHub Commit Status attestation (`quality-gate/stryker-mutation`).
 
 **Tier Profiles**:
 | Level | Included Packages | Target |
@@ -133,7 +151,7 @@ flowchart TD
 | `Standard` | `core`, `abstractions`, `result`, `mediator`, `dapper`, `testing`, `postgresql`, `sqlserver`, `sqlite` | Standard engine & popular DB adapters (~30-45m) |
 | `Advanced` | All 13 ecosystem packages | Comprehensive ecosystem validation |
 
-**Mutation Thresholds** (per `stryker-config.json`):
+**Mutation Thresholds** (per `stryker-*-config.json`):
 | Threshold | Value | Meaning |
 |---|---|---|
 | Break (Hard Gate) | 95% | Build fails and release blocked if $< 95\%$ |
@@ -162,26 +180,6 @@ flowchart TD
 **Regression Threshold**: Default 10% (configurable via `workflow_dispatch` input).  
 **Baseline Location**: `benchmarks/results/` (committed to repository by `weekly-benchmarks.yml`).
 
-**Secrets required**: `SNK_KEY` (optional)
-
----
-
-### `benchmarks.yml` — On-Demand Benchmark Run
-
-**File**: `.github/workflows/benchmarks.yml`  
-**Trigger**: `workflow_call` (reusable), `workflow_dispatch` (with optional `benchmark-filter` input)  
-**Runner**: `ubuntu-latest`, timeout 60 min
-
-**Steps**:
-1. Checkout
-2. Setup .NET SDKs: `8.0.x`, `9.0.x`, `10.0.x`
-3. Restore Strong Name key
-4. Build (Release)
-5. Run benchmarks (short job, JSON + Markdown exporters → `./benchmarks/results/`)
-6. Sync results from `BenchmarkDotNet.Artifacts/`
-7. Upload benchmark results artifact (retention: 30 days)
-8. Post Markdown summary to GitHub Step Summary
-
 ---
 
 ### `weekly-benchmarks.yml` — Weekly Full Benchmark Baseline
@@ -204,21 +202,25 @@ flowchart TD
 
 ---
 
-### `publish.yml` — Pack & Publish to NuGet (with Mutation Release Gate)
+### `publish.yml` — Pack, Attest & Publish to NuGet.org
 
 **File**: `.github/workflows/publish.yml`  
-**Trigger**: `release: published` (GitHub Release event); `workflow_dispatch`  
+**Trigger**: `push` tags `v*.*.*` (legacy manual tag push); `workflow_dispatch` (triggered automatically by `release-please.yml` or manual UI dispatch).  
+**Permissions**: `id-token: write` (for NuGet OIDC and Sigstore attestation), `contents: write` (for GitHub Release creation), `attestations: write` (for build provenance), `statuses: read`, `actions: read`.  
 **Runner**: `ubuntu-latest`
 
 **Jobs**:
-1. `verify-mutation-gate` — Executes `scripts/verify-release-mutation-gate.js` against the target commit SHA. Verifies that mutation testing on `main` passed ($\ge 95\%$). Blocks release if score $< 95\%$ or no test record exists.
-2. `publish` — (Needs `verify-mutation-gate`) Packs and publishes `.nupkg` artifacts to NuGet.org.
-
-**Secrets required**:
-| Secret | Required | Purpose |
-|---|---|---|
-| `SNK_KEY` | No | Strong name signing |
-| `NUGET_API_KEY` | Yes (for publish) | NuGet.org push authentication |
+1. `mutation-gate-check` — Evaluates mutation quality gate on `main` via `scripts/verify-mutation-gate.js`. If cached status $\ge 95\%$, proceeds immediately; otherwise flags `needs_stryker: true`.
+2. `stryker-gate` — Conditional execution of `mutation-testing.yml` with `mutation-level: "Standard"` if `needs_stryker == 'true'`.
+3. `publish` — (Requires mutation quality gate to pass)
+   - Resolves SemVer version from `inputs.version`, git tag, or `Directory.Build.props`.
+   - Restores Strong Name key from `SNK_KEY` (conditional).
+   - Executes full build and test suite with coverage upload to Codecov (`publish-gate` flag).
+   - Packs all 13 `.csproj` packages to `./nupkgs/`.
+   - Generates Sigstore Provenance Attestation via `actions/attest-build-provenance@v2.2.3`.
+   - Logs into NuGet via OIDC using `NuGet/login@v1` (user: `ericksonlopezf`), retrieving an ephemeral `NUGET_API_KEY` token.
+   - Pushes packages to `https://api.nuget.org/v3/index.json` with `--skip-duplicate`.
+   - Creates GitHub Release with release notes and `.nupkg` assets (tag-triggered).
 
 ---
 
@@ -230,9 +232,8 @@ flowchart TD
 **Runner**: `ubuntu-latest`
 
 **Steps**:
-1. `googleapis/release-please-action@v4` with `release-type: simple`
-
-**Purpose**: Automates GitHub Release creation and version bump pull requests based on Conventional Commit messages (e.g., `feat:`, `fix:`, `chore(release):`). When a release PR is merged, the action creates a GitHub Release, which triggers `publish.yml`.
+1. Executes `googleapis/release-please-action@v5.0.0` with `.release-please-config.json` and `.release-please-manifest.json`.
+2. If release is created (`releases_created == 'true'`), automatically dispatches `publish.yml` via GitHub REST API with the newly created version.
 
 ---
 
@@ -240,18 +241,20 @@ flowchart TD
 
 | Secret Name | Used By | Purpose | Required |
 |---|---|---|---|
-| `SNK_KEY` | `dotnet-build-test.yml`, `aot-smoke-test.yml`, `mutation-testing.yml`, `benchmark-regression-gate.yml`, `benchmarks.yml`, `weekly-benchmarks.yml`, `publish.yml` | Base64-encoded `.snk` strong name key content | No (signing skipped if absent) |
-| `CODECOV_TOKEN` | `dotnet-build-test.yml` | Codecov coverage upload authentication | No (upload skipped if absent) |
-| `NUGET_API_KEY` | `publish.yml` | NuGet.org package push | Yes (for live publish) |
+| `SNK_KEY` | All build workflows | Base64-encoded `.snk` strong name key content | No (signing skipped if absent) |
+| `CODECOV_TOKEN` | `dotnet-build-test.yml`, `publish.yml` | Codecov coverage upload authentication | No (upload skipped if absent) |
+| `SONAR_TOKEN` | `dotnet-build-test.yml` | SonarCloud static analysis authentication | No (analysis skipped if absent) |
+
+> **Note on NuGet Authentication**: Static `NUGET_API_KEY` secrets are **not stored** in GitHub repository settings. The `publish.yml` workflow uses **NuGet Trusted Publishing via OIDC** (`NuGet/login@v1`, `id-token: write`), generating an ephemeral step output token for package publishing.
 
 ---
 
 ## Branch Strategy
 
-| Branch | CI | Mutation Testing | Release Please | Compliance |
+| Branch | Fast CI | Mutation Testing | Release Please | Compliance |
 |---|---|---|---|---|
-| `main` | ✅ Push + PR target | ✅ Asynchronous deferred gate | ✅ Monitors pushes | ✅ PR target |
-| `develop` | ✅ Push + PR target | ❌ (Targeted for main) | ❌ | ✅ PR target |
-| `feature/*` | ✅ via PR | ❌ (Fast PR CI) | ❌ | ✅ via PR |
-| `fix/*` | ✅ via PR | ❌ (Fast PR CI) | ❌ | ✅ via PR |
-| `docs/*` | ❌ (md/docs ignored) | ❌ | ❌ | ✅ via PR |
+| `main` | ✅ Push + PR target | ✅ Asynchronous deferred gate | ✅ Monitors pushes | ✅ Push + PR target |
+| `develop` | ✅ Push + PR target | ❌ (Targeted for main) | ❌ | ❌ |
+| `feature/*` | ✅ via PR | ❌ (Fast PR CI) | ❌ | ✅ via PR to main |
+| `fix/*` | ✅ via PR | ❌ (Fast PR CI) | ❌ | ✅ via PR to main |
+| `docs/*` | ❌ (md/docs ignored in CI) | ❌ | ❌ | ✅ via PR to main |

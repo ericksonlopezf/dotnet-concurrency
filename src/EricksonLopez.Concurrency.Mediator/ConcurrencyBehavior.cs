@@ -33,6 +33,8 @@ public sealed class ConcurrencyBehavior<TRequest, TResponse> : IPipelineBehavior
         CancellationToken cancellationToken)
         where TNext : struct, INext<TResponse>
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         if (request is not IConcurrencyAwareRequest concurrencyRequest)
         {
             return await next.InvokeAsync().ConfigureAwait(false);

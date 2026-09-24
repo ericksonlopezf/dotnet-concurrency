@@ -11,6 +11,7 @@ namespace EricksonLopez.Concurrency.SqlServer;
 public readonly struct SqlServerRowVersionToken : IConcurrencyToken, IEquatable<SqlServerRowVersionToken>, IComparable<SqlServerRowVersionToken>, IComparable
 {
     private readonly byte[]? _bytes;
+    private readonly string? _hex;
 
     /// <summary>
     /// Represents an empty or uninitialized SQL Server rowversion token.
@@ -24,6 +25,7 @@ public readonly struct SqlServerRowVersionToken : IConcurrencyToken, IEquatable<
     public SqlServerRowVersionToken(byte[]? rowVersionBytes)
     {
         _bytes = rowVersionBytes is not null ? (byte[])rowVersionBytes.Clone() : Array.Empty<byte>();
+        _hex = _bytes.Length > 0 ? Convert.ToHexString(_bytes) : string.Empty;
     }
 
     /// <summary>
@@ -33,10 +35,11 @@ public readonly struct SqlServerRowVersionToken : IConcurrencyToken, IEquatable<
     public SqlServerRowVersionToken(ReadOnlySpan<byte> span)
     {
         _bytes = span.ToArray();
+        _hex = _bytes.Length > 0 ? Convert.ToHexString(_bytes) : string.Empty;
     }
 
     /// <inheritdoc />
-    public string Value => _bytes is not null ? Convert.ToHexString(_bytes) : string.Empty;
+    public string Value => _hex ?? string.Empty;
 
     /// <inheritdoc />
     public string TokenKind => "SqlServer.RowVersion";
@@ -72,6 +75,11 @@ public readonly struct SqlServerRowVersionToken : IConcurrencyToken, IEquatable<
             return false;
         }
 
+        if (other is SqlServerRowVersionToken rowVersionToken)
+        {
+            return Equals(rowVersionToken);
+        }
+
         return string.Equals(Value, other.Value, StringComparison.Ordinal);
     }
 
@@ -82,7 +90,17 @@ public readonly struct SqlServerRowVersionToken : IConcurrencyToken, IEquatable<
     /// <returns><see langword="true"/> if both tokens have identical values; otherwise, <see langword="false"/>.</returns>
     public bool Equals(SqlServerRowVersionToken other)
     {
-        return string.Equals(Value, other.Value, StringComparison.Ordinal);
+        if (_bytes is null && other._bytes is null)
+        {
+            return true;
+        }
+
+        if (_bytes is null || other._bytes is null)
+        {
+            return false;
+        }
+
+        return _bytes.AsSpan().SequenceEqual(other._bytes.AsSpan());
     }
 
     /// <inheritdoc />
@@ -92,10 +110,7 @@ public readonly struct SqlServerRowVersionToken : IConcurrencyToken, IEquatable<
     }
 
     /// <inheritdoc />
-    public override int GetHashCode()
-    {
-        return string.GetHashCode(Value, StringComparison.Ordinal);
-    }
+    public override int GetHashCode() => string.GetHashCode(Value, StringComparison.Ordinal);
 
     /// <inheritdoc />
     public int CompareTo(SqlServerRowVersionToken other)

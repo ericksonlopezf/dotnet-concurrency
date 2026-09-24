@@ -183,7 +183,7 @@ public sealed class OracleConcurrencyErrorClassifierTests
         conflict.Should().NotBeNull();
         conflict!.EntityId.Should().Be("order_1");
         conflict.EntityType.Should().Be("Order");
-        conflict.ConflictType.Should().Be(ConcurrencyConflictType.SerializationFailure);
+        conflict.ConflictType.Should().Be(ConcurrencyConflictType.Deadlock);
         conflict.Classification.Should().Be(ConcurrencyConflictClassification.Transient);
         conflict.Operation.Should().Be("CustomDeadlockOp");
         conflict.Message.Should().Contain("Oracle deadlock detected (ORA-00060)");
@@ -203,7 +203,7 @@ public sealed class OracleConcurrencyErrorClassifierTests
         conflict.Should().NotBeNull();
         conflict!.EntityId.Should().Be("account_1");
         conflict.EntityType.Should().Be("Account");
-        conflict.ConflictType.Should().Be(ConcurrencyConflictType.SerializationFailure);
+        conflict.ConflictType.Should().Be(ConcurrencyConflictType.LockUnavailable);
         conflict.Classification.Should().Be(ConcurrencyConflictClassification.Transient);
         conflict.Operation.Should().Be("CustomBusyOp");
         conflict.Message.Should().Contain("Oracle resource busy condition (ORA-00054)");
@@ -243,7 +243,7 @@ public sealed class OracleConcurrencyErrorClassifierTests
         conflict.Should().NotBeNull();
         conflict!.EntityId.Should().Be("user_1");
         conflict.EntityType.Should().Be("User");
-        conflict.ConflictType.Should().Be(ConcurrencyConflictType.Custom);
+        conflict.ConflictType.Should().Be(ConcurrencyConflictType.AlreadyExists);
         conflict.Classification.Should().Be(ConcurrencyConflictClassification.StaleState);
         conflict.Operation.Should().Be("CustomUniqueOp");
         conflict.Message.Should().Contain("Oracle unique constraint violation (ORA-00001)");

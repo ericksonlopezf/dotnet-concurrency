@@ -114,7 +114,7 @@ public sealed class SqliteConcurrencyErrorClassifierTests
         conflict.Should().NotBeNull();
         conflict!.EntityId.Should().Be("order_1");
         conflict.EntityType.Should().Be("Order");
-        conflict.ConflictType.Should().Be(ConcurrencyConflictType.SerializationFailure);
+        conflict.ConflictType.Should().Be(ConcurrencyConflictType.LockUnavailable);
         conflict.Classification.Should().Be(ConcurrencyConflictClassification.Transient);
         conflict.Operation.Should().Be("CustomBusyOp");
         conflict.Message.Should().Contain("SQLite database busy lock conflict (Error 5)");
@@ -134,7 +134,7 @@ public sealed class SqliteConcurrencyErrorClassifierTests
         conflict.Should().NotBeNull();
         conflict!.EntityId.Should().Be("account_1");
         conflict.EntityType.Should().Be("Account");
-        conflict.ConflictType.Should().Be(ConcurrencyConflictType.SerializationFailure);
+        conflict.ConflictType.Should().Be(ConcurrencyConflictType.LockUnavailable);
         conflict.Classification.Should().Be(ConcurrencyConflictClassification.Transient);
         conflict.Operation.Should().Be("CustomLockedOp");
         conflict.Message.Should().Contain("SQLite table locked conflict (Error 6)");
@@ -154,7 +154,7 @@ public sealed class SqliteConcurrencyErrorClassifierTests
         conflict.Should().NotBeNull();
         conflict!.EntityId.Should().Be("user_1");
         conflict.EntityType.Should().Be("User");
-        conflict.ConflictType.Should().Be(ConcurrencyConflictType.Custom);
+        conflict.ConflictType.Should().Be(ConcurrencyConflictType.AlreadyExists);
         conflict.Classification.Should().Be(ConcurrencyConflictClassification.StaleState);
         conflict.Operation.Should().Be("CustomConstraintOp");
         conflict.Message.Should().Contain("SQLite constraint violation (Error 19)");

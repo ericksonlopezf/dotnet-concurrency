@@ -167,7 +167,7 @@ public sealed class MySqlConcurrencyErrorClassifierTests
         conflict.Should().NotBeNull();
         conflict!.EntityId.Should().Be("order_1");
         conflict.EntityType.Should().Be("Order");
-        conflict.ConflictType.Should().Be(ConcurrencyConflictType.SerializationFailure);
+        conflict.ConflictType.Should().Be(ConcurrencyConflictType.Deadlock);
         conflict.Classification.Should().Be(ConcurrencyConflictClassification.Transient);
         conflict.Operation.Should().Be("CustomOp");
         conflict.Message.Should().Contain("MySQL deadlock detected (Error 1213)");
@@ -187,7 +187,7 @@ public sealed class MySqlConcurrencyErrorClassifierTests
         conflict.Should().NotBeNull();
         conflict!.EntityId.Should().Be("account_1");
         conflict.EntityType.Should().Be("Account");
-        conflict.ConflictType.Should().Be(ConcurrencyConflictType.SerializationFailure);
+        conflict.ConflictType.Should().Be(ConcurrencyConflictType.LockUnavailable);
         conflict.Classification.Should().Be(ConcurrencyConflictClassification.Transient);
         conflict.Operation.Should().Be("CustomLockOp");
         conflict.Message.Should().Contain("MySQL lock wait timeout exceeded (Error 1205)");
@@ -207,7 +207,7 @@ public sealed class MySqlConcurrencyErrorClassifierTests
         conflict.Should().NotBeNull();
         conflict!.EntityId.Should().Be("user_1");
         conflict.EntityType.Should().Be("User");
-        conflict.ConflictType.Should().Be(ConcurrencyConflictType.Custom);
+        conflict.ConflictType.Should().Be(ConcurrencyConflictType.AlreadyExists);
         conflict.Classification.Should().Be(ConcurrencyConflictClassification.StaleState);
         conflict.Operation.Should().Be("CustomUniqueOp");
         conflict.Message.Should().Contain("MySQL duplicate entry constraint violation (Error 1062)");

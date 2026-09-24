@@ -6,16 +6,33 @@ using EricksonLopez.Concurrency.Abstractions;
 using EricksonLopez.Concurrency.Dapper;
 using EricksonLopez.Concurrency.Result;
 using EricksonLopez.Concurrency.Showcase.Models;
+using EricksonLopez.Concurrency.Testing;
+using EricksonLopez.Result;
 using Microsoft.Data.Sqlite;
 using ResultInstance = EricksonLopez.Result.Result;
 
 namespace EricksonLopez.Concurrency.Showcase.Levels;
 
 /// <summary>
-/// Level 04: Advanced Integration — Dapper Zero-Roundtrip execution, token updates, OptimisticUpdateBuilder, and functional Result monad mapping.
+/// Provides demonstrations of advanced database integrations, Dapper extensions, and Result monad mappings.
 /// </summary>
 public static class Level04_AdvancedIntegration
 {
+    /// <summary>
+    /// Executes the advanced integration demonstration.
+    /// </summary>
+    /// <remarks>
+    /// Cookbook: Level 04 — Advanced Integration.
+    /// Prerequisites: Level01-03, a working IDbConnection (SQLite in-memory used here).
+    /// Concepts: Dapper optimistic update, Result monad mapping, OptimisticUpdateBuilder SQL generation,
+    ///            ConcurrencyErrors factory methods and error code constants.
+    /// APIs: OptimisticUpdateBuilder.BuildVersionedUpdate(), IDbConnection.ExecuteOptimisticAsync(),
+    ///        IDbConnection.ExecuteOptimisticTokenAsync(), CasResult&lt;T&gt;.ToResult(), ConcurrencyConflict?.ToResult(),
+    ///        ConcurrencyResultExtensions.FromRowsAffected(), ConcurrencyErrors.VersionMismatch()/TokenMismatch().
+    /// Complexity: Intermediate.
+    /// Next: Level05_ProcessingAndConcurrency for CAS and race conditions.
+    /// </remarks>
+    /// <returns>A task representing the asynchronous operation.</returns>
     public static async Task RunAsync()
     {
         Console.ForegroundColor = ConsoleColor.Cyan;
@@ -135,5 +152,50 @@ public static class Level04_AdvancedIntegration
 
         Console.WriteLine($"    - RowsAffected = 0 -> Result.IsFailure: {evaluatedResult.IsFailure}, Code: {evaluatedResult.Error?.Code}");
         Console.WriteLine($"    - RowsAffected = 1 -> Result.IsSuccess: {evaluatedEntityResult.IsSuccess}, Value: BankAccount '{evaluatedEntityResult.Value?.AccountId}'");
+
+        // 8. CasResult<T>.ToResult<T>() — functional mapping from CAS outcomes (GAP 2)
+        Console.WriteLine("\n[8] CasResult<T>.ToResult<T>() — Functional Mapping from CAS Results:");
+
+        var fake = new FakeConcurrencyController();
+        var casAccount = new BankAccount("ACC-RESULT-1", "Clara", 800m, version: 1);
+
+        // 8a. Success path
+        fake.WithSuccess(nextVersion: 2);
+        CasResult<BankAccount> successCas = await fake.ExecuteCasAsync(
+            casAccount, ExpectedVersion.Specific(1), casAccount.AccountId,
+            (a, ct) => ValueTask.FromResult(a));
+
+        Result<BankAccount> casSucResult = successCas.ToResult<BankAccount>();
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.WriteLine($"    [CasResult Success] Result.IsSuccess={casSucResult.IsSuccess}, Entity='{casSucResult.Value?.AccountId}'");
+        Console.ResetColor();
+
+        // 8b. Conflict path
+        var casConflict = ConcurrencyConflict.VersionMismatch("ACC-RESULT-1", nameof(BankAccount),
+            ExpectedVersion.Specific(1), ActualVersion.From(5));
+        fake.Reset();
+        fake.WithConflict(casConflict);
+        CasResult<BankAccount> conflictCas = await fake.ExecuteCasAsync(
+            casAccount, ExpectedVersion.Specific(1), casAccount.AccountId,
+            (a, ct) => ValueTask.FromResult(a));
+
+        Result<BankAccount> casConflResult = conflictCas.ToResult<BankAccount>();
+        Console.ForegroundColor = ConsoleColor.Yellow;
+        Console.WriteLine($"    [CasResult Conflict] Result.IsFailure={casConflResult.IsFailure}, Error.Code='{casConflResult.Error?.Code}'");
+        Console.ResetColor();
+
+        // 9. ConcurrencyErrors — named error-code constants and factory methods (GAP 3)
+        Console.WriteLine("\n[9] ConcurrencyErrors — Named Code Constants and Factory Methods:");
+        Console.WriteLine($"    - ConcurrencyConflictCode:   '{ConcurrencyErrors.ConcurrencyConflictCode}'");
+        Console.WriteLine($"    - VersionMismatchCode:       '{ConcurrencyErrors.VersionMismatchCode}'");
+        Console.WriteLine($"    - TokenMismatchCode:         '{ConcurrencyErrors.TokenMismatchCode}'");
+        Console.WriteLine($"    - EntityDeletedCode:         '{ConcurrencyErrors.EntityDeletedCode}'");
+        Console.WriteLine($"    - SerializationFailureCode:  '{ConcurrencyErrors.SerializationFailureCode}'");
+        Console.WriteLine($"    - DeadlockCode:              '{ConcurrencyErrors.DeadlockCode}'");
+
+        Error versionError = ConcurrencyErrors.VersionMismatch("ACC-ERR-1", nameof(BankAccount), ExpectedVersion.Specific(3), ActualVersion.From(7));
+        Error tokenError   = ConcurrencyErrors.TokenMismatch("CUST-ERR-1", nameof(BankAccount), ConcurrencyToken.From("tok-a"), ConcurrencyToken.From("tok-b"));
+        Console.WriteLine($"    [VersionMismatch factory] Code='{versionError.Code}', Retryability={versionError.Retryability}");
+        Console.WriteLine($"    [TokenMismatch factory]   Code='{tokenError.Code}',   Retryability={tokenError.Retryability}");
     }
 }

@@ -3,7 +3,7 @@
 
   <PropertyGroup>
     <Description>Testing utilities, mock-free test doubles (FakeConcurrencyController), and fluent builders for EricksonLopez.Concurrency.</Description>
-    <PackageTags>$(CommonPackageTags);testing;test-doubles;fakes;unit-testing;in-memory;test-fixtures</PackageTags>
+    <PackageTags>$(CommonPackageTags);testing;unit-testing;test-doubles;fakes;in-memory;test-fixtures;mock</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

@@ -1,5 +1,11 @@
 # ADR-009: Testability and Mock-Free Test Doubles via FakeConcurrencyController
 
+## Status
+Accepted
+
+## Date
+2026-08-19
+
 - **Status**: Accepted
 - **Date**: 2026-08-19
 - **Component**: EricksonLopez.Concurrency

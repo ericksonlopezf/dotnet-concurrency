@@ -54,7 +54,7 @@ public sealed class FakeConcurrencyController : IConcurrencyController
     }
 
     /// <summary>
-    /// Gets the list of recorded <see cref="IConcurrencyController.ExecuteCasAsync{TEntity}"/> invocations.
+    /// Gets the list of recorded CAS invocations.
     /// </summary>
     public IReadOnlyList<ExecuteCasInvocation> ExecuteCasInvocations
     {
@@ -304,6 +304,7 @@ public sealed class FakeConcurrencyController : IConcurrencyController
 
     /// <inheritdoc />
     /// <exception cref="ArgumentNullException"><paramref name="entity"/> or <paramref name="mutate"/> is <see langword="null"/></exception>
+    /// <exception cref="OperationCanceledException">The cancellation token was canceled</exception>
     public async ValueTask<CasResult<TEntity>> ExecuteCasAsync<TEntity>(
         TEntity entity,
         ExpectedVersion expected,
@@ -355,6 +356,11 @@ public sealed class FakeConcurrencyController : IConcurrencyController
                     nextVersion = new ConcurrencyVersion(entity.Version).Next();
                 }
             }
+        }
+
+        if (mutated is IMutableVersionedEntity mutable)
+        {
+            mutable.Version = nextVersion.Value;
         }
 
         return CasResult.Succeeded(mutated, nextVersion);

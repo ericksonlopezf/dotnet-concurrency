@@ -21,7 +21,7 @@ public static class OptimisticUpdateBuilder
     /// <param name="tenantColumn">The optional name of the tenant isolation column.</param>
     /// <param name="tenantParam">The optional name of the tenant isolation parameter.</param>
     /// <returns>A generated SQL UPDATE statement containing optimistic concurrency predicates.</returns>
-    /// <exception cref="ArgumentException"><paramref name="tableName"/>, <paramref name="setClauses"/>, <paramref name="idColumn"/>, or <paramref name="versionColumn"/> is <see langword="null"/> or whitespace</exception>
+    /// <exception cref="ArgumentException"><paramref name="tableName"/>, <paramref name="setClauses"/>, <paramref name="idColumn"/>, or <paramref name="versionColumn"/> is <see langword="null"/> or whitespace or contains invalid identifier characters</exception>
     public static string BuildVersionedUpdate(
         string tableName,
         string setClauses,
@@ -32,10 +32,22 @@ public static class OptimisticUpdateBuilder
         string? tenantColumn = null,
         string? tenantParam = null)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(tableName);
+        ValidateIdentifier(tableName, nameof(tableName));
         ArgumentException.ThrowIfNullOrWhiteSpace(setClauses);
-        ArgumentException.ThrowIfNullOrWhiteSpace(idColumn);
-        ArgumentException.ThrowIfNullOrWhiteSpace(versionColumn);
+        ValidateIdentifier(idColumn, nameof(idColumn));
+        ValidateIdentifier(versionColumn, nameof(versionColumn));
+        ValidateIdentifier(idParam, nameof(idParam));
+        ValidateIdentifier(versionParam, nameof(versionParam));
+
+        if (!string.IsNullOrWhiteSpace(tenantColumn))
+        {
+            ValidateIdentifier(tenantColumn, nameof(tenantColumn));
+        }
+
+        if (!string.IsNullOrWhiteSpace(tenantParam))
+        {
+            ValidateIdentifier(tenantParam, nameof(tenantParam));
+        }
 
         var sb = new StringBuilder();
         sb.Append("UPDATE ").Append(tableName).Append(" SET ");
@@ -51,5 +63,17 @@ public static class OptimisticUpdateBuilder
 
         sb.Append(" AND ").Append(versionColumn).Append(" = @").Append(versionParam).Append(';');
         return sb.ToString();
+    }
+
+    private static void ValidateIdentifier(string identifier, string paramName)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(identifier, paramName);
+        foreach (char c in identifier)
+        {
+            if (!char.IsAsciiLetterOrDigit(c) && c != '_' && c != '.')
+            {
+                throw new ArgumentException($"Identifier '{identifier}' contains invalid characters.", paramName);
+            }
+        }
     }
 }

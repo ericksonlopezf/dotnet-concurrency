@@ -138,6 +138,7 @@ public static class PostgreSqlConcurrencyErrorClassifier
     /// <param name="entityType">The type name of the target entity.</param>
     /// <param name="operation">The name of the operation being executed.</param>
     /// <returns>A populated <see cref="ConcurrencyConflict"/> if recognized as a concurrency failure; otherwise, <see langword="null"/>.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="exception"/> is <see langword="null"/></exception>
     public static ConcurrencyConflict? ToConcurrencyConflict(
         Exception exception,
         string entityId,

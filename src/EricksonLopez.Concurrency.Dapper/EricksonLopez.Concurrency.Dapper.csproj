@@ -3,7 +3,7 @@
 
   <PropertyGroup>
     <Description>High-performance Dapper optimistic concurrency extensions and SQL versioning adapters for the EricksonLopez.Concurrency framework.</Description>
-    <PackageTags>$(CommonPackageTags);dapper;sql;conditional-update;query-builder;ado-net;zero-roundtrip</PackageTags>
+    <PackageTags>$(CommonPackageTags);dapper;micro-orm;sql;conditional-update;query-builder;ado-net;optimistic-locking</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

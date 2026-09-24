@@ -9,10 +9,22 @@ using Microsoft.Extensions.DependencyInjection;
 namespace EricksonLopez.Concurrency.Showcase.Levels;
 
 /// <summary>
-/// Level 01: Quick Start — Minimal DI setup, entity versioning, and initial version validation.
+/// Provides a quick-start demonstration covering minimal DI setup, entity versioning, and version validation.
 /// </summary>
 public static class Level01_QuickStart
 {
+    /// <summary>
+    /// Executes the quick-start demonstration.
+    /// </summary>
+    /// <remarks>
+    /// Cookbook: Level 01 — Quick Start.
+    /// Prerequisites: Level00 (conceptual foundations).
+    /// Concepts: DI container setup, IConcurrencyController resolution, VerifyVersion, conflict detection.
+    /// APIs: AddEricksonLopezConcurrency(), IConcurrencyController.VerifyVersion(), ExpectedVersion.Specific().
+    /// Complexity: Beginner.
+    /// Next: Level02_FullConfiguration for advanced options and dialect registrations.
+    /// </remarks>
+    /// <returns>A task representing the asynchronous operation.</returns>
     public static Task RunAsync()
     {
         Console.ForegroundColor = ConsoleColor.Cyan;

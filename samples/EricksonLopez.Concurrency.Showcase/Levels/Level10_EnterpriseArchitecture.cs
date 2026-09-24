@@ -19,10 +19,27 @@ using Microsoft.Extensions.DependencyInjection;
 namespace EricksonLopez.Concurrency.Showcase.Levels;
 
 /// <summary>
-/// Level 10: Enterprise Architecture — CQRS, Mediator pipeline behavior, Multi-Tenancy isolation, Test doubles (FakeConcurrencyController, ConcurrencyConflictBuilder), and ASP.NET Core ProblemDetails.
+/// Provides demonstrations of enterprise architectural patterns including CQRS, mediator pipelines, multi-tenancy, and test doubles.
 /// </summary>
 public static class Level10_EnterpriseArchitecture
 {
+    /// <summary>
+    /// Executes the enterprise architecture demonstration.
+    /// </summary>
+    /// <remarks>
+    /// Cookbook: Level 10 — Enterprise Architecture.
+    /// Prerequisites: Level01-09.
+    /// Concepts: CQRS command dispatch, mediator pipeline behavior (observability only), multi-tenant SQL,
+    ///            test doubles, RFC 7807 ProblemDetails, ADR-001 architectural demarcation.
+    /// APIs: ConcurrencyBehavior&lt;TRequest,TResponse&gt;, IConcurrencyAwareRequest,
+    ///        OptimisticUpdateBuilder (multi-tenant overload), FakeConcurrencyController,
+    ///        ConcurrencyConflictBuilder, ConcurrencyProblemDetails.From(),
+    ///        HttpRequest.GetExpectedConcurrencyToken()/GetExpectedConcurrencyVersion(),
+    ///        HttpResponse.SetConcurrencyETag().
+    /// Complexity: Expert.
+    /// Next: Level11_ComprehensiveApiCoverageDemo for exhaustive API surface verification.
+    /// </remarks>
+    /// <returns>A task representing the asynchronous operation.</returns>
     public static async Task RunAsync()
     {
         Console.ForegroundColor = ConsoleColor.Cyan;
@@ -128,6 +145,25 @@ public static class Level10_EnterpriseArchitecture
         Console.WriteLine($"    -> FakeConcurrencyController recorded invocation: Total={fakeController.TotalInvocations}");
         Console.WriteLine($"    -> VerifyVersionInvocations count: {fakeController.VerifyVersionInvocations.Count}");
         Console.WriteLine($"    -> Simulated conflict returned: Entity='{simulatedConflict?.EntityId}', Msg='{simulatedConflict?.Message}'");
+
+        // GAP 4: WithSuccessOnNextWrite \u2014 queue-based explicit version on next CAS
+        fakeController.Reset();
+        fakeController.WithSuccessOnNextWrite(nextVersion: 42L);
+        CasResult<BankAccount> queuedSuccessResult = await fakeController.ExecuteCasAsync(
+            testAccount, ExpectedVersion.Specific(5), testAccount.AccountId,
+            (a, ct) => ValueTask.FromResult(a));
+        Console.WriteLine($"    -> WithSuccessOnNextWrite(42): IsSuccess={queuedSuccessResult.IsSuccess}, NewVersion={queuedSuccessResult.NewVersion}");
+
+        // GAP 4: WithConflictOnNextWrite(type, entityId, entityType, classification) \u2014 synthesized overload
+        fakeController.WithConflictOnNextWrite(
+            ConcurrencyConflictType.VersionMismatch,
+            entityId: "ACC-TEST-99",
+            entityType: "BankAccount",
+            classification: ConcurrencyConflictClassification.Transient);
+        CasResult<BankAccount> queuedConflictResult = await fakeController.ExecuteCasAsync(
+            testAccount, ExpectedVersion.Specific(5), testAccount.AccountId,
+            (a, ct) => ValueTask.FromResult(a));
+        Console.WriteLine($"    -> WithConflictOnNextWrite(type,...): IsSuccess={queuedConflictResult.IsSuccess}, Conflict={queuedConflictResult.Conflict?.ConflictType}");
 
         // -------------------------------------------------------------
         // 6. ASP.NET Core RFC 7807 ProblemDetails & HTTP Result Mapping

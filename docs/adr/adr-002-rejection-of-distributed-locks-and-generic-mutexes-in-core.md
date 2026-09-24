@@ -1,5 +1,11 @@
 # ADR-002: Rejection of Distributed Locks and Generic Mutexes in Core
 
+## Status
+Accepted
+
+## Date
+2026-08-15
+
 - **Status**: Accepted
 - **Date**: 2026-08-15
 - **Component**: EricksonLopez.Concurrency

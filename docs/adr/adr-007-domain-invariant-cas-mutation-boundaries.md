@@ -1,5 +1,11 @@
 # ADR-007: Domain Invariant Compare-And-Swap (CAS) Mutation Boundaries
 
+## Status
+Accepted
+
+## Date
+2026-08-18
+
 - **Status**: Accepted
 - **Date**: 2026-08-18
 - **Component**: EricksonLopez.Concurrency

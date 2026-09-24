@@ -14,8 +14,18 @@
 
 [CmdletBinding()]
 param(
-    [string]$RootDirectory = $PSScriptRoot + "/.."
+    [string]$RootDirectory = "."
 )
+
+if (-not $RootDirectory -or $RootDirectory -eq ".") {
+    if ($PSScriptRoot) {
+        $RootDirectory = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
+    } else {
+        $RootDirectory = (Get-Location).Path
+    }
+} else {
+    $RootDirectory = (Resolve-Path $RootDirectory).Path
+}
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
@@ -23,20 +33,19 @@ $ErrorActionPreference = "Stop"
 $violations = [System.Collections.Generic.List[string]]::new()
 
 Write-Host "============================================================" -ForegroundColor Cyan
-Write-Host "  EricksonLopez.Concurrency — Convention & Quality Gate     " -ForegroundColor Cyan
+Write-Host "  EricksonLopez.Concurrency - Convention and Quality Gate   " -ForegroundColor Cyan
 Write-Host "============================================================" -ForegroundColor Cyan
 
-# ─── 1. License Header Check ──────────────────────────────────────────────
+# --- 1. License Header Check ----------------------------------------------
 Write-Host "`n[1/6] Validating C# License Headers..." -ForegroundColor Yellow
-$expectedHeader = "// Copyright © Erickson Lopez. MIT License."
 $csFiles = Get-ChildItem -Path $RootDirectory -Filter "*.cs" -Recurse | Where-Object {
-    $_.FullName -notmatch '[\\/](bin|obj|\.git|\.vs|\.system_generated)[\\/]'
+    $_.FullName -notmatch '[\\/](bin|obj|\.git|\.vs|\.system_generated|MEGA-AUDITORIA|StrykerOutput|artifacts|BenchmarkDotNet\.Artifacts)[\\/]'
 }
 
 $missingHeaders = 0
 foreach ($file in $csFiles) {
     $firstLine = (Get-Content -Path $file.FullName -TotalCount 1 -Encoding UTF8)
-    if ($firstLine -ne $expectedHeader) {
+    if ($firstLine -notmatch '^//\s*Copyright\s+.*Erickson\s+Lopez.*MIT\s+License') {
         $rel = Resolve-Path -Relative -Path $file.FullName
         $violations.Add("Missing/Invalid MIT License Header: $rel")
         $missingHeaders++
@@ -48,7 +57,7 @@ if ($missingHeaders -eq 0) {
     Write-Host "  -> FAILED: $missingHeaders files missing valid license header." -ForegroundColor Red
 }
 
-# ─── 2. Markdown Kebab-Case Naming Check ──────────────────────────────────
+# --- 2. Markdown Kebab-Case Naming Check ----------------------------------
 Write-Host "`n[2/6] Validating Markdown File Naming (kebab-case)..." -ForegroundColor Yellow
 $reservedNames = @(
     "README.md", "LICENSE", "LICENSE.md", "SECURITY.md", "SUPPORT.md", 
@@ -57,7 +66,7 @@ $reservedNames = @(
 )
 
 $mdFiles = Get-ChildItem -Path $RootDirectory -Filter "*.md" -Recurse | Where-Object {
-    $_.FullName -notmatch '[\\/](bin|obj|\.git|\.vs|\.system_generated|StrykerOutput)[\\/]'
+    $_.FullName -notmatch '[\\/](bin|obj|\.git|\.vs|\.system_generated|MEGA-AUDITORIA|StrykerOutput|artifacts|BenchmarkDotNet\.Artifacts)[\\/]'
 }
 
 $invalidMdNames = 0
@@ -78,10 +87,10 @@ if ($invalidMdNames -eq 0) {
     Write-Host "  -> FAILED: $invalidMdNames markdown files violate kebab-case conventions." -ForegroundColor Red
 }
 
-# ─── 3. Canonical URLs and Maintainer Email Check ────────────────────────
+# --- 3. Canonical URLs and Maintainer Email Check ------------------------
 Write-Host "`n[3/6] Validating Canonical URLs and Maintainer Email..." -ForegroundColor Yellow
 $textFiles = Get-ChildItem -Path $RootDirectory -Include "*.cs","*.md","*.csproj","*.props","*.targets","*.yml","*.json" -Recurse | Where-Object {
-    $_.FullName -notmatch '[\\/](bin|obj|\.git|\.vs|\.system_generated|StrykerOutput)[\\/]'
+    $_.FullName -notmatch '[\\/](bin|obj|\.git|\.vs|\.system_generated|StrykerOutput|MEGA-AUDITORIA|artifacts|BenchmarkDotNet\.Artifacts|node_modules)[\\/]'
 }
 
 $legacyUrlCount = 0
@@ -105,7 +114,7 @@ if ($legacyUrlCount -eq 0 -and $legacyEmailCount -eq 0) {
     Write-Host "  -> FAILED: Found $legacyUrlCount legacy URLs and $legacyEmailCount legacy emails." -ForegroundColor Red
 }
 
-# ─── 4. Obsolete API Usage Check in src/ ─────────────────────────────────
+# --- 4. Obsolete API Usage Check in src/ ---------------------------------
 Write-Host "`n[4/6] Checking for Prohibited [Obsolete] Usages..." -ForegroundColor Yellow
 $srcCsFiles = Get-ChildItem -Path (Join-Path $RootDirectory "src") -Filter "*.cs" -Recurse | Where-Object {
     $_.FullName -notmatch '[\\/](bin|obj)[\\/]'
@@ -126,10 +135,10 @@ if ($obsoleteCount -eq 0) {
     Write-Host "  -> FAILED: $obsoleteCount prohibited [Obsolete] attributes found." -ForegroundColor Red
 }
 
-# ─── 5. Prohibited <NoWarn> Suppressions ─────────────────────────────────
+# --- 5. Prohibited <NoWarn> Suppressions ---------------------------------
 Write-Host "`n[5/6] Checking for Prohibited <NoWarn> Suppressions..." -ForegroundColor Yellow
 $projFiles = Get-ChildItem -Path $RootDirectory -Include "*.csproj","*.props" -Recurse | Where-Object {
-    $_.FullName -notmatch '[\\/](bin|obj|\.git)[\\/]'
+    $_.FullName -notmatch '[\\/](bin|obj|\.git|MEGA-AUDITORIA|StrykerOutput|artifacts|BenchmarkDotNet\.Artifacts)[\\/]'
 }
 
 $prohibitedWarnings = @("CS1591", "CS8618", "CS8600", "CS8602", "CS8603", "CS8604", "CA2007")

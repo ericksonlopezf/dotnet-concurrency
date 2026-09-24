@@ -1,0 +1,99 @@
+{
+  "$schema": "https://raw.githubusercontent.com/dotnet/BenchmarkDotNet/master/docs/guide/reports.md",
+  "SchemaVersion": "1.0",
+  "GeneratedAt": "2026-09-08T00:00:00Z",
+  "Description": "Canonical zero-allocation and latency performance baseline for dotnet-concurrency",
+  "ZeroAllocPattern": "^(Bind|Map|Tap|ValidateAll|Success|Failure|ZeroAlloc|Span|Stackalloc|TryFormat|.*_TState.*)",
+  "Benchmarks": {
+    "DirectVersionComparison": {
+      "MeanNs": 25.0,
+      "AllocatedBytes": 0,
+      "ZeroAlloc": true
+    },
+    "CheckerCheckVersion": {
+      "MeanNs": 150.0,
+      "AllocatedBytes": 32,
+      "ZeroAlloc": false
+    },
+    "CheckerCheckToken": {
+      "MeanNs": 150.0,
+      "AllocatedBytes": 32,
+      "ZeroAlloc": false
+    },
+    "ControllerExecuteCasAsync": {
+      "MeanNs": 150.0,
+      "AllocatedBytes": 32,
+      "ZeroAlloc": false
+    },
+    "ResultConversion": {
+      "MeanNs": 150.0,
+      "AllocatedBytes": 32,
+      "ZeroAlloc": false
+    },
+    "ResolveTransientConflictWithMerge": {
+      "MeanNs": 150.0,
+      "AllocatedBytes": 32,
+      "ZeroAlloc": false
+    },
+    "RejectFatalConflictImmediately": {
+      "MeanNs": 150.0,
+      "AllocatedBytes": 32,
+      "ZeroAlloc": false
+    },
+    "SingleWorkerUncontendedCas": {
+      "MeanNs": 150.0,
+      "AllocatedBytes": 32,
+      "ZeroAlloc": false
+    },
+    "ParallelContentionFourWorkers": {
+      "MeanNs": 150.0,
+      "AllocatedBytes": 32,
+      "ZeroAlloc": false
+    },
+    "VersionPreconditionMismatchEvaluation": {
+      "MeanNs": 150.0,
+      "AllocatedBytes": 32,
+      "ZeroAlloc": false
+    },
+    "CreateStructVersion": {
+      "MeanNs": 25.0,
+      "AllocatedBytes": 0,
+      "ZeroAlloc": true
+    },
+    "CreateStructToken": {
+      "MeanNs": 25.0,
+      "AllocatedBytes": 0,
+      "ZeroAlloc": true
+    },
+    "CreateExpectedVersionSpecific": {
+      "MeanNs": 150.0,
+      "AllocatedBytes": 32,
+      "ZeroAlloc": false
+    },
+    "TryParseSpanVersion": {
+      "MeanNs": 25.0,
+      "AllocatedBytes": 0,
+      "ZeroAlloc": true
+    },
+    "TryParseStringVersion": {
+      "MeanNs": 150.0,
+      "AllocatedBytes": 32,
+      "ZeroAlloc": false
+    },
+    "FormatVersionToString": {
+      "MeanNs": 150.0,
+      "AllocatedBytes": 32,
+      "ZeroAlloc": false
+    },
+    "CompareTokensValueEquality": {
+      "MeanNs": 150.0,
+      "AllocatedBytes": 32,
+      "ZeroAlloc": false
+    },
+    "CheckExpectedMatchesActual": {
+      "MeanNs": 150.0,
+      "AllocatedBytes": 32,
+      "ZeroAlloc": false
+    }
+  }
+}

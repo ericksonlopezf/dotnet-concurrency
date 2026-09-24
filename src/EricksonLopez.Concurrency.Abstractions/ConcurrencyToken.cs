@@ -8,6 +8,9 @@ namespace EricksonLopez.Concurrency.Abstractions;
 /// </summary>
 public readonly record struct ConcurrencyToken : IConcurrencyToken, IComparable<ConcurrencyToken>, IComparable
 {
+    private readonly string? _value;
+    private readonly string? _tokenKind;
+
     /// <summary>
     /// Represents an empty, uninitialized concurrency token.
     /// </summary>
@@ -16,12 +19,12 @@ public readonly record struct ConcurrencyToken : IConcurrencyToken, IComparable<
     /// <summary>
     /// Gets the raw string value of the token.
     /// </summary>
-    public string Value { get; }
+    public string Value => _value ?? string.Empty;
 
     /// <summary>
     /// Gets the discriminator or kind of token (e.g. "String", "Guid", "RowVersion", "Hash").
     /// </summary>
-    public string TokenKind { get; }
+    public string TokenKind => _tokenKind ?? "None";
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConcurrencyToken"/> struct with a specific value and kind.
@@ -30,9 +33,23 @@ public readonly record struct ConcurrencyToken : IConcurrencyToken, IComparable<
     /// <param name="tokenKind">The descriptive kind of the token.</param>
     public ConcurrencyToken(string value, string tokenKind = "Opaque")
     {
-        Value = value ?? string.Empty;
-        TokenKind = string.IsNullOrWhiteSpace(tokenKind) ? "Opaque" : tokenKind;
+        _value = value ?? string.Empty;
+        _tokenKind = string.IsNullOrWhiteSpace(tokenKind) ? "Opaque" : tokenKind;
     }
+
+    /// <summary>
+    /// Indicates whether the current concurrency token is equal to another token of the same type.
+    /// </summary>
+    /// <param name="other">An object to compare with this token.</param>
+    /// <returns><see langword="true"/> if the current token is equal to the <paramref name="other"/> parameter; otherwise, <see langword="false"/>.</returns>
+    public bool Equals(ConcurrencyToken other)
+    {
+        return string.Equals(Value, other.Value, StringComparison.Ordinal) &&
+               string.Equals(TokenKind, other.TokenKind, StringComparison.Ordinal);
+    }
+
+    /// <inheritdoc />
+    public override int GetHashCode() => HashCode.Combine(Value, TokenKind);
 
     /// <summary>
     /// Creates a new concurrency token from a <see cref="Guid"/>.

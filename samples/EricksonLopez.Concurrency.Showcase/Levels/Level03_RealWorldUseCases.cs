@@ -8,10 +8,24 @@ using EricksonLopez.Concurrency.Showcase.Models;
 namespace EricksonLopez.Concurrency.Showcase.Levels;
 
 /// <summary>
-/// Level 03: Real-World Use Cases — Domain models, strongly-typed versions, ExpectedVersion kinds, ActualVersion, and ConcurrencyToken/ETags.
+/// Provides demonstrations of real-world use cases including domain models, strongly-typed versions, and concurrency tokens.
 /// </summary>
 public static class Level03_RealWorldUseCases
 {
+    /// <summary>
+    /// Executes the real-world use cases demonstration.
+    /// </summary>
+    /// <remarks>
+    /// Cookbook: Level 03 — Real-World Use Cases.
+    /// Prerequisites: Level01 (VerifyVersion basics), Level02 (DI setup).
+    /// Concepts: ExpectedVersion semantics (Specific/New/Exists/Any), ConcurrencyVersion&lt;T&gt; typed versions,
+    ///            ConcurrencyToken ETags, IConcurrencyChecker direct use, default(ExpectedVersion) behavior.
+    /// APIs: ExpectedVersion.New/Exists/Any/Specific(), ConcurrencyVersion.TryParse(), ActualVersion.From()/NotFound,
+    ///        ConcurrencyToken.NewGuid()/From(), IConcurrencyChecker.CheckVersion()/CheckToken().
+    /// Complexity: Intermediate.
+    /// Next: Level04_AdvancedIntegration for Dapper and Result monad.
+    /// </remarks>
+    /// <returns>A task representing the asynchronous operation.</returns>
     public static Task RunAsync()
     {
         Console.ForegroundColor = ConsoleColor.Cyan;
@@ -27,6 +41,10 @@ public static class Level03_RealWorldUseCases
         // -------------------------------------------------------------
         Console.WriteLine("\n--- Case 1: ExpectedVersion Semantics (Creation vs Mutation) ---");
 
+        // ExpectedVersion has four semantic kinds: Specific, New, Exists, Any.
+        // Note: default(ExpectedVersion) == ExpectedVersion.Specific(0), which is equivalent
+        // to ExpectedVersion.New in practice. Prefer ExpectedVersion.New for readability
+        // when the intent is entity-creation precondition enforcement.
         var newInventory = new ProductInventory("SKU-9901", "Gaming Laptop X1", 50, 0, version: 0);
         var existingInventory = new ProductInventory("SKU-9902", "Mechanical Keyboard Pro", 120, 10, version: 4);
 

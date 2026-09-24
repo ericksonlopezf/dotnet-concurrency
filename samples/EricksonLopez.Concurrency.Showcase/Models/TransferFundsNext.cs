@@ -9,19 +9,28 @@ using EricksonLopez.Result;
 namespace EricksonLopez.Concurrency.Showcase.Models;
 
 /// <summary>
-/// Next delegate struct executing the command handler downstream.
+/// Represents a mediator pipeline handler struct executing the transfer funds command downstream.
 /// </summary>
 public readonly struct TransferFundsNext : INext<Result<TransferResult>>
 {
     private readonly TransferFundsCommand _command;
     private readonly IConcurrencyController _controller;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TransferFundsNext"/> struct with the specified command and controller.
+    /// </summary>
+    /// <param name="command">The funds transfer command to execute.</param>
+    /// <param name="controller">The concurrency controller used to verify and advance entity versions.</param>
     public TransferFundsNext(TransferFundsCommand command, IConcurrencyController controller)
     {
         _command = command;
         _controller = controller;
     }
 
+    /// <summary>
+    /// Executes the downstream command handler pipeline asynchronously.
+    /// </summary>
+    /// <returns>A value task representing the asynchronous operation. The task result contains the <see cref="Result{T}"/> containing the <see cref="TransferResult"/>.</returns>
     public async ValueTask<Result<TransferResult>> InvokeAsync()
     {
         TransferFundsCommand cmd = _command;

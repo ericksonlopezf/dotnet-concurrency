@@ -1,11 +1,11 @@
 # EricksonLopez.Concurrency
 
-High-performance, struct-based, Native AOT-compatible Optimistic Concurrency Control, conflict arbitration, and deterministic state synchronization ecosystem for modern .NET.
+Zero-allocation, Native AOT Optimistic Concurrency Control (OCC) and conflict resolution framework for .NET. Eliminates lost updates and race conditions across Dapper, ASP.NET Core, and relational databases.
 
 [![CI](https://img.shields.io/github/actions/workflow/status/ericksonlopezf/dotnet-concurrency/ci.yml?branch=main&style=for-the-badge&logo=githubactions&logoColor=white&label=CI)](https://github.com/ericksonlopezf/dotnet-concurrency/actions)
 [![Coverage](https://img.shields.io/codecov/c/github/ericksonlopezf/dotnet-concurrency?style=for-the-badge&logo=codecov&logoColor=white)](https://codecov.io/gh/ericksonlopezf/dotnet-concurrency)
 [![Quality Gate](https://img.shields.io/sonar/quality_gate/ericksonlopezf_dotnet-concurrency?server=https%3A%2F%2Fsonarcloud.io&style=for-the-badge&logo=sonarcloud&logoColor=white)](https://sonarcloud.io/summary/new_code?id=ericksonlopezf_dotnet-concurrency)
-[![Mutation Score](https://img.shields.io/badge/Mutation_Score-100%25-brightgreen?style=for-the-badge&logo=stryker&logoColor=white)](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/docs/mutation-testing.md)
+[![Mutation Score](https://img.shields.io/badge/Mutation_Score-%E2%89%A599%25-brightgreen?style=for-the-badge&logo=stryker&logoColor=white)](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/docs/mutation-testing.md)
 [![NuGet](https://img.shields.io/nuget/v/EricksonLopez.Concurrency?style=for-the-badge&logo=nuget&logoColor=white&color=512BD4)](https://www.nuget.org/packages/EricksonLopez.Concurrency)
 [![NuGet Downloads](https://img.shields.io/nuget/dt/EricksonLopez.Concurrency?style=for-the-badge&logo=nuget&logoColor=white&color=004880)](https://www.nuget.org/packages/EricksonLopez.Concurrency)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/LICENSE)
@@ -24,7 +24,7 @@ High-performance, struct-based, Native AOT-compatible Optimistic Concurrency Con
 - [Key Features](#-key-features)
 - [Ecosystem](#-ecosystem)
 - [Documentation](#-documentation)
-  - [Step-by-Step Interactive Showcase (Levels 00 to 10)](#-step-by-step-interactive-showcase-levels-00-to-10)
+  - [Step-by-Step Interactive Showcase (Levels 00 to 11)](#-step-by-step-interactive-showcase-levels-00-to-11)
   - [Technical Reference & Architecture Guides](#-technical-reference--architecture-guides)
 - [Installation](#-installation)
 - [Quick Start](#-quick-start)
@@ -59,7 +59,7 @@ In high-throughput, distributed cloud services and multi-user web applications, 
 - ⚡ **Zero-Allocation Struct Primitives**: `ConcurrencyVersion`, `ExpectedVersion`, `ActualVersion`, and `ConcurrencyToken` are modeled as stack-allocated `readonly record struct` value types, guaranteeing **0 bytes allocated** on verification hot paths.
 - 🗄️ **Zero-Roundtrip Conditional SQL Execution**: Dapper extensions execute atomic single-statement updates (`UPDATE ... WHERE id = @Id AND version = @ExpectedVersion`) and immediately classify `rowsAffected == 0` as a concurrency conflict without preceding queries.
 - 🌐 **6-Engine Database Dialect & SQLSTATE Classification**: Automatically catches and classifies native database exceptions (deadlocks, serialization failures, lock timeouts) across PostgreSQL, SQL Server, MySQL, MariaDB, Oracle, and SQLite.
-- 🔒 **In-Memory Atomic Compare-And-Swap (CAS)**: Provides thread-safe, lock-free in-memory state mutations with checked monotonic version increments (`checked(Value + 1)`).
+- 🔒 **In-Memory Atomic Compare-And-Swap (CAS)**: Provides thread-safe, fine-grained per-entity locking for in-memory state mutations via stripe-partitioned, reference-counted semaphore pools, with checked monotonic version increments (`checked(Value + 1)`).
 - 📦 **Monadic CQRS & Web Pipeline Integration**: First-class HTTP `If-Match` / `ETag` parsing, RFC 7807 / RFC 9457 `ConcurrencyProblemDetails` middleware, and observability pipeline behaviors for `EricksonLopez.Mediator` and `EricksonLopez.Result`.
 
 ---
@@ -71,7 +71,7 @@ In high-throughput, distributed cloud services and multi-user web applications, 
 - 🗄️ **Zero-Roundtrip Database Updates**: Atomic conditional write execution via Dapper without preceding `SELECT` queries.
 - 🌐 **6-Engine Database Dialect Support**: PostgreSQL (`xmin`, SQLSTATE `40001`/`40P01`), SQL Server (`ROWVERSION`, Errors `1205`/`3960`), MySQL (`1213`/`1205`), MariaDB (`WAIT n`), Oracle (`ORA_ROWSCN`, `ORA-00060`), and SQLite (`SQLITE_BUSY`/`SQLITE_LOCKED`).
 - 📦 **Monadic Result & CQRS Integration**: Fluent translation into `EricksonLopez.Result` and zero-overhead observability behaviors for `EricksonLopez.Mediator`.
-- 🌐 **ASP.NET Core & RFC 7807**: Automatic HTTP 409 Conflict middleware, RFC 7807/9457 problem details, and ETag header management.
+- 🌐 **ASP.NET Core & RFC 7807 / RFC 9457**: Automatic HTTP 409 Conflict middleware, RFC 7807/9457 problem details, and ETag header management.
 - 🧪 **Mock-Free Testing Suite**: `FakeConcurrencyController` test double with complete invocation recording and fluent `ConcurrencyConflictBuilder`.
 - 📊 **Built-in OpenTelemetry Instrumentation**: Custom `ActivitySource` and `Meter` instruments tracking conflict rates, durations, and resolution outcomes.
 - 🛡️ **Native AOT & Trimming Verified**: 100% Native AOT compatible with zero dynamic code generation and zero reflection on hot execution paths.
@@ -102,23 +102,24 @@ In high-throughput, distributed cloud services and multi-user web applications, 
 
 > 🌐 **Official Documentation Hub:** [https://github.com/ericksonlopezf/dotnet-concurrency/tree/main/docs](https://github.com/ericksonlopezf/dotnet-concurrency/tree/main/docs)
 
-### 🎓 Step-by-Step Interactive Showcase (Levels 00 to 10)
+### 🎓 Step-by-Step Interactive Showcase (Levels 00 to 11)
 
 The repository includes a comprehensive, interactive executable reference application located in `samples/EricksonLopez.Concurrency.Showcase`.
 
-| Level | Topic | Description |
-|---|---|---|
-| [**Level 00**](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/docs/showcase-guide.md) | **Conceptual & Design Principles** | Motivation, Lost Updates problem, Redis Redlock comparison, zero-allocation structs, and Native AOT guarantees |
-| [**Level 01**](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/docs/showcase-guide.md) | **Quick Start & DI Setup** | Dependency injection configuration with `AddEricksonLopezConcurrency`, `IVersionedEntity`, and `IConcurrencyController` |
-| [**Level 02**](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/docs/showcase-guide.md) | **Full Configuration** | `ConcurrencyOptions` configuration, custom conflict resolvers (`AddConflictResolver`), and 6-engine database provider DI |
-| [**Level 03**](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/docs/showcase-guide.md) | **Real-World Use Cases** | Strongly typed versions `IVersionedEntity<T>`, `ExpectedVersion` semantics (`New`, `Exists`, `Specific`, `Any`), and ETags |
-| [**Level 04**](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/docs/showcase-guide.md) | **Advanced Dapper Integration** | Dapper zero-roundtrip execution with `OptimisticUpdateBuilder`, `ExecuteOptimisticAsync`, and monadic Result mapping |
-| [**Level 05**](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/docs/showcase-guide.md) | **Processing & Concurrency** | In-memory Compare-And-Swap (`ExecuteCasAsync`), atomic state transitions, and 10-task parallel race condition simulation |
-| [**Level 06**](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/docs/showcase-guide.md) | **Error Handling & Classification** | Database error classification matrix for PostgreSQL, SQL Server, MySQL, MariaDB, Oracle, SQLite, and exceptions |
-| [**Level 07**](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/docs/showcase-guide.md) | **Scalability & Throughput** | Zero-allocation verification (0 bytes heap allocated across 1,000,000 checks at 50M+ ops/sec) and OpenTelemetry |
-| [**Level 08**](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/docs/showcase-guide.md) | **Customization & Extensibility** | Implementing `IConcurrencyConflictResolver<T>`, domain 3-way merging, `LastWriteWinsConflictResolver`, and retry resolvers |
-| [**Level 09**](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/docs/showcase-guide.md) | **Specialized Tokens & Locking** | Native database tokens (`xmin`, `ROWVERSION`, `ORA_ROWSCN`) and pessimistic query locking helpers (`FOR UPDATE`, `UPDLOCK`) |
-| [**Level 10**](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/docs/showcase-guide.md) | **Enterprise Architecture** | Clean Architecture + CQRS with `EricksonLopez.Mediator`, multi-tenancy isolation, test double harness, and RFC 7807 |
+| Level | Topic | Source Reference | Description |
+|---|---|---|---|
+| [**Level 00**](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/samples/EricksonLopez.Concurrency.Showcase/Levels/Level00_Conceptual.cs) | **Conceptual & Design Principles** | [`Level00_Conceptual.cs`](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/samples/EricksonLopez.Concurrency.Showcase/Levels/Level00_Conceptual.cs) | Motivation, Lost Updates problem, Redis Redlock comparison, zero-allocation structs, and Native AOT guarantees |
+| [**Level 01**](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/samples/EricksonLopez.Concurrency.Showcase/Levels/Level01_QuickStart.cs) | **Quick Start & DI Setup** | [`Level01_QuickStart.cs`](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/samples/EricksonLopez.Concurrency.Showcase/Levels/Level01_QuickStart.cs) | Dependency injection configuration with `AddEricksonLopezConcurrency`, `IVersionedEntity`, and `IConcurrencyController` |
+| [**Level 02**](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/samples/EricksonLopez.Concurrency.Showcase/Levels/Level02_FullConfiguration.cs) | **Full Configuration** | [`Level02_FullConfiguration.cs`](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/samples/EricksonLopez.Concurrency.Showcase/Levels/Level02_FullConfiguration.cs) | `ConcurrencyOptions` configuration, custom conflict resolvers (`AddConflictResolver`), and 6-engine database provider DI |
+| [**Level 03**](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/samples/EricksonLopez.Concurrency.Showcase/Levels/Level03_RealWorldUseCases.cs) | **Real-World Use Cases** | [`Level03_RealWorldUseCases.cs`](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/samples/EricksonLopez.Concurrency.Showcase/Levels/Level03_RealWorldUseCases.cs) | Strongly typed versions `IVersionedEntity<T>`, `ExpectedVersion` semantics (`New`, `Exists`, `Specific`, `Any`), and ETags |
+| [**Level 04**](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/samples/EricksonLopez.Concurrency.Showcase/Levels/Level04_AdvancedIntegration.cs) | **Advanced Dapper Integration** | [`Level04_AdvancedIntegration.cs`](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/samples/EricksonLopez.Concurrency.Showcase/Levels/Level04_AdvancedIntegration.cs) | Dapper zero-roundtrip execution with `OptimisticUpdateBuilder`, `ExecuteOptimisticAsync`, and monadic Result mapping |
+| [**Level 05**](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/samples/EricksonLopez.Concurrency.Showcase/Levels/Level05_ProcessingAndConcurrency.cs) | **Processing & Concurrency** | [`Level05_ProcessingAndConcurrency.cs`](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/samples/EricksonLopez.Concurrency.Showcase/Levels/Level05_ProcessingAndConcurrency.cs) | In-memory Compare-And-Swap (`ExecuteCasAsync`), atomic state transitions, and 10-task parallel race condition simulation |
+| [**Level 06**](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/samples/EricksonLopez.Concurrency.Showcase/Levels/Level06_ErrorHandlingAndClassification.cs) | **Error Handling & Classification** | [`Level06_ErrorHandlingAndClassification.cs`](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/samples/EricksonLopez.Concurrency.Showcase/Levels/Level06_ErrorHandlingAndClassification.cs) | Database error classification matrix for PostgreSQL, SQL Server, MySQL, MariaDB, Oracle, SQLite, and exceptions |
+| [**Level 07**](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/samples/EricksonLopez.Concurrency.Showcase/Levels/Level07_ScalabilityAndThroughput.cs) | **Scalability & Throughput** | [`Level07_ScalabilityAndThroughput.cs`](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/samples/EricksonLopez.Concurrency.Showcase/Levels/Level07_ScalabilityAndThroughput.cs) | Zero-allocation verification (0 bytes heap allocated across 1,000,000 checks at 50M+ ops/sec) and OpenTelemetry |
+| [**Level 08**](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/samples/EricksonLopez.Concurrency.Showcase/Levels/Level08_CustomizationAndExtensibility.cs) | **Customization & Extensibility** | [`Level08_CustomizationAndExtensibility.cs`](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/samples/EricksonLopez.Concurrency.Showcase/Levels/Level08_CustomizationAndExtensibility.cs) | Implementing `IConcurrencyConflictResolver<T>`, domain 3-way merging, `LastWriteWinsConflictResolver`, and retry resolvers |
+| [**Level 09**](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/samples/EricksonLopez.Concurrency.Showcase/Levels/Level09_SpecializedTokensAndLocking.cs) | **Specialized Tokens & Locking** | [`Level09_SpecializedTokensAndLocking.cs`](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/samples/EricksonLopez.Concurrency.Showcase/Levels/Level09_SpecializedTokensAndLocking.cs) | Native database tokens (`xmin`, `ROWVERSION`, `ORA_ROWSCN`) and pessimistic query locking helpers (`FOR UPDATE`, `UPDLOCK`) |
+| [**Level 10**](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/samples/EricksonLopez.Concurrency.Showcase/Levels/Level10_EnterpriseArchitecture.cs) | **Enterprise Architecture** | [`Level10_EnterpriseArchitecture.cs`](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/samples/EricksonLopez.Concurrency.Showcase/Levels/Level10_EnterpriseArchitecture.cs) | Clean Architecture + CQRS with `EricksonLopez.Mediator`, multi-tenancy isolation, test double harness, and RFC 7807 |
+| [**Level 11**](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/samples/EricksonLopez.Concurrency.Showcase/Levels/Level11_ComprehensiveApiCoverageDemo.cs) | **Comprehensive Public API Verification** | [`Level11_ComprehensiveApiCoverageDemo.cs`](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/samples/EricksonLopez.Concurrency.Showcase/Levels/Level11_ComprehensiveApiCoverageDemo.cs) | Exhaustive executable verification across 16 sections (CasResult, ConcurrencyConflict, fluent builder, database classifiers, metadata propagation, and AOT invariants) |
 
 ---
 
@@ -128,13 +129,15 @@ The repository includes a comprehensive, interactive executable reference applic
 - [**System Overview**](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/docs/overview.md) — Comprehensive architectural blueprint, domain boundaries, and design guarantees.
 - [**Architectural Standards**](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/docs/architecture.md) — Layer topology, dependency rules, and zero-allocation constraints.
 - [**Functional Architecture & Flows**](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/docs/architecture-flow.md) — Sequence diagrams, CAS state machines, and component interactions.
-- [**Architectural Decision Records (ADRs)**](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/docs/adr-decisions.md) — ADR-001 through ADR-012 documenting technical decisions and rejected alternatives.
+- [**Architectural Decision Records (ADRs)**](https://github.com/ericksonlopezf/dotnet-concurrency/tree/main/docs/adr) — 13 formal ADRs documenting design rationale, boundary guarantees, and rejected alternatives (also see [Summary Index](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/docs/adr-decisions.md)).
 - [**Architecture Tests**](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/docs/architecture-tests.md) — Automated NetArchTest layer boundary and reference isolation enforcement.
 
 #### API Reference & Patterns
 - [**Public API Reference**](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/docs/api-reference.md) — Exhaustive contract documentation for all structs, classes, interfaces, and options.
+- [**API Inventory**](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/docs/api-inventory.md) — Complete surface inventory of public types, constructors, and methods.
 - [**Cookbook & Recipes**](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/docs/cookbook.md) — 11 ready-to-use production recipes covering REST APIs, Dapper, CAS, and testing.
 - [**Package Reference & Compatibility**](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/docs/packages.md) — Complete 13-package matrix and dependency topology.
+- [**Features & Compatibility Matrix**](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/docs/master-feature-matrix.md) — Target framework matrix, diagnostics, and HTTP status codes.
 - [**Optimistic Concurrency Mechanics**](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/docs/optimistic-concurrency.md) — Theoretical foundation and mathematical model of OCC.
 - [**Concurrency Tokens Guide**](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/docs/concurrency-tokens.md) — Opaque tokens, UUIDs, ETags, and binary hashes.
 - [**Version Control & Semantics**](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/docs/version-control.md) — Monotonic checked transitions and version pre-conditions.
@@ -160,6 +163,7 @@ The repository includes a comprehensive, interactive executable reference applic
 
 #### Quality, Operations & Comparison
 - [**Testing & Mock-Free Doubles**](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/docs/testing.md) — `FakeConcurrencyController` and test harness.
+- [**Testing Roadmap & Architecture**](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/docs/testing-roadmap.md) — Comprehensive test architecture and verification strategy.
 - [**Mutation Testing Guide**](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/docs/mutation-testing.md) — Stryker.NET quality gates, per-package configs, and thresholds.
 - [**Native AOT Compatibility Guide**](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/docs/aot.md) — Trimming, Native AOT compilation, and smoke testing.
 - [**Telemetry & Metrics Guide**](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/docs/telemetry-and-metrics.md) — OpenTelemetry `ActivitySource` and `Meter` instruments.
@@ -168,6 +172,9 @@ The repository includes a comprehensive, interactive executable reference applic
 - [**Failure Modes & Threat Model**](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/docs/failure-modes.md) — Security threat model and failure analysis.
 - [**Migration Guide**](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/docs/migration-guide.md) — Migrating from legacy locks or manual versioning.
 - [**Comparison vs Entity Framework Core**](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/docs/vs-ef-core.md) — In-depth architectural trade-off analysis.
+- [**Frequently Asked Questions (FAQ)**](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/docs/faq.md) — Architecture, runtime, and diagnostic answers.
+- [**Best Practices Guide**](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/docs/best-practices.md) — Enterprise patterns and architectural guardrails.
+- [**Troubleshooting Guide**](https://github.com/ericksonlopezf/dotnet-concurrency/blob/main/docs/troubleshooting.md) — Diagnostics, triage procedures, and remediation.
 
 ---
 
@@ -236,12 +243,15 @@ dotnet add package EricksonLopez.Concurrency.Testing
 
 ### 1. Define Versioned Domain Entities
 
-Implement `IVersionedEntity` (numeric version) or `IConcurrencyAware` (opaque token):
+Implement `IVersionedEntity` for immutable version inspection or `IMutableVersionedEntity` when the controller automatically manages version transitions:
 
 ```csharp
 using EricksonLopez.Concurrency.Abstractions;
 
-public sealed class CustomerAccount : IVersionedEntity
+// Implement IMutableVersionedEntity so the controller automatically advances
+// Version after a successful CAS mutation. Use IVersionedEntity for read-only
+// version inspection in non-CAS contexts.
+public sealed class CustomerAccount : IMutableVersionedEntity
 {
     public string Id { get; init; } = string.Empty;
     public string OwnerName { get; set; } = string.Empty;
@@ -266,7 +276,7 @@ CasResult<CustomerAccount> casResult = await controller.ExecuteCasAsync(
     entity: account,
     expected: ExpectedVersion.Specific(1),
     entityId: account.Id,
-    mutate: (acc, ct) =>
+    mutate: static (acc, ct) =>
     {
         acc.Balance += 150m;
         return ValueTask.FromResult(acc);
@@ -319,7 +329,43 @@ public async Task<Result> UpdateBalanceAsync(
 }
 ```
 
-### 4. ASP.NET Core REST API & ETag Verification
+### 4. Monadic Result Pipeline & Pattern Matching
+
+Integrate CAS outcomes into railway-oriented functional pipelines with `EricksonLopez.Result`:
+
+```csharp
+using EricksonLopez.Concurrency.Abstractions;
+using EricksonLopez.Concurrency.Controllers;
+using EricksonLopez.Concurrency.Result;
+using EricksonLopez.Result;
+
+public async Task<Result<CustomerAccount>> CreditAccountMonadicAsync(
+    IConcurrencyController controller,
+    CustomerAccount account,
+    decimal creditAmount,
+    CancellationToken ct)
+{
+    CasResult<CustomerAccount> casOutcome = await controller.ExecuteCasAsync(
+        entity: account,
+        expected: ExpectedVersion.Specific(account.Version),
+        entityId: account.Id,
+        mutate: (acc, _) =>
+        {
+            acc.Balance += creditAmount;
+            return ValueTask.FromResult(acc);
+        },
+        cancellationToken: ct);
+
+    // Converts CasResult<T> directly into a monadic Result<T>
+    Result<CustomerAccount> result = casOutcome.ToResult();
+
+    return result.Match(
+        onSuccess: updated => Result<CustomerAccount>.Success(updated),
+        onFailure: error => Result<CustomerAccount>.Failure(error));
+}
+```
+
+### 5. ASP.NET Core REST API & ETag Verification
 
 Validate HTTP `If-Match` headers and return RFC 7807/9457 `409 Conflict` responses:
 
@@ -336,16 +382,20 @@ builder.Services.AddConcurrencyAspNetCore();
 var app = builder.Build();
 app.UseConcurrencyConflictHandling(); // Automatically translates ConcurrencyException to HTTP 409
 
-app.MapPut("/api/v1/accounts/{id}", async (string id, HttpRequest request, IConcurrencyController controller) =>
+app.MapPut("/api/v1/accounts/{id}", async (string id, HttpRequest request, HttpResponse response, IConcurrencyController controller) =>
 {
     // Extract version from HTTP If-Match header
-    long? expectedVersion = request.GetExpectedConcurrencyVersion();
+    ExpectedVersion? expectedVersion = request.GetExpectedConcurrencyVersion();
+    if (!expectedVersion.HasValue)
+    {
+        return Results.StatusCode(StatusCodes.Status428PreconditionRequired);
+    }
     
     // Validate precondition
-    var entity = await LoadAccountAsync(id);
+    CustomerAccount entity = await LoadAccountAsync(id);
     ConcurrencyConflict? conflict = controller.VerifyVersion(
         entity, 
-        ExpectedVersion.Specific(expectedVersion ?? 1), 
+        expectedVersion.Value, 
         id);
 
     if (conflict is not null)
@@ -356,6 +406,7 @@ app.MapPut("/api/v1/accounts/{id}", async (string id, HttpRequest request, IConc
     // Mutate and set new ETag header
     entity.Balance += 100m;
     entity.Version++;
+    response.SetConcurrencyETag(entity.Version);
     
     return Results.Ok(entity);
 });
@@ -485,13 +536,15 @@ public sealed class DapperOrderRepository
 
 ### Use Case 3: High-Throughput In-Memory State Machine with CAS
 
-Perform lock-free atomic transitions for in-memory stock reservation or wallet ledger balances:
+Perform thread-safe, per-entity-isolated atomic transitions for in-memory stock reservation or wallet ledger balances:
 
 ```csharp
 using EricksonLopez.Concurrency.Abstractions;
 using EricksonLopez.Concurrency.Controllers;
 
-public sealed class InventoryStock : IVersionedEntity
+// Implement IMutableVersionedEntity so the controller automatically advances
+// Version after a successful CAS mutation.
+public sealed class InventoryStock : IMutableVersionedEntity
 {
     public string Sku { get; init; } = string.Empty;
     public int AvailableUnits { get; set; }
@@ -576,23 +629,24 @@ public sealed class UserProfileEndpoint
     public static async Task<IResult> UpdateProfile(
         string userId,
         HttpRequest request,
+        HttpResponse response,
         UserProfileDto dto,
         IUserProfileRepository repo,
         IConcurrencyController controller)
     {
         // Parse HTTP If-Match header (e.g. If-Match: "3")
-        long? expectedVersion = request.GetExpectedConcurrencyVersion();
+        ExpectedVersion? expectedVersion = request.GetExpectedConcurrencyVersion();
         if (!expectedVersion.HasValue)
         {
             return Results.StatusCode(StatusCodes.Status428PreconditionRequired);
         }
 
-        var profile = await repo.GetByIdAsync(userId);
+        UserProfile? profile = await repo.GetByIdAsync(userId);
         if (profile is null) return Results.NotFound();
 
         ConcurrencyConflict? conflict = controller.VerifyVersion(
             profile, 
-            ExpectedVersion.Specific(expectedVersion.Value), 
+            expectedVersion.Value, 
             userId);
 
         if (conflict is not null)
@@ -605,6 +659,7 @@ public sealed class UserProfileEndpoint
         profile.Version++;
         await repo.SaveAsync(profile);
 
+        response.SetConcurrencyETag(profile.Version);
         return Results.Ok(profile);
     }
 }
@@ -740,6 +795,16 @@ builder.Services.AddOpenTelemetry()
 
 ---
 
+### Native AOT & Trimming Guarantees
+
+`EricksonLopez.Concurrency` is architected from the ground up for modern ahead-of-time compilation:
+
+1. **Zero Dynamic Code Generation**: No usage of `System.Reflection.Emit`, dynamic proxies, or runtime IL weaving.
+2. **Zero Hot-Path Reflection**: Version checking and token comparison operate via static struct member invocations and `ISpanParsable<T>` / `ISpanFormattable` implementations.
+3. **Trimming Compatibility**: Full preservation of annotations across all packages with `<IsAotCompatible>true</IsAotCompatible>` and `<EnableTrimAnalyzer>true</EnableTrimAnalyzer>` enabled in build configurations.
+
+---
+
 ## 🧪 Testing & Quality
 
 ### Mock-Free Testing with `FakeConcurrencyController`
@@ -805,6 +870,7 @@ dotnet stryker --config-file stryker-postgresql-config.json
 | **Stryker Mutation Testing Score** | $\ge 99\%$ | **Passed ($\ge 99\%$)** |
 | **NetArchTest Architectural Boundary Rules** | 0 Violations | **Enforced (100%)** |
 | **Native AOT & Trim Warnings** | 0 Warnings | **Verified (Clean)** |
+| **Total Test Suite Executions** | 100% Pass | **Passed (485 / 485 tests)** |
 
 ---
 
@@ -825,7 +891,7 @@ dotnet stryker --config-file stryker-postgresql-config.json
 ### Allocation Profile Guarantees
 
 1. **0 Bytes on Hot Paths**: `OptimisticConcurrencyChecker.CheckVersion` executes in ~1.14 nanoseconds with strictly **zero heap allocations**.
-2. **Zero GC Pressure**: Because all version and token representations are stack-allocated `readonly record struct` value types, high-throughput consumer loops execute without triggering Gen 0/1 garbage collection pauses.
+2. **Zero GC Pressure on the No-Conflict Path**: Because all version and token representations are stack-allocated `readonly record struct` value types, successful verification loops execute without triggering Gen 0/1 garbage collection pauses. When a conflict is detected, a `ConcurrencyConflict` record is allocated on the heap for diagnostic enrichment.
 3. **Native AOT Ready**: Zero runtime reflection, dynamic proxy generation, or emit-based code paths.
 
 ---
@@ -862,6 +928,21 @@ dotnet stryker --config-file stryker-postgresql-config.json
 | **MariaDB** | Custom token / `ConcurrencyVersion` | `1213` (Deadlock), `1205` (Lock Timeout), `1062` (Duplicate Key) | `Transient`, `StaleState` | `FOR UPDATE [WAIT n \| LOCK IN SHARE MODE]` |
 | **Oracle** | `OracleRowScnToken` (`ORA_ROWSCN` 64-bit SCN) | `ORA-00060` (Deadlock), `ORA-00054` (Busy), `ORA-08177` (Serialization), `ORA-00001` (Unique) | `Transient`, `StaleState` | `FOR UPDATE [NOWAIT \| WAIT n]` |
 | **SQLite** | Custom token / `ConcurrencyVersion` | `SQLITE_BUSY` (5), `SQLITE_LOCKED` (6), `SQLITE_CONSTRAINT` (19) | `Transient`, `Fatal` | Database-level lock protocol |
+
+---
+
+### Domain Conflict to HTTP RFC 7807 / RFC 9457 Mapping Matrix
+
+| Conflict Type | Classification | HTTP Status Code | RFC Problem Type | Architectural Action |
+|---|---|:---:|---|---|
+| `VersionMismatch` | `StaleState` | **409 Conflict** | `https://tools.ietf.org/html/rfc7231#section-6.5.8` | Client state is stale; reload resource and prompt user or re-evaluate |
+| `TokenMismatch` | `StaleState` | **409 Conflict** | `https://tools.ietf.org/html/rfc7231#section-6.5.8` | Opaque token mismatched; re-fetch current ETag and retry |
+| `StateDeleted` | `NonRetryable` | **404 Not Found** / **409 Conflict** | `https://tools.ietf.org/html/rfc7231#section-6.5.4` | Entity was permanently removed from database; abort mutation |
+| `AlreadyExists` | `NonRetryable` | **409 Conflict** | `https://tools.ietf.org/html/rfc7231#section-6.5.8` | Entity already present when expecting `ExpectedVersion.New` |
+| `SerializationFailure` | `Transient` | **409 Conflict** / **503 Unavailable** | `https://tools.ietf.org/html/rfc7231#section-6.6.4` | Database concurrency anomaly; execute immediate transaction retry |
+| `Deadlock` | `Transient` | **409 Conflict** / **503 Unavailable** | `https://tools.ietf.org/html/rfc7231#section-6.6.4` | Lock cycle detected; retry with exponential backoff and jitter |
+| `LockUnavailable` | `Transient` | **409 Conflict** / **503 Unavailable** | `https://tools.ietf.org/html/rfc7231#section-6.6.4` | Row locked by competing transaction (`NOWAIT`); retry after short delay |
+| `Custom` | Configurable | **409 Conflict** | RFC 7807 extensible | User-defined domain conflict handling |
 
 ---
 
@@ -995,6 +1076,8 @@ flowchart LR
 | **Database Updates** | Issuing a preceding `SELECT version` followed by an `UPDATE` (TOCTOU race hazard) | Using `ExecuteOptimisticAsync` to perform atomic conditional updates (`WHERE version = @ExpectedVersion`) |
 | **Control Flow** | Throwing `ConcurrencyException` across internal domain service layers | Returning monadic `Result` or `CasResult<T>` and mapping explicitly at boundaries |
 | **REST Preconditions** | Updating resources without validating incoming `If-Match` / `ETag` headers | Validating `request.GetExpectedConcurrencyVersion()` and returning HTTP 412 / 409 |
+| **Struct Initialization** | Relying on `default(ExpectedVersion)` expecting "Any" version | Explicitly using `ExpectedVersion.Any`, `ExpectedVersion.New`, or `ExpectedVersion.Specific(v)` |
+| **High-Throughput Closures** | Lambda closures capturing outer variables in CAS loops | Passing state explicitly and using static lambdas to eliminate closure heap allocations |
 | **Transient Retries** | Retrying immediately in tight loops without backoff or jitter on deadlocks | Using exponential backoff with full jitter for conflicts classified as `Transient` |
 | **Custom Merging** | Silently overwriting fields without reconciling domain state changes | Implementing `IConcurrencyConflictResolver<T>` with `ConflictResolution.Merged` |
 | **Version Arithmetic** | Unchecked version increments (`version++` in unchecked context) | Using `ConcurrencyVersion.Next()` which enforces safe `checked` overflow protection |
@@ -1008,27 +1091,32 @@ flowchart LR
 > Concurrency anomalies cause silent data corruption if errors are ignored or swallowed. Always inspect the classified `ConcurrencyConflictType` and `ConcurrencyConflictClassification`.
 
 ### 1. Unchecked Arithmetic Overflow in Long-Lived Entities
-- **Symptom**: In extreme high-throughput entities, incrementing `long.MaxValue` overflows to negative numbers, causing version comparison bugs.
-- **Cause**: Manual `version++` arithmetic in unchecked contexts.
+- **Symptom**: In extreme high-throughput entities, incrementing `long.MaxValue` silently overflows to negative numbers, causing corrupted version comparison evaluations.
+- **Cause**: Manual `version++` arithmetic in an unchecked C# context.
 - **Remediation**: Always use `ConcurrencyVersion.Next()` which enforces `checked(Value + 1)` and throws `OverflowException` instead of silently overflowing.
 
 ### 2. Unquoted or Stripped ETag Header Values in HTTP Clients
-- **Symptom**: `GetExpectedConcurrencyVersion()` returns `null` or fails to match the expected version.
-- **Cause**: HTTP proxies or client libraries stripping surrounding quotes from ETag strings (e.g. `If-Match: 1` vs `If-Match: "1"`).
-- **Remediation**: `ConcurrencyHttpExtensions` automatically sanitizes and trims enclosing double quotes from ETag strings.
+- **Symptom**: `GetExpectedConcurrencyVersion()` returns `null` or fails to match the expected version despite headers being sent.
+- **Cause**: Intermediary HTTP proxies, CDNs, or client libraries stripping surrounding quotes from ETag strings (e.g. `If-Match: 1` vs `If-Match: "1"`).
+- **Remediation**: `ConcurrencyHttpExtensions` automatically sanitizes, unquotes, and trims enclosing double quotes and weak prefixes (`W/"..."`) from ETag strings.
 
 ### 3. Immediate Tight-Loop Retries on Deadlocks (Retry Storms)
 - **Symptom**: Database connection pools exhaust and CPU spikes when concurrent transactions conflict.
-- **Cause**: Retrying immediately without exponential backoff and jitter upon receiving a `Transient` deadlock conflict (`40P01` / `1205`).
+- **Cause**: Retrying immediately in a `while` loop without exponential backoff and jitter upon receiving a `Transient` deadlock conflict (`40P01` / `1205`).
 - **Remediation**: Integrate outer retry policies (e.g. Polly or `EricksonLopez.Resilience`) configured with exponential backoff and full jitter.
 
-### 4. Direct Class Instantiation Instead of Struct Semantics
-- **Symptom**: High Gen 0 GC collection counts in high-throughput message processing loops.
-- **Cause**: Boxing structs or introducing custom reference classes for version tracking.
-- **Remediation**: Retain `readonly record struct` value types and pass `ExpectedVersion` by value.
+### 4. Unexpected Mismatch when Using `default(ExpectedVersion)`
+- **Symptom**: New entities fail verification with an unexpected version mismatch error comparing against version 0.
+- **Cause**: `default(ExpectedVersion)` evaluates to `ExpectedVersionKind.Specific` with version `0`. It does **not** default to `ExpectedVersion.Any`.
+- **Remediation**: Use `ExpectedVersion.Any` when bypassing version checks, or `ExpectedVersion.New` when asserting that an entity must not yet exist.
 
-### 5. Swallowing Transient Database Exceptions
-- **Symptom**: Database deadlocks appear as generic internal server errors (HTTP 500).
+### 5. Direct Class Instantiation Instead of Struct Semantics
+- **Symptom**: High Gen 0 GC collection counts and allocation spikes in high-throughput message processing loops.
+- **Cause**: Boxing structs or introducing custom reference classes for version tracking.
+- **Remediation**: Retain `readonly record struct` value types and pass `ExpectedVersion` by value across service boundaries.
+
+### 6. Swallowing Transient Database Exceptions
+- **Symptom**: Database deadlocks appear as generic internal server errors (HTTP 500) rather than retryable conflicts.
 - **Cause**: Catching generic `DbException` without running dialect classification.
 - **Remediation**: Register the corresponding database dialect classifier (e.g. `AddEricksonLopezConcurrencyPostgreSql()`) to map SQLSTATE codes to structured `ConcurrencyConflict` models.
 
@@ -1040,7 +1128,7 @@ flowchart LR
 - ⚡ [**EricksonLopez.Result**](https://github.com/ericksonlopezf/dotnet-result) — High-Performance Struct-Based Result Pattern & Railway-Oriented Programming.
 - 🔍 [**EricksonLopez.Specification**](https://github.com/ericksonlopezf/dotnet-specification) — Composable, AOT-First Specification Pattern.
 - 📬 [**EricksonLopez.Mediator**](https://github.com/ericksonlopezf/dotnet-mediator) — Zero-Allocation CQRS Mediator & Pipeline Engine.
-- 🔒 [**EricksonLopez.Concurrency**](https://github.com/ericksonlopezf/dotnet-concurrency) — Optimistic Concurrency Control, CAS & State Synchronization.
+- 🔒 **EricksonLopez.Concurrency** — Optimistic Concurrency Control, CAS & State Synchronization.
 - 🛡️ [**EricksonLopez.Idempotency**](https://github.com/ericksonlopezf/dotnet-idempotency) — Distributed Idempotency & Duplicate Request Prevention.
 - 💼 [**EricksonLopez.Transaction**](https://github.com/ericksonlopezf/dotnet-transaction) — Transaction Coordination, Outbox & Distributed Sagas.
 - 🏢 [**EricksonLopez.MultiTenancy**](https://github.com/ericksonlopezf/dotnet-multitenancy) — Multi-Tenant Isolation, PostgreSQL RLS & Context Resolution.

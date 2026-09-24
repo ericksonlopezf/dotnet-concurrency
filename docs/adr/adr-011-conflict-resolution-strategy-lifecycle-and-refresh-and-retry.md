@@ -1,5 +1,11 @@
 # ADR-011: Conflict Resolution Strategy Lifecycle and RefreshAndRetry Resolver Pattern
 
+## Status
+Accepted
+
+## Date
+2026-08-21
+
 - **Status**: Accepted
 - **Date**: 2026-08-21
 - **Component**: EricksonLopez.Concurrency

@@ -31,6 +31,7 @@ public static class ConcurrencyDapperExtensions
     /// <returns>A task representing the asynchronous operation. The task result contains a <see cref="ConcurrencyConflict"/> if no rows were modified; otherwise, <see langword="null"/> indicating success.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="connection"/> is <see langword="null"/></exception>
     /// <exception cref="ArgumentException"><paramref name="sql"/> is <see langword="null"/> or whitespace</exception>
+    /// <exception cref="InvalidOperationException">The optimistic update affected more than one row</exception>
     public static async Task<ConcurrencyConflict?> ExecuteOptimisticAsync(
         this IDbConnection connection,
         string sql,
@@ -57,10 +58,15 @@ public static class ConcurrencyDapperExtensions
 
         int rowsAffected = await connection.ExecuteAsync(command).ConfigureAwait(false);
 
-        if (rowsAffected > 0)
+        if (rowsAffected == 1)
         {
             ConcurrencyDiagnostics.SuccessesCounter.Add(1, new KeyValuePair<string, object?>("concurrency.entity_type", entityType));
             return null;
+        }
+
+        if (rowsAffected > 1)
+        {
+            throw new InvalidOperationException($"Optimistic update affected {rowsAffected} rows for entity '{entityId}' of type '{entityType}'. Expected exactly 1 row.");
         }
 
         ConcurrencyConflict conflict = ConcurrencyConflict.VersionMismatch(
@@ -90,6 +96,7 @@ public static class ConcurrencyDapperExtensions
     /// <returns>A task representing the asynchronous operation. The task result contains a <see cref="ConcurrencyConflict"/> if no rows were modified; otherwise, <see langword="null"/> indicating success.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="connection"/> or <paramref name="expectedToken"/> is <see langword="null"/></exception>
     /// <exception cref="ArgumentException"><paramref name="sql"/> is <see langword="null"/> or whitespace</exception>
+    /// <exception cref="InvalidOperationException">The optimistic update affected more than one row</exception>
     public static async Task<ConcurrencyConflict?> ExecuteOptimisticTokenAsync(
         this IDbConnection connection,
         string sql,
@@ -117,10 +124,15 @@ public static class ConcurrencyDapperExtensions
 
         int rowsAffected = await connection.ExecuteAsync(command).ConfigureAwait(false);
 
-        if (rowsAffected > 0)
+        if (rowsAffected == 1)
         {
             ConcurrencyDiagnostics.SuccessesCounter.Add(1, new KeyValuePair<string, object?>("concurrency.entity_type", entityType));
             return null;
+        }
+
+        if (rowsAffected > 1)
+        {
+            throw new InvalidOperationException($"Optimistic update affected {rowsAffected} rows for entity '{entityId}' of type '{entityType}'. Expected exactly 1 row.");
         }
 
         ConcurrencyConflict conflict = ConcurrencyConflict.TokenMismatch(

@@ -13,14 +13,14 @@ Complete reference for all **13 NuGet packages** published by `EricksonLopez.Con
 | [Testing](#testing) | `EricksonLopez.Concurrency.Testing` | Testing | `net8.0`, `net9.0`, `net10.0` | `Abstractions` |
 | [AspNetCore](#aspnetcore) | `EricksonLopez.Concurrency.AspNetCore` | Web Integration | `net8.0`, `net9.0`, `net10.0` | `Abstractions`, `Microsoft.AspNetCore.App` (framework ref) |
 | [Result](#result) | `EricksonLopez.Concurrency.Result` | Ecosystem Integration | `net8.0`, `net9.0`, `net10.0` | `Abstractions`, `Core`, `EricksonLopez.Result` |
-| [Mediator](#mediator) | `EricksonLopez.Concurrency.Mediator` | Ecosystem Integration | `net8.0`, `net9.0`, `net10.0` | `Abstractions`, `Core`, `EricksonLopez.Mediator` |
-| [Dapper](#dapper) | `EricksonLopez.Concurrency.Dapper` | Infrastructure | `net8.0`, `net9.0`, `net10.0` | `Abstractions`, `Core`, `Dapper` |
+| [Mediator](#mediator) | `EricksonLopez.Concurrency.Mediator` | Ecosystem Integration | `net8.0`, `net9.0`, `net10.0` | `Abstractions`, `Core`, `EricksonLopez.Mediator`, `Microsoft.Extensions.DependencyInjection.Abstractions` |
+| [Dapper](#dapper) | `EricksonLopez.Concurrency.Dapper` | Infrastructure | `net8.0`, `net9.0`, `net10.0` | `Abstractions`, `Core`, `Dapper`, `Microsoft.Extensions.DependencyInjection.Abstractions` |
 | [PostgreSql](#postgresql) | `EricksonLopez.Concurrency.PostgreSql` | Database Dialect | `net8.0`, `net9.0`, `net10.0` | `Abstractions`, `Core`, `Npgsql`, `Microsoft.Extensions.DependencyInjection.Abstractions` |
-| [SqlServer](#sqlserver) | `EricksonLopez.Concurrency.SqlServer` | Database Dialect | `net8.0`, `net9.0`, `net10.0` | `Abstractions`, `Microsoft.Data.SqlClient` |
-| [MySql](#mysql) | `EricksonLopez.Concurrency.MySql` | Database Dialect | `net8.0`, `net9.0`, `net10.0` | `Abstractions`, `MySqlConnector` |
-| [MariaDb](#mariadb) | `EricksonLopez.Concurrency.MariaDb` | Database Dialect | `net8.0`, `net9.0`, `net10.0` | `Abstractions`, `MySqlConnector` |
-| [Oracle](#oracle) | `EricksonLopez.Concurrency.Oracle` | Database Dialect | `net8.0`, `net9.0`, `net10.0` | `Abstractions`, `Oracle.ManagedDataAccess.Core` |
-| [Sqlite](#sqlite) | `EricksonLopez.Concurrency.Sqlite` | Database Dialect | `net8.0`, `net9.0`, `net10.0` | `Abstractions`, `Microsoft.Data.Sqlite` |
+| [SqlServer](#sqlserver) | `EricksonLopez.Concurrency.SqlServer` | Database Dialect | `net8.0`, `net9.0`, `net10.0` | `Abstractions`, `Microsoft.Data.SqlClient`, `Microsoft.Extensions.DependencyInjection.Abstractions` |
+| [MySql](#mysql) | `EricksonLopez.Concurrency.MySql` | Database Dialect | `net8.0`, `net9.0`, `net10.0` | `Abstractions`, `MySqlConnector`, `Microsoft.Extensions.DependencyInjection.Abstractions` |
+| [MariaDb](#mariadb) | `EricksonLopez.Concurrency.MariaDb` | Database Dialect | `net8.0`, `net9.0`, `net10.0` | `Abstractions`, `MySqlConnector`, `Microsoft.Extensions.DependencyInjection.Abstractions` |
+| [Oracle](#oracle) | `EricksonLopez.Concurrency.Oracle` | Database Dialect | `net8.0`, `net9.0`, `net10.0` | `Abstractions`, `Oracle.ManagedDataAccess.Core`, `Microsoft.Extensions.DependencyInjection.Abstractions` |
+| [Sqlite](#sqlite) | `EricksonLopez.Concurrency.Sqlite` | Database Dialect | `net8.0`, `net9.0`, `net10.0` | `Abstractions`, `Microsoft.Data.Sqlite`, `Microsoft.Extensions.DependencyInjection.Abstractions` |
 
 ---
 
@@ -34,7 +34,7 @@ Complete reference for all **13 NuGet packages** published by `EricksonLopez.Con
 
 The foundation package. Contains:
 - Zero-allocation value types: `ConcurrencyVersion`, `ConcurrencyVersion<TEntity>`, `ExpectedVersion`, `ActualVersion`, `ConcurrencyToken`
-- Core interfaces: `IVersionedEntity`, `IVersionedEntity<T>`, `IConcurrencyAware`, `IConcurrencyChecker`, `IConcurrencyController`, `IConcurrencyConflictResolver<TEntity>`, `IConcurrencyToken`
+- Core interfaces: `IVersionedEntity`, `IVersionedEntity<T>`, `IMutableVersionedEntity`, `IConcurrencyAware`, `IConcurrencyChecker`, `IConcurrencyController`, `IConcurrencyConflictResolver<TEntity>`, `IConcurrencyToken`
 - Conflict models: `ConcurrencyConflict`, `ConcurrencyConflictType`, `ConcurrencyConflictClassification`, `ConflictResolutionStrategy`, `ConflictResolution<T>`, `CasResult<T>`
 - Exceptions: `ConcurrencyException`, `ConcurrencyConfigurationException`, `ConcurrencyTokenMismatchException`
 
@@ -158,7 +158,7 @@ PostgreSQL adapter. Contains:
 ### SqlServer
 
 **NuGet ID**: `EricksonLopez.Concurrency.SqlServer`  
-**Layer**: Database Dialect (depends only on Abstractions)  
+**Layer**: Database Dialect  
 **Primary Namespace**: `EricksonLopez.Concurrency.SqlServer`
 
 SQL Server adapter. Contains:
@@ -174,7 +174,7 @@ SQL Server adapter. Contains:
 ### MySql
 
 **NuGet ID**: `EricksonLopez.Concurrency.MySql`  
-**Layer**: Database Dialect (depends only on Abstractions)  
+**Layer**: Database Dialect  
 **Primary Namespace**: `EricksonLopez.Concurrency.MySql`
 
 MySQL adapter using `MySqlConnector`. Contains:
@@ -189,7 +189,7 @@ MySQL adapter using `MySqlConnector`. Contains:
 ### MariaDb
 
 **NuGet ID**: `EricksonLopez.Concurrency.MariaDb`  
-**Layer**: Database Dialect (depends only on Abstractions)  
+**Layer**: Database Dialect  
 **Primary Namespace**: `EricksonLopez.Concurrency.MariaDb`
 
 MariaDB adapter using `MySqlConnector`. Contains:
@@ -205,7 +205,7 @@ MariaDB adapter using `MySqlConnector`. Contains:
 ### Oracle
 
 **NuGet ID**: `EricksonLopez.Concurrency.Oracle`  
-**Layer**: Database Dialect (depends only on Abstractions)  
+**Layer**: Database Dialect  
 **Primary Namespace**: `EricksonLopez.Concurrency.Oracle`
 
 Oracle adapter. Contains:
@@ -222,7 +222,7 @@ Oracle adapter. Contains:
 ### Sqlite
 
 **NuGet ID**: `EricksonLopez.Concurrency.Sqlite`  
-**Layer**: Database Dialect (depends only on Abstractions)  
+**Layer**: Database Dialect  
 **Primary Namespace**: `EricksonLopez.Concurrency.Sqlite`
 
 SQLite adapter. Contains:

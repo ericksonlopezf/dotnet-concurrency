@@ -3,7 +3,7 @@
 
   <PropertyGroup>
     <Description>Core concurrency orchestration, optimistic verification, conflict resolvers, diagnostics, and OpenTelemetry instrumentation for the EricksonLopez.Concurrency ecosystem.</Description>
-    <PackageTags>$(CommonPackageTags);concurrency-control;conflict-resolution;opentelemetry;diagnostics;state-synchronization;compare-and-swap</PackageTags>
+    <PackageTags>$(CommonPackageTags);concurrency-control;conflict-resolution;compare-and-swap;cas;retry;opentelemetry;observability</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

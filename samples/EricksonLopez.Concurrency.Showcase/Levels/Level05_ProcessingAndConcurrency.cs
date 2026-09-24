@@ -11,10 +11,22 @@ using EricksonLopez.Concurrency.Showcase.Models;
 namespace EricksonLopez.Concurrency.Showcase.Levels;
 
 /// <summary>
-/// Level 05: Processing and High Concurrency — In-Memory Compare-And-Swap (CAS) and race-condition stress simulations.
+/// Provides demonstrations of in-memory Compare-And-Swap (CAS) state transitions and high-concurrency race condition simulations.
 /// </summary>
 public static class Level05_ProcessingAndConcurrency
 {
+    /// <summary>
+    /// Executes the processing and concurrency demonstration.
+    /// </summary>
+    /// <remarks>
+    /// Cookbook: Level 05 — Processing and Concurrency.
+    /// Prerequisites: Level01-04.
+    /// Concepts: Atomic CAS state transitions, non-reentrant per-entityId locking, race condition simulation.
+    /// APIs: IConcurrencyController.ExecuteCasAsync(), CasResult&lt;T&gt;.IsSuccess/Entity/NewVersion/Conflict.
+    /// Complexity: Intermediate.
+    /// Next: Level06_ErrorHandlingAndClassification for DB error classification.
+    /// </remarks>
+    /// <returns>A task representing the asynchronous operation.</returns>
     public static async Task RunAsync()
     {
         Console.ForegroundColor = ConsoleColor.Cyan;
@@ -29,6 +41,12 @@ public static class Level05_ProcessingAndConcurrency
         // CASE 1: Basic Execution of Compare-And-Swap (CAS)
         // -------------------------------------------------------------
         Console.WriteLine("\n--- Case 1: Successful Compare-And-Swap (CAS) ---");
+
+        // ExecuteCasAsync provides in-memory mutual exclusion via a striped SemaphoreSlim.
+        // IMPORTANT architectural constraint: it is NON-REENTRANT for the same entityId.
+        // A call to ExecuteCasAsync(entityId: "X") while another call with the same entityId
+        // is executing will block until the first completes, preventing lost updates.
+        // Different entityIds execute concurrently without interference (stripe partitioning).
 
         var inventory = new ProductInventory("PROD-800", "High Performance GPU", availableStock: 20, reservedStock: 0, version: 1);
         Console.WriteLine($"Initial State: Available={inventory.AvailableStock}, Version={inventory.Version}");

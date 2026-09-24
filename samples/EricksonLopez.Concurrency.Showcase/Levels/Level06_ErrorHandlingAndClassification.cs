@@ -16,10 +16,24 @@ using Npgsql;
 namespace EricksonLopez.Concurrency.Showcase.Levels;
 
 /// <summary>
-/// Level 06: Error Handling and Dialect Classification — Database error classification across PostgreSQL, SQL Server, MySQL, MariaDB, Oracle, SQLite, and ConcurrencyException hierarchy.
+/// Provides demonstrations of database error classification across dialects and the concurrency exception hierarchy.
 /// </summary>
 public static class Level06_ErrorHandlingAndClassification
 {
+    /// <summary>
+    /// Executes the error handling and classification demonstration.
+    /// </summary>
+    /// <remarks>
+    /// Cookbook: Level 06 — Error Handling and DB Classification.
+    /// Prerequisites: Level01-05.
+    /// Concepts: Database error classification matrix, exception hierarchy, ConcurrencyErrors→Result bridging.
+    /// APIs: PostgreSqlConcurrencyErrorClassifier, SqlServerErrorClassifier, MySqlConcurrencyErrorClassifier,
+    ///        MariaDbConcurrencyErrorClassifier, OracleConcurrencyErrorClassifier, SqliteConcurrencyErrorClassifier,
+    ///        ConcurrencyException, ConcurrencyTokenMismatchException, ConcurrencyConfigurationException.
+    /// Complexity: Intermediate.
+    /// Next: Level07_ScalabilityAndThroughput for performance and OpenTelemetry.
+    /// </remarks>
+    /// <returns>A task representing the asynchronous operation.</returns>
     public static Task RunAsync()
     {
         Console.ForegroundColor = ConsoleColor.Cyan;

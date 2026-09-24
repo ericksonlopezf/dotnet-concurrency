@@ -1,5 +1,11 @@
 # ADR-006: Dedicated Database Dialect Packages for Engine Isolation
 
+## Status
+Accepted
+
+## Date
+2026-08-17
+
 - **Status**: Accepted
 - **Date**: 2026-08-17
 - **Component**: EricksonLopez.Concurrency

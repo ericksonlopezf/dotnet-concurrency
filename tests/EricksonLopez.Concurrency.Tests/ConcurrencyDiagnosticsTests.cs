@@ -15,12 +15,12 @@ public sealed class ConcurrencyDiagnosticsTests
     public void Diagnostics_MetadataAndInstruments_ShouldBeConfiguredCorrectly()
     {
         ConcurrencyDiagnostics.SourceName.Should().Be("EricksonLopez.Concurrency");
-        ConcurrencyDiagnostics.Version.Should().Be("1.0.0");
+        ConcurrencyDiagnostics.Version.Should().Be("2.0.0");
         ConcurrencyDiagnostics.ActivitySource.Name.Should().Be("EricksonLopez.Concurrency");
-        ConcurrencyDiagnostics.ActivitySource.Version.Should().Be("1.0.0");
+        ConcurrencyDiagnostics.ActivitySource.Version.Should().Be("2.0.0");
 
         ConcurrencyDiagnostics.Meter.Name.Should().Be("EricksonLopez.Concurrency");
-        ConcurrencyDiagnostics.Meter.Version.Should().Be("1.0.0");
+        ConcurrencyDiagnostics.Meter.Version.Should().Be("2.0.0");
 
         ConcurrencyDiagnostics.ConflictsCounter.Name.Should().Be("concurrency.conflicts");
         ConcurrencyDiagnostics.ConflictsCounter.Unit.Should().Be("{conflict}");

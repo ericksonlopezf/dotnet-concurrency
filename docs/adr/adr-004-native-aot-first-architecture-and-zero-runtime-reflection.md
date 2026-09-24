@@ -1,5 +1,11 @@
 # ADR-004: Native AOT First Architecture and Zero Runtime Reflection
 
+## Status
+Accepted
+
+## Date
+2026-08-16
+
 - **Status**: Accepted
 - **Date**: 2026-08-16
 - **Component**: EricksonLopez.Concurrency

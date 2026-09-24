@@ -1,5 +1,11 @@
 # ADR-010: ASP.NET Core Integration, RFC 7807 ProblemDetails, and HTTP ETag Semantics
 
+## Status
+Accepted
+
+## Date
+2026-08-20
+
 - **Status**: Accepted
 - **Date**: 2026-08-20
 - **Component**: EricksonLopez.Concurrency
