@@ -93,4 +93,78 @@ public sealed class OptimisticUpdateBuilderTests
         act.Should().Throw<ArgumentException>()
             .WithParameterName(expectedParam);
     }
+
+    [Fact]
+    public void BuildVersionedUpdate_WithDotInTableName_ShouldSucceed()
+    {
+        string sql = OptimisticUpdateBuilder.BuildVersionedUpdate(
+            tableName: "dbo.orders",
+            setClauses: "status = @Status");
+
+        sql.Should().StartWith("UPDATE dbo.orders SET status = @Status");
+    }
+
+    [Fact]
+    public void BuildVersionedUpdate_WithWhitespaceTenantColumn_ShouldNotIncludeTenantPredicate()
+    {
+        string sql = OptimisticUpdateBuilder.BuildVersionedUpdate(
+            tableName: "orders",
+            setClauses: "status = @Status",
+            tenantColumn: "   ");
+
+        sql.Should().Be("UPDATE orders SET status = @Status, version = version + 1 WHERE id = @Id AND version = @ExpectedVersion;");
+    }
+
+    [Fact]
+    public void BuildVersionedUpdate_InvalidIdParam_ShouldThrowArgumentException()
+    {
+        Action act = () => OptimisticUpdateBuilder.BuildVersionedUpdate(
+            tableName: "orders",
+            setClauses: "status = @Status",
+            idParam: "id;DROP");
+
+        act.Should().Throw<ArgumentException>()
+            .WithParameterName("idParam")
+            .WithMessage("Identifier 'id;DROP' contains invalid characters.*");
+    }
+
+    [Fact]
+    public void BuildVersionedUpdate_InvalidVersionParam_ShouldThrowArgumentException()
+    {
+        Action act = () => OptimisticUpdateBuilder.BuildVersionedUpdate(
+            tableName: "orders",
+            setClauses: "status = @Status",
+            versionParam: "ver-sion");
+
+        act.Should().Throw<ArgumentException>()
+            .WithParameterName("versionParam")
+            .WithMessage("Identifier 'ver-sion' contains invalid characters.*");
+    }
+
+    [Fact]
+    public void BuildVersionedUpdate_InvalidTenantColumn_ShouldThrowArgumentException()
+    {
+        Action act = () => OptimisticUpdateBuilder.BuildVersionedUpdate(
+            tableName: "orders",
+            setClauses: "status = @Status",
+            tenantColumn: "tenant-col!");
+
+        act.Should().Throw<ArgumentException>()
+            .WithParameterName("tenantColumn")
+            .WithMessage("Identifier 'tenant-col!' contains invalid characters.*");
+    }
+
+    [Fact]
+    public void BuildVersionedUpdate_InvalidTenantParam_ShouldThrowArgumentException()
+    {
+        Action act = () => OptimisticUpdateBuilder.BuildVersionedUpdate(
+            tableName: "orders",
+            setClauses: "status = @Status",
+            tenantColumn: "tenant_id",
+            tenantParam: "tenant-param");
+
+        act.Should().Throw<ArgumentException>()
+            .WithParameterName("tenantParam")
+            .WithMessage("Identifier 'tenant-param' contains invalid characters.*");
+    }
 }

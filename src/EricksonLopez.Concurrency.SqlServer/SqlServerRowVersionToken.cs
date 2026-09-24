@@ -25,7 +25,7 @@ public readonly struct SqlServerRowVersionToken : IConcurrencyToken, IEquatable<
     public SqlServerRowVersionToken(byte[]? rowVersionBytes)
     {
         _bytes = rowVersionBytes is not null ? (byte[])rowVersionBytes.Clone() : Array.Empty<byte>();
-        _hex = _bytes.Length > 0 ? Convert.ToHexString(_bytes) : string.Empty;
+        _hex = Convert.ToHexString(_bytes);
     }
 
     /// <summary>
@@ -35,7 +35,7 @@ public readonly struct SqlServerRowVersionToken : IConcurrencyToken, IEquatable<
     public SqlServerRowVersionToken(ReadOnlySpan<byte> span)
     {
         _bytes = span.ToArray();
-        _hex = _bytes.Length > 0 ? Convert.ToHexString(_bytes) : string.Empty;
+        _hex = Convert.ToHexString(_bytes);
     }
 
     /// <inheritdoc />

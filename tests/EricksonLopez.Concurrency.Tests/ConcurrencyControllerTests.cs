@@ -516,6 +516,204 @@ public sealed class ConcurrencyControllerTests : IDisposable
         await actCas.Should().ThrowAsync<ObjectDisposedException>();
     }
 
+    [Fact]
+    public void Constructor_WithZeroOrNegativeStripeCount_ShouldDefaultToAtLeastOne()
+    {
+        var options = new ConcurrencyOptions { StripeCount = 0 };
+        using var controller = new ConcurrencyController(options: options);
+        var product = new ProductAggregate { Id = "p1", Version = 1 };
+        controller.VerifyVersion(product, ExpectedVersion.Specific(1), "p1").Should().BeNull();
+    }
+
+    [Fact]
+    public void VerifyVersion_And_VerifyToken_WhitespaceEntityId_ShouldThrowArgumentException()
+    {
+        var product = new ProductAggregate { Id = "p1", Version = 1 };
+
+        Action actV1 = () => _controller.VerifyVersion(product, ExpectedVersion.Specific(1), "");
+        actV1.Should().Throw<ArgumentException>().WithParameterName("entityId");
+        Action actV2 = () => _controller.VerifyVersion(product, ExpectedVersion.Specific(1), "   ");
+        actV2.Should().Throw<ArgumentException>().WithParameterName("entityId");
+
+        Action actT1 = () => _controller.VerifyToken(product, new ConcurrencyToken("1"), "");
+        actT1.Should().Throw<ArgumentException>().WithParameterName("entityId");
+        Action actT2 = () => _controller.VerifyToken(product, new ConcurrencyToken("1"), "   ");
+        actT2.Should().Throw<ArgumentException>().WithParameterName("entityId");
+    }
+
+    [Fact]
+    public void VerifyVersion_And_VerifyToken_DiagnosticsAndDetailedActivityTags()
+    {
+        var recordedActivities = new System.Collections.Generic.List<Activity>();
+        using var listener = new ActivityListener
+        {
+            ShouldListenTo = s => s.Name == ConcurrencyDiagnostics.SourceName,
+            Sample = (ref ActivityCreationOptions<ActivityContext> _) => ActivitySamplingResult.AllDataAndRecorded,
+            ActivityStopped = a => recordedActivities.Add(a)
+        };
+        ActivitySource.AddActivityListener(listener);
+
+        var options = new ConcurrencyOptions
+        {
+            EnableDiagnostics = true,
+            RecordDetailedActivityTags = true
+        };
+        using var controller = new ConcurrencyController(options: options);
+        var product = new ProductAggregate { Id = "diag-prod", Version = 7 };
+
+        controller.VerifyVersion(product, ExpectedVersion.Specific(7), "diag-prod");
+        var versionActivity = recordedActivities.Find(a => a.OperationName == "concurrency.verify_version");
+        versionActivity.Should().NotBeNull();
+        versionActivity!.GetTagItem("concurrency.expected_version").Should().Be(ExpectedVersion.Specific(7).ToString());
+        versionActivity.GetTagItem("concurrency.actual_version").Should().Be("7");
+
+        var token = new ConcurrencyToken("7", "Numeric");
+        controller.VerifyToken(product, token, "diag-prod");
+        var tokenActivity = recordedActivities.Find(a => a.OperationName == "concurrency.verify_token");
+        tokenActivity.Should().NotBeNull();
+        tokenActivity!.GetTagItem("concurrency.expected_token").Should().Be("7");
+        tokenActivity.GetTagItem("concurrency.actual_token").Should().Be("7");
+
+        // Verify with EnableDiagnostics = false that NO activities are created
+        recordedActivities.Clear();
+        using var noDiagController = new ConcurrencyController(options: new ConcurrencyOptions { EnableDiagnostics = false });
+        noDiagController.VerifyVersion(product, ExpectedVersion.Specific(7), "diag-prod");
+        noDiagController.VerifyToken(product, token, "diag-prod");
+        recordedActivities.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void VerifyVersion_And_VerifyToken_WhenThrowOnUnresolvedConflictIsTrue()
+    {
+        using var controller = new ConcurrencyController(options: new ConcurrencyOptions { ThrowOnUnresolvedConflict = true });
+        var product = new ProductAggregate { Id = "throw-prod", Version = 1 };
+
+        Action actV = () => controller.VerifyVersion(product, ExpectedVersion.Specific(2), "throw-prod");
+        actV.Should().Throw<ConcurrencyException>();
+
+        Action actT = () => controller.VerifyToken(product, new ConcurrencyToken("2"), "throw-prod");
+        actT.Should().Throw<ConcurrencyException>();
+    }
+
+    [Fact]
+    public async Task ExecuteCasAsync_ConcurrentInvocationsForSameEntity_ShouldCorrectlyIncrementAndDecrementRefCount()
+    {
+        var product1 = new ProductAggregate { Id = "shared_entity", Version = 1 };
+        var tcsStart = new TaskCompletionSource<bool>();
+        var tcsRelease = new TaskCompletionSource<bool>();
+
+        var task1 = _controller.ExecuteCasAsync(
+            product1,
+            ExpectedVersion.Specific(1),
+            "shared_entity",
+            async (p, ct) =>
+            {
+                tcsStart.SetResult(true);
+                await tcsRelease.Task;
+                return p;
+            });
+
+        await tcsStart.Task;
+
+        var product2 = new ProductAggregate { Id = "shared_entity", Version = 2 };
+        var task2 = _controller.ExecuteCasAsync(
+            product2,
+            ExpectedVersion.Specific(2),
+            "shared_entity",
+            (p, ct) => ValueTask.FromResult(p));
+
+        tcsRelease.SetResult(true);
+
+        var res1 = await task1;
+        var res2 = await task2;
+
+        res1.IsSuccess.Should().BeTrue();
+        res2.IsSuccess.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task ExecuteCasAsync_WhenDisposedDuringExecution_ShouldDisposeActiveLockInReleaseLock()
+    {
+        var controller = new ConcurrencyController();
+        var product = new ProductAggregate { Id = "dispose_while_active", Version = 1 };
+        var tcsStarted = new TaskCompletionSource<bool>();
+
+        var casTask = controller.ExecuteCasAsync(
+            product,
+            ExpectedVersion.Specific(1),
+            "dispose_while_active",
+            async (p, ct) =>
+            {
+                tcsStarted.SetResult(true);
+                await Task.Delay(Timeout.Infinite, ct);
+                return p;
+            });
+
+        await tcsStarted.Task;
+
+        controller.Dispose();
+
+        var act = () => casTask.AsTask();
+        await act.Should().ThrowAsync<OperationCanceledException>();
+    }
+
+    private sealed class ImmutableProduct : IVersionedEntity
+    {
+        public long Version { get; init; } = 1;
+    }
+
+    [Fact]
+    public async Task ExecuteCasAsync_WhenImmutableEntityDoesNotAdvanceVersion_ShouldThrowInvalidOperationException()
+    {
+        var entity = new ImmutableProduct { Version = 1 };
+        Func<Task> act = async () =>
+        {
+            await _controller.ExecuteCasAsync(
+                entity,
+                ExpectedVersion.Specific(1),
+                "imm-1",
+                (e, ct) => ValueTask.FromResult(e));
+        };
+
+        var ex = await act.Should().ThrowAsync<InvalidOperationException>();
+        ex.WithMessage("*In-memory CAS requires version progression to prevent stale updates.*");
+    }
+
+    [Fact]
+    public async Task ExecuteCasAsync_WhenMutableEntity_ShouldMutateVersionOnEntityInstance()
+    {
+        var entity = new ProductAggregate { Id = "mut-1", Version = 5 };
+        var result = await _controller.ExecuteCasAsync(
+            entity,
+            ExpectedVersion.Specific(5),
+            "mut-1",
+            (e, ct) => ValueTask.FromResult(e));
+
+        result.IsSuccess.Should().BeTrue();
+        entity.Version.Should().Be(6);
+    }
+
+    [Fact]
+    public async Task ConcurrencyController_DisposeIdempotent_And_DisposeAsync_ShouldWork()
+    {
+        var controller = new ConcurrencyController();
+        var product = new ProductAggregate { Id = "p-pool", Version = 1 };
+        var res = await controller.ExecuteCasAsync(
+            product,
+            ExpectedVersion.Specific(1),
+            "p-pool",
+            (p, ct) => ValueTask.FromResult(p));
+        res.IsSuccess.Should().BeTrue();
+
+        controller.Dispose();
+        controller.Dispose();
+
+        var controller2 = new ConcurrencyController();
+        await controller2.DisposeAsync();
+        Action act = () => controller2.VerifyVersion(product, ExpectedVersion.Specific(1), "p-pool");
+        act.Should().Throw<ObjectDisposedException>();
+    }
+
     public void Dispose()
     {
         _controller.Dispose();

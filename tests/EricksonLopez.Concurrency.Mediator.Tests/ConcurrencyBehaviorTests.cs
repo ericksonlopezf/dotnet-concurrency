@@ -252,4 +252,16 @@ public sealed class ConcurrencyBehaviorTests
         await act.Should().ThrowAsync<InvalidOperationException>()
             .WithMessage("Generic failure");
     }
+
+    [Fact]
+    public async Task Handle_WhenCancellationRequested_ShouldThrowOperationCanceledException()
+    {
+        var behavior = new ConcurrencyBehavior<PlainCommand, string>();
+        using var cts = new CancellationTokenSource();
+        cts.Cancel();
+
+        var act = async () => await behavior.Handle(new PlainCommand("Test"), new MockNext("Processed"), cts.Token);
+
+        await act.Should().ThrowAsync<OperationCanceledException>();
+    }
 }

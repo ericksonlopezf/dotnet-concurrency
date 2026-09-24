@@ -66,11 +66,19 @@ public sealed class ConcurrencyOptions
     public TimeSpan DefaultMaxExecutionTimeout { get; set; } = TimeSpan.FromSeconds(30);
 
     /// <summary>
+    /// Calculates the default stripe count based on the specified processor count.
+    /// </summary>
+    /// <param name="processorCount">The number of available processors.</param>
+    /// <returns>The calculated stripe count, with a minimum of 256.</returns>
+    public static int CalculateDefaultStripeCount(int processorCount) =>
+        Math.Max(256, processorCount * 8);
+
+    /// <summary>
     /// Gets or sets the number of stripes (partitions) used by the concurrency controller to shard internal locks.
     /// </summary>
     /// <remarks>
     /// The default value is calculated as <see cref="Environment.ProcessorCount"/> * 8, with a minimum of 256. 
     /// Higher values reduce false-sharing contention in highly concurrent systems at the cost of slight memory overhead.
     /// </remarks>
-    public int StripeCount { get; set; } = Math.Max(256, Environment.ProcessorCount * 8);
+    public int StripeCount { get; set; } = CalculateDefaultStripeCount(Environment.ProcessorCount);
 }

@@ -117,6 +117,20 @@ public sealed class SqlServerRowVersionTokenTests
         t1.Equals("01").Should().BeFalse();
 
         t1.GetHashCode().Should().Be(string.GetHashCode("01", StringComparison.Ordinal));
+
+        var defaultTokenA = default(SqlServerRowVersionToken);
+        var defaultTokenB = default(SqlServerRowVersionToken);
+        var emptyArrayToken = new SqlServerRowVersionToken(Array.Empty<byte>());
+
+        defaultTokenA.Equals(defaultTokenB).Should().BeTrue();
+        defaultTokenA.Equals(t1).Should().BeFalse();
+        t1.Equals(defaultTokenA).Should().BeFalse();
+
+        // When comparing default token (_bytes is null) to emptyArrayToken (_bytes is empty array)
+        // Via IConcurrencyToken:
+        defaultTokenA.Equals((IConcurrencyToken)emptyArrayToken).Should().BeFalse();
+        emptyArrayToken.Equals((IConcurrencyToken)defaultTokenA).Should().BeFalse();
+        defaultTokenA.Equals((IConcurrencyToken)defaultTokenB).Should().BeTrue();
     }
 
     [Fact]

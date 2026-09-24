@@ -139,4 +139,13 @@ public sealed class ConcurrencyTokenTests
             .WithMessage("Object must be of type ConcurrencyToken.*")
             .WithParameterName("obj");
     }
+
+    [Fact]
+    public void ConcurrencyToken_Default_ShouldHaveEmptyValueAndNoneKind()
+    {
+        var defaultToken = default(ConcurrencyToken);
+        defaultToken.Value.Should().Be(string.Empty);
+        defaultToken.TokenKind.Should().Be("None");
+        defaultToken.IsEmpty.Should().BeTrue();
+    }
 }
