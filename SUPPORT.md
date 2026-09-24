@@ -27,7 +27,7 @@ If you encounter a bug or have a concrete feature proposal:
 - Submit a detailed report using the official issue templates with:
   - Exact package version (`EricksonLopez.Concurrency.*`).
   - Target Framework (`net8.0`, `net9.0`, or `net10.0`).
-  - Database engine and provider version (e.g., Npgsql 10.0.3, Microsoft.Data.SqlClient 5.2.2, MySqlConnector 2.4.0, Oracle.ManagedDataAccess.Core 23.7.0, Microsoft.Data.Sqlite 10.0.3).
+  - Database engine and provider version (e.g., Npgsql 10.0.3, Microsoft.Data.SqlClient 7.0.2, MySqlConnector 2.6.2, Oracle.ManagedDataAccess.Core 23.26.300, Microsoft.Data.Sqlite 10.0.11).
   - Minimal reproducible example or failing test case.
 
 ### 4. Direct Maintainer & Commercial Support

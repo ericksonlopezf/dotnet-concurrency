@@ -7,7 +7,7 @@ namespace EricksonLopez.Concurrency.Abstractions;
 /// </summary>
 public enum ExpectedVersionKind : byte
 {
-    /// <summary>Matches an exact, specific numeric version.</summary>
+    /// <summary>Matches an exact, specific numeric version. Note: This is the default state (0), which means <c>default(ExpectedVersion)</c> strictly expects version 0 (New/Uninitialized) by default.</summary>
     Specific = 0,
     /// <summary>Matches any version (disables optimistic version mismatch check).</summary>
     Any = 1,

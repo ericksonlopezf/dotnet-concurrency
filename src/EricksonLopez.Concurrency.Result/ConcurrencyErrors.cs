@@ -46,6 +46,7 @@ public static class ConcurrencyErrors
     /// </summary>
     /// <param name="conflict">The rich conflict descriptor containing failure diagnostics.</param>
     /// <returns>A structured <see cref="Error"/> configured with <see cref="ErrorType.Conflict"/>.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="conflict"/> is <see langword="null"/></exception>
     public static Error FromConflict(ConcurrencyConflict conflict)
     {
         ArgumentNullException.ThrowIfNull(conflict);

@@ -35,6 +35,7 @@ public sealed class ConcurrencyConflictHttpResult : IResult
     }
 
     /// <inheritdoc />
+    /// <exception cref="ArgumentNullException"><paramref name="httpContext"/> is <see langword="null"/></exception>
     public async Task ExecuteAsync(HttpContext httpContext)
     {
         ArgumentNullException.ThrowIfNull(httpContext);

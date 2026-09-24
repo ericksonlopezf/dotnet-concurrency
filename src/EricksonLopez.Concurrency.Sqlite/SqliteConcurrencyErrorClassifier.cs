@@ -122,7 +122,7 @@ public static class SqliteConcurrencyErrorClassifier
             return new ConcurrencyConflict(
                 entityId: entityId,
                 entityType: entityType,
-                conflictType: ConcurrencyConflictType.SerializationFailure,
+                conflictType: ConcurrencyConflictType.LockUnavailable,
                 classification: ConcurrencyConflictClassification.Transient,
                 operation: operation ?? "Update",
                 message: $"SQLite database busy lock conflict (Error {exception.SqliteErrorCode}): {exception.Message}",
@@ -138,7 +138,7 @@ public static class SqliteConcurrencyErrorClassifier
             return new ConcurrencyConflict(
                 entityId: entityId,
                 entityType: entityType,
-                conflictType: ConcurrencyConflictType.SerializationFailure,
+                conflictType: ConcurrencyConflictType.LockUnavailable,
                 classification: ConcurrencyConflictClassification.Transient,
                 operation: operation ?? "Update",
                 message: $"SQLite table locked conflict (Error {exception.SqliteErrorCode}): {exception.Message}",
@@ -154,7 +154,7 @@ public static class SqliteConcurrencyErrorClassifier
             return new ConcurrencyConflict(
                 entityId: entityId,
                 entityType: entityType,
-                conflictType: ConcurrencyConflictType.Custom,
+                conflictType: ConcurrencyConflictType.AlreadyExists,
                 classification: ConcurrencyConflictClassification.StaleState,
                 operation: operation ?? "Update",
                 message: $"SQLite constraint violation (Error {exception.SqliteErrorCode}): {exception.Message}",

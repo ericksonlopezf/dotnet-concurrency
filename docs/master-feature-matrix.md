@@ -11,7 +11,7 @@ This document provides a comprehensive technical matrix detailing concurrency co
 | **Allocation Profile** | Zero-Heap (Struct) | Zero-Heap (Struct) | Low (String Interned) | Zero-Heap (Struct) | Zero-Heap (Struct) | Driver-level |
 | **Native AOT Compatible** | Yes (Trim-safe) | Yes (Trim-safe) | Yes (Trim-safe) | Yes (Trim-safe) | Yes (Trim-safe) | Yes (Trim-safe) |
 | **Monotonic Versioning** | Yes (`Version.Next()`) | Yes (`Value + 1`) | No (Opaque token) | System-managed | System-managed | Database sequence |
-| **`ISpanParsable<T>`** | N/A | Yes | Yes | Yes | Yes | N/A |
+| **`ISpanParsable<T>`** | N/A | Yes | No | No | No | N/A |
 | **HTTP ETag Mapping** | N/A | Yes | Yes | Yes | Yes | N/A |
 | **Automatic Classification**| Yes | Yes | Yes | Yes | Yes | Yes (SQLSTATE / Error codes) |
 
@@ -21,7 +21,7 @@ This document provides a comprehensive technical matrix detailing concurrency co
 
 | Database Engine | Integration Package | Error Classifier | Native Concurrency Token | Row Lock Syntax Supported | Deadlock Code / SQLSTATE |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **PostgreSQL** | `EricksonLopez.Concurrency.PostgreSql` | `PostgreSqlConcurrencyErrorClassifier` | `XminConcurrencyToken` (uint32) | `FOR UPDATE [NOWAIT / SKIP LOCKED]` | `40001` (Serialization), `40P01` (Deadlock), `55P03` (LockNotAvailable) |
+| **PostgreSQL** | `EricksonLopez.Concurrency.PostgreSql` | `PostgreSqlConcurrencyErrorClassifier` | `XminConcurrencyToken` (uint32) | `FOR UPDATE`, `FOR UPDATE NOWAIT`, `FOR UPDATE SKIP LOCKED`, `FOR SHARE`, `FOR NO KEY UPDATE` | `40001` (Serialization), `40P01` (Deadlock), `55P03` (LockNotAvailable) |
 | **SQL Server** | `EricksonLopez.Concurrency.SqlServer` | `SqlServerErrorClassifier` | `SqlServerRowVersionToken` (byte[8]) | `WITH (UPDLOCK, ROWLOCK)` | `1205` (Deadlock), `1222` (Lock Request Timeout) |
 | **MySQL** | `EricksonLopez.Concurrency.MySql` | `MySqlConcurrencyErrorClassifier` | Version Column (`BIGINT UNSIGNED`) | `FOR UPDATE [NOWAIT / SKIP LOCKED]` | `1213` (Deadlock), `1205` (Lock Wait Timeout) |
 | **MariaDB** | `EricksonLopez.Concurrency.MariaDb` | `MariaDbConcurrencyErrorClassifier` | Version Column (`BIGINT UNSIGNED`) | `FOR UPDATE [WAIT n / NOWAIT]` | `1213` (Deadlock), `1205` (Lock Wait Timeout) |
@@ -37,7 +37,7 @@ This document provides a comprehensive technical matrix detailing concurrency co
 | **ASP.NET Core** | `EricksonLopez.Concurrency.AspNetCore` | `ConcurrencyConflictMiddleware`, `Results.Extensions` | RFC 7807 `ConcurrencyProblemDetails` (HTTP 409 Conflict) |
 | **EricksonLopez.Result** | `EricksonLopez.Concurrency.Result` | `.ToResult()`, `CasResult<T>.ToResult()` | `Error.Conflict("Concurrency.Conflict", ...)` |
 | **EricksonLopez.Mediator** | `EricksonLopez.Concurrency.Mediator` | `ConcurrencyBehavior<TRequest, TResponse>` | OpenTelemetry span tagging & metrics recording |
-| **Dapper** | `EricksonLopez.Concurrency.Dapper` | `ConcurrencyVersionTypeHandler`, `ConcurrencyTokenTypeHandler` | Parameter mapping & column deserialization |
+| **Dapper** | `EricksonLopez.Concurrency.Dapper` | `ConcurrencyTokenHandler` (native numeric mapping for `ConcurrencyVersion`) | Parameter mapping & column deserialization |
 | **Testing** | `EricksonLopez.Concurrency.Testing` | `FakeConcurrencyController`, `ConcurrencyConflictBuilder` | In-memory verification without test doubles |
 
 ---

@@ -29,7 +29,7 @@ flowchart TD
 | **Compare-And-Swap (CAS)** | In-memory atomic mutations with version incrementation | Guarantees deterministic state transitions in domain models before database persistence. |
 | **Zero-Roundtrip SQL Conflict Detection** | Parameterized `WHERE version = @ExpectedVersion` with `rowsAffected` check | Detects concurrent modifications immediately on write without extra round-trip queries. |
 | **Database Dialect Classifiers** | SQLSTATE & engine-specific error classification (Postgres, SqlServer, MySQL, MariaDB, Oracle, SQLite) | Translates database-level serialization failures into structured `ConcurrencyConflict` records. |
-| **Ecosystem Synergy** | First-class integration with `Result`, `Mediator`, `MultiTenancy` | Seamless monadic error propagation, zero-allocation struct behaviors, and tenant isolation. |
+| **Ecosystem Synergy** | First-class integration with `Result`, `Mediator`, `MultiTenancy` | Seamless monadic error propagation, lightweight pipeline behaviors with struct continuations, and tenant isolation. |
 
 ---
 

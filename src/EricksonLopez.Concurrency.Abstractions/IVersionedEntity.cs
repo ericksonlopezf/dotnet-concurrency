@@ -12,3 +12,4 @@ public interface IVersionedEntity
     /// </summary>
     long Version { get; }
 }
+

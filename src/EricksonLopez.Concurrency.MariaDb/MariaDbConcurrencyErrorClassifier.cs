@@ -136,7 +136,7 @@ public static class MariaDbConcurrencyErrorClassifier
             return new ConcurrencyConflict(
                 entityId: entityId,
                 entityType: entityType,
-                conflictType: ConcurrencyConflictType.SerializationFailure,
+                conflictType: ConcurrencyConflictType.Deadlock,
                 classification: ConcurrencyConflictClassification.Transient,
                 operation: operation ?? "Update",
                 message: $"MariaDB deadlock detected (Error {exception.Number}): {exception.Message}",
@@ -152,7 +152,7 @@ public static class MariaDbConcurrencyErrorClassifier
             return new ConcurrencyConflict(
                 entityId: entityId,
                 entityType: entityType,
-                conflictType: ConcurrencyConflictType.SerializationFailure,
+                conflictType: ConcurrencyConflictType.LockUnavailable,
                 classification: ConcurrencyConflictClassification.Transient,
                 operation: operation ?? "Update",
                 message: $"MariaDB lock wait timeout exceeded (Error {exception.Number}): {exception.Message}",
@@ -168,7 +168,7 @@ public static class MariaDbConcurrencyErrorClassifier
             return new ConcurrencyConflict(
                 entityId: entityId,
                 entityType: entityType,
-                conflictType: ConcurrencyConflictType.Custom,
+                conflictType: ConcurrencyConflictType.AlreadyExists,
                 classification: ConcurrencyConflictClassification.StaleState,
                 operation: operation ?? "Update",
                 message: $"MariaDB duplicate entry constraint violation (Error {exception.Number}): {exception.Message}",

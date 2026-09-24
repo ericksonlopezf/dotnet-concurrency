@@ -240,7 +240,9 @@ public sealed class ConcurrencyArchitectureTests
             .Where(f => !f.Contains(Path.DirectorySeparatorChar + "obj" + Path.DirectorySeparatorChar) &&
                         !f.Contains(Path.DirectorySeparatorChar + "bin" + Path.DirectorySeparatorChar) &&
                         !f.Contains(Path.DirectorySeparatorChar + ".git" + Path.DirectorySeparatorChar) &&
-                        !f.Contains(Path.DirectorySeparatorChar + "node_modules" + Path.DirectorySeparatorChar))
+                        !f.Contains(Path.DirectorySeparatorChar + "node_modules" + Path.DirectorySeparatorChar) &&
+                        !f.Contains(Path.DirectorySeparatorChar + "MEGA-AUDITORIA" + Path.DirectorySeparatorChar) &&
+                        !f.Contains(Path.DirectorySeparatorChar + "StrykerOutput" + Path.DirectorySeparatorChar))
             .Select(Path.GetFileName)
             .Where(name => !string.IsNullOrEmpty(name))
             .Where(name => !reservedNames.Contains(name, StringComparer.Ordinal))

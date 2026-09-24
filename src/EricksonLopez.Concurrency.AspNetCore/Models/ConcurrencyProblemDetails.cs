@@ -43,6 +43,16 @@ public sealed class ConcurrencyProblemDetails : ProblemDetails
     public string? ActualVersion { get; set; }
 
     /// <summary>
+    /// Gets or sets the expected concurrency token, if applicable.
+    /// </summary>
+    public string? ExpectedToken { get; set; }
+
+    /// <summary>
+    /// Gets or sets the actual concurrency token found in persistent storage, if applicable.
+    /// </summary>
+    public string? ActualToken { get; set; }
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="ConcurrencyProblemDetails"/> class.
     /// </summary>
     public ConcurrencyProblemDetails()
@@ -82,7 +92,9 @@ public sealed class ConcurrencyProblemDetails : ProblemDetails
                 ? (conflict.ActualVersion.Value.Exists
                     ? conflict.ActualVersion.Value.Version.Value.ToString(System.Globalization.CultureInfo.InvariantCulture)
                     : "NotFound")
-                : null
+                : null,
+            ExpectedToken = conflict.ExpectedToken?.Value,
+            ActualToken = conflict.ActualToken?.Value
         };
 
         foreach (KeyValuePair<string, string> item in conflict.Metadata)

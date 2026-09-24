@@ -7,10 +7,18 @@ using EricksonLopez.Concurrency.Showcase.Models;
 namespace EricksonLopez.Concurrency.Showcase.Resolvers;
 
 /// <summary>
-/// Custom conflict resolver demonstrating domain-specific conflict resolution registered via DI.
+/// Provides domain-specific conflict resolution for <see cref="ProductInventory"/> entities.
 /// </summary>
 public sealed class ShowcaseInventoryConflictResolver : IConcurrencyConflictResolver<ProductInventory>
 {
+    /// <summary>
+    /// Resolves a concurrency conflict for a product inventory item by reconciling available and reserved stock.
+    /// </summary>
+    /// <param name="proposedEntity">The proposed product inventory state.</param>
+    /// <param name="currentDatabaseEntity">The current database entity state, or <see langword="null"/> if not found.</param>
+    /// <param name="conflict">The detected concurrency conflict.</param>
+    /// <param name="cancellationToken">A token that can be used to cancel the asynchronous operation.</param>
+    /// <returns>A value task representing the asynchronous operation. The task result contains the <see cref="ConflictResolution{TEntity}"/> outcome.</returns>
     public ValueTask<ConflictResolution<ProductInventory>> ResolveAsync(
         ProductInventory proposedEntity,
         ProductInventory? currentDatabaseEntity,

@@ -19,10 +19,24 @@ using Microsoft.Extensions.DependencyInjection;
 namespace EricksonLopez.Concurrency.Showcase.Levels;
 
 /// <summary>
-/// Level 02: Full Configuration — ConcurrencyOptions, all database dialect registrations, and custom conflict resolvers.
+/// Provides demonstrations of full configuration, options, database dialect registrations, and custom conflict resolvers.
 /// </summary>
 public static class Level02_FullConfiguration
 {
+    /// <summary>
+    /// Executes the full configuration demonstration.
+    /// </summary>
+    /// <remarks>
+    /// Cookbook: Level 02 — Full Configuration.
+    /// Prerequisites: Level01 (basic DI setup).
+    /// Concepts: ConcurrencyOptions all properties, custom resolver registration, all dialect DI extensions.
+    /// APIs: AddEricksonLopezConcurrency(Action&lt;ConcurrencyOptions&gt;), AddConflictResolver&lt;T,R&gt;(),
+    ///        AddEricksonLopezConcurrencyDapper/PostgreSql/SqlServer/MySql/MariaDb/Oracle/Sqlite(),
+    ///        AddConcurrencyMediatorBehavior(), AddConcurrencyAspNetCore().
+    /// Complexity: Intermediate.
+    /// Next: Level03_RealWorldUseCases for domain entity patterns.
+    /// </remarks>
+    /// <returns>A task representing the asynchronous operation.</returns>
     public static Task RunAsync()
     {
         Console.ForegroundColor = ConsoleColor.Cyan;
@@ -36,11 +50,19 @@ public static class Level02_FullConfiguration
 
         services.AddEricksonLopezConcurrency(options =>
         {
-            options.DefaultResolutionStrategy = ConflictResolutionStrategy.MergeDomainSpecific;
-            options.EnableDiagnostics = true;
-            options.DefaultConflictClassification = ConcurrencyConflictClassification.Transient;
-            options.RecordDetailedActivityTags = true;
-            options.ThrowOnUnresolvedConflict = false;
+            options.DefaultResolutionStrategy       = ConflictResolutionStrategy.MergeDomainSpecific;
+            options.EnableDiagnostics               = true;
+            options.DefaultConflictClassification   = ConcurrencyConflictClassification.Transient;
+            options.RecordDetailedActivityTags      = true;
+            options.ThrowOnUnresolvedConflict       = false;
+            // Lock-acquisition and execution timeouts (prevent deadlocks and thread-pool starvation)
+            options.DefaultMaxAcquisitionTimeout    = TimeSpan.FromSeconds(5);
+            options.DefaultMaxExecutionTimeout      = TimeSpan.FromSeconds(60);
+            // StripeCount controls internal lock partitioning for ExecuteCasAsync.
+            // The actual stripe count used is max(configured, ProcessorCount * 8) with a floor of 256.
+            // Higher values reduce contention under heavy concurrent load (more independent buckets).
+            // Default: 512. Values above Environment.ProcessorCount * 8 have diminishing returns.
+            options.StripeCount                     = 512;
         });
 
         // 2. Register custom typed resolver for ProductInventory
@@ -71,6 +93,9 @@ public static class Level02_FullConfiguration
         Console.WriteLine($"    - DefaultConflictClassification:     {optionsInstance.DefaultConflictClassification}");
         Console.WriteLine($"    - RecordDetailedActivityTags:        {optionsInstance.RecordDetailedActivityTags}");
         Console.WriteLine($"    - ThrowOnUnresolvedConflict:         {optionsInstance.ThrowOnUnresolvedConflict}");
+        Console.WriteLine($"    - DefaultMaxAcquisitionTimeout:      {optionsInstance.DefaultMaxAcquisitionTimeout.TotalSeconds}s  (lock-wait ceiling before TimeoutException)");
+        Console.WriteLine($"    - DefaultMaxExecutionTimeout:        {optionsInstance.DefaultMaxExecutionTimeout.TotalSeconds}s  (mutation-delegate ceiling before cancellation)");
+        Console.WriteLine($"    - StripeCount:                       {optionsInstance.StripeCount}  (internal lock partitions = max(256, ProcessorCount * 8))");
 
         Console.WriteLine("\n[2] Registered and Injected Services:");
         Console.WriteLine($"    - IConcurrencyChecker:               {checker.GetType().Name}");

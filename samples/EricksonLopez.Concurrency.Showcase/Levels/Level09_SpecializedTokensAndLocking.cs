@@ -11,10 +11,26 @@ using EricksonLopez.Concurrency.SqlServer;
 namespace EricksonLopez.Concurrency.Showcase.Levels;
 
 /// <summary>
-/// Level 09: Specialized Database Tokens and Pessimistic Locking Hints — xmin, ROWVERSION, ORA_ROWSCN, and query hint extensions.
+/// Provides demonstrations of specialized database tokens (xmin, ROWVERSION, ORA_ROWSCN) and dialect-specific locking hints.
 /// </summary>
 public static class Level09_SpecializedTokensAndLocking
 {
+    /// <summary>
+    /// Executes the specialized tokens and locking demonstration.
+    /// </summary>
+    /// <remarks>
+    /// Cookbook: Level 09 — Specialized Tokens and Dialect Locking.
+    /// Prerequisites: Level01-08.
+    /// Concepts: Engine-specific concurrency tokens, pessimistic locking SQL clauses for all 5 dialects.
+    /// APIs: XminConcurrencyToken.From()/Parse(), SqlServerRowVersionToken.Parse()/ToByteArray(),
+    ///        OracleRowScnToken.Parse()/From(), ConcurrencyVersion.Next(),
+    ///        PostgreSqlExtensions.WithLock(), SqlServerExtensions.WithSqlServerTableHint(),
+    ///        MySqlExtensions.WithMySqlLock(), MariaDbExtensions.WithMariaDbLock()/WithMariaDbLockWait(),
+    ///        OracleExtensions.WithOracleLock()/WithOracleLockWait().
+    /// Complexity: Advanced.
+    /// Next: Level10_EnterpriseArchitecture for CQRS, mediator, and multi-tenancy.
+    /// </remarks>
+    /// <returns>A task representing the asynchronous operation.</returns>
     public static Task RunAsync()
     {
         Console.ForegroundColor = ConsoleColor.Cyan;
@@ -40,15 +56,28 @@ public static class Level09_SpecializedTokensAndLocking
         var oracleScnToken = OracleRowScnToken.Parse("184467440737");
         Console.WriteLine($"[Oracle]     OracleRowScnToken: Value='{oracleScnToken.Value}', Kind='{oracleScnToken.TokenKind}', ToString='{oracleScnToken}'");
 
+        // 4. ConcurrencyVersion.Next() — untyped overload (GAP 8)
+        var baseVersion = new ConcurrencyVersion(7);
+        ConcurrencyVersion nextVersion = baseVersion.Next();
+        Console.WriteLine($"[ConcurrencyVersion] Untyped .Next(): {baseVersion.Value} -> {nextVersion.Value}");
+
         // -------------------------------------------------------------
         // PART 2: Pessimistic Locking Clauses & Query Hints
         // -------------------------------------------------------------
         Console.WriteLine("\n--- Part 2: Pessimistic Locking Clauses and Hints ---");
 
-        // PostgreSQL
+        // PostgreSQL — all 5 lock modes documented
         string pgQuery = "SELECT id, status FROM orders WHERE id = @Id"
             .WithLock(PostgreSqlLockMode.ForUpdateSkipLocked);
-        Console.WriteLine($"[PostgreSQL] WithLock (SkipLocked):\n    {pgQuery}");
+        Console.WriteLine($"[PostgreSQL] ForUpdateSkipLocked:\n    {pgQuery}");
+
+        string pgShareQuery = "SELECT id, balance FROM accounts WHERE id = @Id"
+            .WithLock(PostgreSqlLockMode.ForShare);
+        Console.WriteLine($"[PostgreSQL] ForShare:\n    {pgShareQuery}");
+
+        string pgNoKeyQuery = "SELECT id, status FROM orders WHERE id = @Id"
+            .WithLock(PostgreSqlLockMode.ForNoKeyUpdate);
+        Console.WriteLine($"[PostgreSQL] ForNoKeyUpdate:\n    {pgNoKeyQuery}");
 
         // SQL Server
         string sqlServerQuery = "orders"

@@ -32,7 +32,7 @@ Error tokenError = ConcurrencyErrors.TokenMismatch(
 | `CasResult<T>` | `.ToResult()` | `Result<T>.Success(entity)` or `Result<T>.Failure(ErrorType.Conflict)` |
 | `ConflictResolution<T>` | `.ToResult()` | `Result<T>.Success(resolvedEntity)` or `Result<T>.Failure(ErrorType.Conflict)` |
 | `int rowsAffected` | `ConcurrencyResultExtensions.FromRowsAffected(...)` | `Result.Success()` if `rows > 0`, else `Result.Failure(ErrorType.Conflict)` |
-| `ConcurrencyConflict` | `.ToResult<T>()` | `Result<T>.Failure(ErrorType.Conflict)` with complete metadata payload |
+| `ConcurrencyConflict?` | `.ToResult()` | `Result.Success()` if null, else `Result.Failure(ErrorType.Conflict)` with complete metadata |
 
 ---
 

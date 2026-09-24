@@ -3,7 +3,7 @@
 
   <PropertyGroup>
     <Description>MySQL concurrency dialect, error classification, and row locking extensions for the EricksonLopez.Concurrency ecosystem.</Description>
-    <PackageTags>$(CommonPackageTags);mysql;deadlock;row-locking;pessimistic-locking;error-classifier;sql</PackageTags>
+    <PackageTags>$(CommonPackageTags);mysql;mysqlconnector;sql;database;deadlock;row-locking;pessimistic-locking;error-classifier</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

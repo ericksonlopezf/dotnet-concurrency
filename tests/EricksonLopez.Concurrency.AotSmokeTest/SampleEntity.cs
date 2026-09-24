@@ -6,7 +6,7 @@ namespace EricksonLopez.Concurrency.NativeAotTests;
 /// <summary>
 /// Sample versioned entity for Native AOT validation.
 /// </summary>
-public sealed record SampleEntity : IVersionedEntity
+public sealed record SampleEntity : IMutableVersionedEntity
 {
     public string Id { get; init; } = string.Empty;
     public decimal Balance { get; init; }

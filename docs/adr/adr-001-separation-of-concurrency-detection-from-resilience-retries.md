@@ -1,5 +1,11 @@
 # ADR-001: Separation of Concurrency Detection from Resilience Retries
 
+## Status
+Accepted
+
+## Date
+2026-08-15
+
 - **Status**: Accepted
 - **Date**: 2026-08-15
 - **Component**: EricksonLopez.Concurrency

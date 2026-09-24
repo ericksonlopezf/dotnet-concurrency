@@ -3,7 +3,7 @@
 
   <PropertyGroup>
     <Description>Oracle concurrency dialect, error classification, ORA_ROWSCN tokens, and locking extensions for the EricksonLopez.Concurrency ecosystem.</Description>
-    <PackageTags>$(CommonPackageTags);oracle;ora-rowscn;deadlock;row-locking;pessimistic-locking;error-classifier;sql</PackageTags>
+    <PackageTags>$(CommonPackageTags);oracle;odp-net;ora-rowscn;sql;database;deadlock;row-locking;pessimistic-locking;error-classifier</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

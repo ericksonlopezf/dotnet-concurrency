@@ -23,6 +23,11 @@ public readonly record struct CasResult<TEntity>
     public bool IsConflict => Conflict is not null;
 
     /// <summary>
+    /// Gets a value indicating whether this result has been initialized with either a success or a conflict.
+    /// </summary>
+    public bool IsInitialized => Conflict is not null || Entity is not null;
+
+    /// <summary>
     /// Gets the mutated entity instance if successful; otherwise, <see langword="null"/>.
     /// </summary>
     public TEntity? Entity { get; }

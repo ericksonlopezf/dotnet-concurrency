@@ -7,6 +7,9 @@ namespace EricksonLopez.Concurrency.Abstractions;
 /// <summary>
 /// Represents an optimistic expectation of an entity's version before applying modifications.
 /// </summary>
+/// <remarks>
+/// <para><strong>Important:</strong> The default value <c>default(ExpectedVersion)</c> evaluates to <see cref="ExpectedVersionKind.Specific"/> with a version of <c>0</c>. It does <strong>not</strong> mean "Any" version. To disable version checks, explicitly use <see cref="Any"/>.</para>
+/// </remarks>
 public readonly record struct ExpectedVersion : IComparable<ExpectedVersion>, IComparable
 {
     /// <summary>

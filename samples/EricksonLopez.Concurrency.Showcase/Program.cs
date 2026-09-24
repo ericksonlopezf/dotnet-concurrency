@@ -7,10 +7,15 @@ using EricksonLopez.Concurrency.Showcase.Levels;
 namespace EricksonLopez.Concurrency.Showcase;
 
 /// <summary>
-/// Executable Showcase entry point orchestrating progressive architectural learning levels.
+/// Provides the application entry point orchestrating progressive architectural learning levels.
 /// </summary>
 public static class Program
 {
+    /// <summary>
+    /// Executes the showcase demonstration suite or interactive menu based on command-line arguments.
+    /// </summary>
+    /// <param name="args">The command-line arguments passed to the application.</param>
+    /// <returns>A task representing the asynchronous operation. The task result contains the process exit code.</returns>
     public static async Task<int> Main(string[] args)
     {
         Console.OutputEncoding = System.Text.Encoding.UTF8;
@@ -41,6 +46,7 @@ public static class Program
             Console.WriteLine("  [8] Level 08: Customization & Extensibility (Conflict Resolvers)");
             Console.WriteLine("  [9] Level 09: Specialized Tokens & Pessimistic Locking Hints");
             Console.WriteLine(" [10] Level 10: Enterprise Architecture (CQRS, Mediator & Multi-Tenancy)");
+            Console.WriteLine(" [11] Level 11: Comprehensive Public API Coverage Verification");
             Console.WriteLine("  [A] Run ALL levels sequentially");
             Console.WriteLine("  [Q] Quit");
             Console.Write("\nOption: ");
@@ -89,6 +95,9 @@ public static class Program
                     case "10":
                         await Level10_EnterpriseArchitecture.RunAsync();
                         break;
+                    case "11":
+                        await Level11_ComprehensiveApiCoverageDemo.RunAsync();
+                        break;
                     case "A":
                         await RunAllLevelsAsync();
                         break;
@@ -121,6 +130,7 @@ public static class Program
         await Level08_CustomizationAndExtensibility.RunAsync();
         await Level09_SpecializedTokensAndLocking.RunAsync();
         await Level10_EnterpriseArchitecture.RunAsync();
+        await Level11_ComprehensiveApiCoverageDemo.RunAsync();
 
         Console.ForegroundColor = ConsoleColor.Green;
         Console.WriteLine("\n===============================================================================");

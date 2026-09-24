@@ -243,7 +243,7 @@ public sealed class SqlServerErrorClassifierTests
         conflict.Should().NotBeNull();
         conflict!.EntityId.Should().Be("user_1");
         conflict.EntityType.Should().Be("User");
-        conflict.ConflictType.Should().Be(ConcurrencyConflictType.Custom);
+        conflict.ConflictType.Should().Be(ConcurrencyConflictType.AlreadyExists);
         conflict.Classification.Should().Be(ConcurrencyConflictClassification.StaleState);
         conflict.Operation.Should().Be("CustomUniqueOp");
         conflict.Message.Should().Contain("SQL Server unique constraint violation (Error 2601)");
@@ -252,6 +252,21 @@ public sealed class SqlServerErrorClassifierTests
 
         ConcurrencyConflict? conflictDefaultOp = SqlServerErrorClassifier.ToConcurrencyConflict(sqlEx, "user_1", "User");
         conflictDefaultOp!.Operation.Should().Be("Update");
+    }
+
+    [Fact]
+    public void ToConcurrencyConflict_LockTimeout_ShouldReturnConfiguredConflict()
+    {
+        SqlException sqlEx = CreateSqlException(1222, "Lock request time out period exceeded.");
+        ConcurrencyConflict? conflict = SqlServerErrorClassifier.ToConcurrencyConflict(sqlEx, "account_1", "Account", "CustomLockOp");
+
+        conflict.Should().NotBeNull();
+        conflict!.EntityId.Should().Be("account_1");
+        conflict.EntityType.Should().Be("Account");
+        conflict.ConflictType.Should().Be(ConcurrencyConflictType.LockUnavailable);
+        conflict.Classification.Should().Be(ConcurrencyConflictClassification.Transient);
+        conflict.Operation.Should().Be("CustomLockOp");
+        conflict.Message.Should().Contain("SQL Server lock request timeout (Error 1222)");
     }
 
     [Fact]

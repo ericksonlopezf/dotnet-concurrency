@@ -6,8 +6,7 @@ Thank you for your interest in contributing to **`EricksonLopez.Concurrency`**! 
 
 ## 📋 Prerequisites
 
-- **.NET SDK**: .NET 10.0 SDK is required as the primary build SDK; .NET 8.0 and 9.0 runtimes are also needed for multi-TFM test execution.  
-  > **Note**: The repository does not include a `global.json` — ensure the correct SDK version is installed manually. The CI pipeline uses `8.0.x`, `9.0.x`, and `10.0.x` as declared in `.github/workflows/dotnet-build-test.yml`.
+- **.NET SDK**: .NET 10.0 SDK is required as the primary build SDK; .NET 8.0 and 9.0 runtimes are also needed for multi-TFM test execution (CI pipelines validate across `8.0.x`, `9.0.x`, and `10.0.x`).
 - **C# language**: Latest C# version (configured via `<LangVersion>latest</LangVersion>` in `Directory.Build.props`).
 - An IDE with Roslyn analyzer support (Visual Studio 2025+, JetBrains Rider 2025+, or VS Code with C# Dev Kit).
 - Optional: Local database instances (PostgreSQL, SQL Server, MySQL, MariaDB, Oracle, SQLite) or Docker if running live provider integration tests.

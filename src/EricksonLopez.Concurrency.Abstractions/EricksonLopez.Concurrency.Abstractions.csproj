@@ -3,7 +3,7 @@
 
   <PropertyGroup>
     <Description>Core abstractions, concurrency tokens, versioning contracts, and conflict domain models for the EricksonLopez.Concurrency framework.</Description>
-    <PackageTags>$(CommonPackageTags);abstractions;concurrency-tokens;versioning;compare-and-swap;conflict-detection;contracts</PackageTags>
+    <PackageTags>$(CommonPackageTags);abstractions;interfaces;concurrency-token;entity-versioning;conflict-detection;compare-and-swap</PackageTags>
   </PropertyGroup>
 
 </Project>

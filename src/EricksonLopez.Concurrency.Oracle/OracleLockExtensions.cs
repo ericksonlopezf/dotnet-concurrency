@@ -29,7 +29,7 @@ public static class OracleLockExtensions
         };
 
         string trimmed = sqlQuery.TrimEnd(';', ' ');
-        return $"{trimmed} {clause};";
+        return $"{trimmed} {clause}";
     }
 
     /// <summary>
@@ -46,6 +46,6 @@ public static class OracleLockExtensions
         ArgumentOutOfRangeException.ThrowIfNegative(timeoutSeconds);
 
         string trimmed = sqlQuery.TrimEnd(';', ' ');
-        return $"{trimmed} FOR UPDATE WAIT {timeoutSeconds};";
+        return $"{trimmed} FOR UPDATE WAIT {timeoutSeconds}";
     }
 }

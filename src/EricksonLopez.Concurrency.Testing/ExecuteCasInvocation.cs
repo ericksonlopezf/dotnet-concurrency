@@ -5,7 +5,7 @@ using EricksonLopez.Concurrency.Abstractions;
 namespace EricksonLopez.Concurrency.Testing;
 
 /// <summary>
-/// Represents a recorded invocation of <see cref="IConcurrencyController.ExecuteCasAsync{TEntity}"/>.
+/// Represents an invocation of a CAS operation on <see cref="IConcurrencyController"/>.
 /// </summary>
 /// <param name="Entity">The entity instance passed to the CAS operation.</param>
 /// <param name="Expected">The expected version constraint.</param>

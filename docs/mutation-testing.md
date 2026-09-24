@@ -15,7 +15,7 @@ The `EricksonLopez.Concurrency` framework enforces strict mutation testing quali
 
 ### Mutation Thresholds
 
-Thresholds are centralized in `stryker-config.json` (and package-specific config files):
+Thresholds are standardized across all package-specific configuration files (`stryker-*-config.json`):
 
 | Threshold | Value | Meaning & Gate Policy |
 |---|---|---|
@@ -33,7 +33,7 @@ Status classification:
 
 ## 2. Per-Package Stryker Configuration Files
 
-Each source package has a dedicated Stryker configuration file in the repository root:
+Each source package has an isolated, dedicated Stryker configuration file in the repository root:
 
 | Source Package | Config File |
 |---|---|
@@ -51,7 +51,7 @@ Each source package has a dedicated Stryker configuration file in the repository
 | `EricksonLopez.Concurrency.SqlServer` | `stryker-sqlserver-config.json` |
 | `EricksonLopez.Concurrency.Testing` | `stryker-testing-config.json` |
 
-`stryker-config.json` serves as the generic fallback configuration template.
+Every package is isolated so that mutation tests only execute tests covering its own code paths, preventing cross-package test execution interference.
 
 ---
 
@@ -122,6 +122,9 @@ dotnet-stryker --config-file stryker-core-config.json
 
 # Abstractions
 dotnet-stryker --config-file stryker-abstractions-config.json
+
+# ASP.NET Core adapter
+dotnet-stryker --config-file stryker-aspnetcore-config.json
 
 # PostgreSQL adapter
 dotnet-stryker --config-file stryker-postgresql-config.json

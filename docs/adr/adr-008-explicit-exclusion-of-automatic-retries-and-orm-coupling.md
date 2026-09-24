@@ -1,5 +1,11 @@
 # ADR-008: Explicit Exclusion of Automatic Retries, Distributed Locks, and ORM Coupling from Core Scope
 
+## Status
+Accepted
+
+## Date
+2026-08-18
+
 - **Status**: Accepted
 - **Date**: 2026-08-18
 - **Component**: EricksonLopez.Concurrency

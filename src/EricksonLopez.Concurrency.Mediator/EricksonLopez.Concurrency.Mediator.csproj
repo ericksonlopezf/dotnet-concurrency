@@ -3,7 +3,7 @@
 
   <PropertyGroup>
     <Description>EricksonLopez.Mediator pipeline integration and high-performance concurrency behaviors for the EricksonLopez.Concurrency ecosystem.</Description>
-    <PackageTags>$(CommonPackageTags);mediator;cqrs;pipeline-behavior;command-handler;middleware</PackageTags>
+    <PackageTags>$(CommonPackageTags);mediator;cqrs;pipeline-behavior;command-handler;middleware;commands</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

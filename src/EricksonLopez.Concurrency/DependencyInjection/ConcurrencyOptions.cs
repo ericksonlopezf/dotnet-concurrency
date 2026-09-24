@@ -1,4 +1,5 @@
 // Copyright © Erickson Lopez. MIT License.
+using System;
 using EricksonLopez.Concurrency.Abstractions;
 
 namespace EricksonLopez.Concurrency.DependencyInjection;
@@ -47,4 +48,29 @@ public sealed class ConcurrencyOptions
     /// The default value is <see langword="false"/> (returns conflict model for caller inspection).
     /// </remarks>
     public bool ThrowOnUnresolvedConflict { get; set; }
+
+    /// <summary>
+    /// Gets or sets the default maximum time to wait when acquiring an optimistic in-memory lock.
+    /// </summary>
+    /// <remarks>
+    /// The default value is 10 seconds. If a lock cannot be acquired within this time, a <see cref="TimeoutException"/> is thrown to prevent deadlocks.
+    /// </remarks>
+    public TimeSpan DefaultMaxAcquisitionTimeout { get; set; } = TimeSpan.FromSeconds(10);
+
+    /// <summary>
+    /// Gets or sets the default maximum time a mutation delegate is allowed to execute while holding the in-memory lock.
+    /// </summary>
+    /// <remarks>
+    /// The default value is 30 seconds. If the delegate execution exceeds this time, the provided cancellation token will be cancelled to prevent thread-pool starvation.
+    /// </remarks>
+    public TimeSpan DefaultMaxExecutionTimeout { get; set; } = TimeSpan.FromSeconds(30);
+
+    /// <summary>
+    /// Gets or sets the number of stripes (partitions) used by the concurrency controller to shard internal locks.
+    /// </summary>
+    /// <remarks>
+    /// The default value is calculated as <see cref="Environment.ProcessorCount"/> * 8, with a minimum of 256. 
+    /// Higher values reduce false-sharing contention in highly concurrent systems at the cost of slight memory overhead.
+    /// </remarks>
+    public int StripeCount { get; set; } = Math.Max(256, Environment.ProcessorCount * 8);
 }
