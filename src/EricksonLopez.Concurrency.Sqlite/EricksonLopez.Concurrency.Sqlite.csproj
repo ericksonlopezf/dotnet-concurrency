@@ -3,7 +3,7 @@
 
   <PropertyGroup>
     <Description>SQLite concurrency dialect and busy/locked error classification for the EricksonLopez.Concurrency ecosystem.</Description>
-    <PackageTags>$(CommonPackageTags);sqlite;sqlite-busy;sqlite-locked;database-locking;error-classifier;sql</PackageTags>
+    <PackageTags>$(CommonPackageTags);sqlite;sqlite-busy;sqlite-locked;sql;database;database-locking;error-classifier</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

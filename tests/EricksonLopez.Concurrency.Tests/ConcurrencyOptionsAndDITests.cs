@@ -125,4 +125,50 @@ public sealed class ConcurrencyOptionsAndDITests
         resolver.Should().NotBeNull();
         resolver.Should().BeOfType<SampleResolver>();
     }
+
+    [Fact]
+    public void AddEricksonLopezConcurrency_WithMicrosoftOptions_ShouldResolveWithoutAmbiguity()
+    {
+        var services = new ServiceCollection();
+        services.AddOptions();
+        services.Configure<ConcurrencyOptions>(opt =>
+        {
+            opt.ThrowOnUnresolvedConflict = true;
+            opt.DefaultMaxAcquisitionTimeout = TimeSpan.FromSeconds(15);
+        });
+        services.AddEricksonLopezConcurrency();
+
+        using ServiceProvider sp = services.BuildServiceProvider();
+        var controller = sp.GetRequiredService<IConcurrencyController>();
+        var options = sp.GetRequiredService<ConcurrencyOptions>();
+        var optionsSnapshot = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<ConcurrencyOptions>>();
+
+        controller.Should().NotBeNull();
+        options.Should().NotBeNull();
+        options.ThrowOnUnresolvedConflict.Should().BeTrue();
+        options.DefaultMaxAcquisitionTimeout.Should().Be(TimeSpan.FromSeconds(15));
+        optionsSnapshot.Value.ThrowOnUnresolvedConflict.Should().BeTrue();
+        optionsSnapshot.Value.DefaultMaxAcquisitionTimeout.Should().Be(TimeSpan.FromSeconds(15));
+    }
+
+    [Fact]
+    public void AddEricksonLopezConcurrency_OptionsForwarding_ShouldReflectConfiguredValues()
+    {
+        var services = new ServiceCollection();
+        services.AddEricksonLopezConcurrency(opt =>
+        {
+            opt.ThrowOnUnresolvedConflict = true;
+            opt.DefaultMaxExecutionTimeout = TimeSpan.FromSeconds(45);
+        });
+
+        using ServiceProvider sp = services.BuildServiceProvider();
+        var options = sp.GetRequiredService<ConcurrencyOptions>();
+        var optionsWrapper = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<ConcurrencyOptions>>();
+
+        options.ThrowOnUnresolvedConflict.Should().BeTrue();
+        options.DefaultMaxExecutionTimeout.Should().Be(TimeSpan.FromSeconds(45));
+        optionsWrapper.Value.ThrowOnUnresolvedConflict.Should().BeTrue();
+        optionsWrapper.Value.DefaultMaxExecutionTimeout.Should().Be(TimeSpan.FromSeconds(45));
+    }
 }
+

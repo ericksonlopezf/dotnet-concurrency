@@ -1,5 +1,11 @@
 # ADR-005: First-Class Integration with EricksonLopez.Result and EricksonLopez.Mediator
 
+## Status
+Accepted
+
+## Date
+2026-08-17
+
 - **Status**: Accepted
 - **Date**: 2026-08-17
 - **Component**: EricksonLopez.Concurrency

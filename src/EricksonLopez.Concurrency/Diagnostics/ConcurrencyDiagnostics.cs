@@ -19,7 +19,7 @@ public static class ConcurrencyDiagnostics
     /// <summary>
     /// Specifies the current semantic version of the instrumentation source.
     /// </summary>
-    public const string Version = "1.0.0";
+    public const string Version = "2.0.0";
 
     /// <summary>
     /// Gets the <see cref="System.Diagnostics.ActivitySource"/> for distributed tracing instrumentation.

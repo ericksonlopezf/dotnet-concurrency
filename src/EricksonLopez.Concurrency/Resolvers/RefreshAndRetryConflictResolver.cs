@@ -18,17 +18,20 @@ public sealed class RefreshAndRetryConflictResolver<TEntity> : IConcurrencyConfl
     private readonly Func<string, CancellationToken, ValueTask<TEntity?>> _refreshDelegate;
     private readonly Func<TEntity, TEntity, TEntity>? _reapplyDelegate;
     private readonly int _maxRetries;
+    private readonly Func<int, TimeSpan>? _retryDelayProvider;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RefreshAndRetryConflictResolver{TEntity}"/> class with the specified refresh delegate.
     /// </summary>
     /// <param name="refreshDelegate">An asynchronous delegate that retrieves the latest persistent state for a given entity identifier.</param>
     /// <param name="maxRetries">The maximum number of reload attempts permitted. Must be at least 1.</param>
+    /// <param name="retryDelayProvider">An optional delegate supplying a backoff delay based on the current retry attempt (1-based).</param>
     /// <exception cref="ArgumentNullException"><paramref name="refreshDelegate"/> is <see langword="null"/></exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="maxRetries"/> is less than 1</exception>
     public RefreshAndRetryConflictResolver(
         Func<string, CancellationToken, ValueTask<TEntity?>> refreshDelegate,
-        int maxRetries = 3)
+        int maxRetries = 3,
+        Func<int, TimeSpan>? retryDelayProvider = null)
     {
         ArgumentNullException.ThrowIfNull(refreshDelegate);
         if (maxRetries < 1)
@@ -39,6 +42,7 @@ public sealed class RefreshAndRetryConflictResolver<TEntity> : IConcurrencyConfl
         _refreshDelegate = refreshDelegate;
         _reapplyDelegate = null;
         _maxRetries = maxRetries;
+        _retryDelayProvider = retryDelayProvider;
     }
 
     /// <summary>
@@ -47,12 +51,14 @@ public sealed class RefreshAndRetryConflictResolver<TEntity> : IConcurrencyConfl
     /// <param name="refreshDelegate">An asynchronous delegate that retrieves the latest persistent state for a given entity identifier.</param>
     /// <param name="reapplyDelegate">A delegate that re-applies local changes onto the freshly reloaded state.</param>
     /// <param name="maxRetries">The maximum number of reload attempts permitted. Must be at least 1.</param>
+    /// <param name="retryDelayProvider">An optional delegate supplying a backoff delay based on the current retry attempt (1-based).</param>
     /// <exception cref="ArgumentNullException"><paramref name="refreshDelegate"/> or <paramref name="reapplyDelegate"/> is <see langword="null"/></exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="maxRetries"/> is less than 1</exception>
     public RefreshAndRetryConflictResolver(
         Func<string, CancellationToken, ValueTask<TEntity?>> refreshDelegate,
         Func<TEntity, TEntity, TEntity> reapplyDelegate,
-        int maxRetries = 3)
+        int maxRetries = 3,
+        Func<int, TimeSpan>? retryDelayProvider = null)
     {
         ArgumentNullException.ThrowIfNull(refreshDelegate);
         ArgumentNullException.ThrowIfNull(reapplyDelegate);
@@ -64,7 +70,18 @@ public sealed class RefreshAndRetryConflictResolver<TEntity> : IConcurrencyConfl
         _refreshDelegate = refreshDelegate;
         _reapplyDelegate = reapplyDelegate;
         _maxRetries = maxRetries;
+        _retryDelayProvider = retryDelayProvider;
     }
+
+    /// <summary>
+    /// Gets the maximum number of retry reload attempts permitted.
+    /// </summary>
+    public int MaxRetries => _maxRetries;
+
+    /// <summary>
+    /// Gets the optional retry delay/backoff provider function.
+    /// </summary>
+    public Func<int, TimeSpan>? RetryDelayProvider => _retryDelayProvider;
 
     /// <inheritdoc />
     public async ValueTask<ConflictResolution<TEntity>> ResolveAsync(
@@ -86,9 +103,32 @@ public sealed class RefreshAndRetryConflictResolver<TEntity> : IConcurrencyConfl
         }
 
         TEntity? latestState = currentDatabaseEntity;
-        if (latestState is null && !string.IsNullOrEmpty(conflict.EntityId))
+        
+        if (latestState is null)
         {
-            latestState = await _refreshDelegate(conflict.EntityId, cancellationToken).ConfigureAwait(false);
+            for (int attempt = 1; attempt <= _maxRetries; attempt++)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                if (!string.IsNullOrEmpty(conflict.EntityId))
+                {
+                    latestState = await _refreshDelegate(conflict.EntityId, cancellationToken).ConfigureAwait(false);
+                }
+
+                if (latestState is not null)
+                {
+                    break;
+                }
+
+                if (attempt < _maxRetries && _retryDelayProvider is not null)
+                {
+                    TimeSpan delay = _retryDelayProvider(attempt);
+                    if (delay > TimeSpan.Zero)
+                    {
+                        await Task.Delay(delay, cancellationToken).ConfigureAwait(false);
+                    }
+                }
+            }
         }
 
         if (latestState is null)

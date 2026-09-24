@@ -79,7 +79,7 @@ This distinction must be clearly communicated in documentation. See `docs/mediat
 
 ### ADR-007 Addendum: ExecuteCasAsync Thread-Safety Boundary
 
-`ExecuteCasAsync` is **safe for sequential use** within a single execution context (e.g., a single command handler invocation). It does **not** provide in-memory mutual exclusion for concurrent threads accessing the same entity instance simultaneously. If multiple threads may access the same entity instance concurrently (rare in typical CQRS/DDD scenarios), a `SemaphoreSlim` or equivalent must be applied at the application layer before calling `ExecuteCasAsync`. The ultimate source of truth for concurrency correctness remains the **database write path** (version-conditioned UPDATE).
+`ExecuteCasAsync` is **safe for sequential use** within a single execution context (e.g., a single command handler invocation). In earlier versions (v1.0), in-memory mutual exclusion was left to application-level synchronization. In v2.0.0 (see [ADR-013](#adr-013-in-memory-striped-lock-pooling-and-reentrancy-guards-for-cas-operations)), `ConcurrencyController` incorporated striped `RefCountedLock` pooling and `AsyncLocal` reentrancy tracking, ensuring safe in-memory mutual exclusion per entity ID with configurable timeouts. The ultimate source of truth for cross-process concurrency correctness remains the **database write path** (version-conditioned UPDATE).
 
 ---
 
@@ -135,3 +135,15 @@ This distinction must be clearly communicated in documentation. See `docs/mediat
 - **Context**: Numeric version numbers frequently arrive from HTTP headers (`If-Match`), query parameters, route variables, or distributed messages as strings or character spans. Parsing them using standard `long.Parse` requires manual validation and throws expensive exceptions on malformed input.
 - **Decision**: Implement `ISpanParsable<T>` and `IParsable<T>` on `ConcurrencyVersion` and `ConcurrencyVersion<TEntity>`, exposing zero-allocation `TryParse(ReadOnlySpan<char>, ...)` and `TryParse(string, ...)` methods.
 - **Consequences**: High-performance, non-allocating version validation across web endpoints and message consumers.
+- **Reference**: See [`adr-012-zero-allocation-string-and-span-version-parsing.md`](adr/adr-012-zero-allocation-string-and-span-version-parsing.md).
+
+---
+
+## ADR-013: In-Memory Striped Lock Pooling and Reentrancy Guards for CAS Operations
+
+- **Status**: Accepted
+- **Context**: In-process concurrent CAS mutations on hot in-memory state require mutual exclusion per entity ID. Previous iterations left synchronization to callers, causing either omitted locks or self-deadlocks in reentrant domain flows.
+- **Decision**: In v2.0.0, implement an internal zero-allocation striped lock pool (`RefCountedLock`) with automatic reference-counted cleanup, `AsyncLocal<ReentrancyNode>` fail-fast reentrancy detection rejecting recursive CAS calls with `InvalidOperationException`, configurable dual timeouts (`DefaultMaxAcquisitionTimeout`, `DefaultMaxExecutionTimeout` on `ConcurrencyOptions`), and `IMutableVersionedEntity` support for in-place mutation.
+- **Consequences**: Out-of-the-box thread safety for in-memory CAS mutations; zero unbounded memory leaks; fail-fast prevention of re-entrant self-deadlocks; bounded latency under high contention.
+- **Reference**: See [`adr-013-in-memory-striped-lock-pooling-and-reentrancy-guards.md`](adr/adr-013-in-memory-striped-lock-pooling-and-reentrancy-guards.md).
+

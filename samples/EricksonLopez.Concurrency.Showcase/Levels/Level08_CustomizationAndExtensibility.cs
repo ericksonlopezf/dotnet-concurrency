@@ -11,10 +11,24 @@ using EricksonLopez.Result;
 namespace EricksonLopez.Concurrency.Showcase.Levels;
 
 /// <summary>
-/// Level 08: Customization and Extensibility — Custom conflict resolvers, DelegateConflictResolver, RefreshAndRetryConflictResolver, and built-in resolution strategies.
+/// Provides demonstrations of custom conflict resolvers, delegates, retry policies, and resolution strategies.
 /// </summary>
 public static class Level08_CustomizationAndExtensibility
 {
+    /// <summary>
+    /// Executes the customization and extensibility demonstration.
+    /// </summary>
+    /// <remarks>
+    /// Cookbook: Level 08 — Customization and Extensibility.
+    /// Prerequisites: Level01-07.
+    /// Concepts: All 4 built-in conflict resolution strategies plus custom delegate-based merge.
+    /// APIs: RejectConflictResolver&lt;T&gt;.Instance, LastWriteWinsConflictResolver&lt;T&gt;.Instance,
+    ///        DelegateConflictResolver&lt;T&gt;, RefreshAndRetryConflictResolver&lt;T&gt;,
+    ///        ConflictResolution.Merged()/LastWriteWins()/RefreshedAndRetried()/Rejected().
+    /// Complexity: Advanced.
+    /// Next: Level09_SpecializedTokensAndLocking for engine-specific tokens and pessimistic hints.
+    /// </remarks>
+    /// <returns>A task representing the asynchronous operation.</returns>
     public static async Task RunAsync()
     {
         Console.ForegroundColor = ConsoleColor.Cyan;
@@ -67,6 +81,11 @@ public static class Level08_CustomizationAndExtensibility
         Console.WriteLine($"    - Resolved Balance: {mergeOutcome.ResolvedEntity?.Balance:C}");
         Console.WriteLine($"    - Reason:           {mergeOutcome.Reason}");
 
+        // ConflictResolution.Merged() is also a public static factory you can call directly
+        // without going through a resolver — useful when the merge logic is inline:
+        var directMerge = ConflictResolution.Merged(localProposed, "Direct merge — incremental delta applied inline.");
+        Console.WriteLine($"    - [ConflictResolution.Merged() factory] IsResolved={directMerge.IsResolved}, Strategy={directMerge.Strategy}");
+
         // -------------------------------------------------------------
         // 3. LastWriteWinsConflictResolver (Explicit Opt-In LWW Overwrite)
         // -------------------------------------------------------------
@@ -103,5 +122,33 @@ public static class Level08_CustomizationAndExtensibility
         Console.WriteLine($"    - Strategy:         {refreshOutcome.Strategy}");
         Console.WriteLine($"    - Reconciled State: Balance={refreshOutcome.ResolvedEntity?.Balance:C}, Version={refreshOutcome.ResolvedEntity?.Version}");
         Console.WriteLine($"    - Reason:           {refreshOutcome.Reason}");
+
+        // Demonstrate public properties on RefreshAndRetryConflictResolver (GAP 6)
+        Console.WriteLine($"    - MaxRetries property:        {refreshRetryResolver.MaxRetries}");
+        Console.WriteLine($"    - RetryDelayProvider is set:  {refreshRetryResolver.RetryDelayProvider is not null}");
+
+        // -------------------------------------------------------------
+        // 5. RefreshAndRetryConflictResolver with exponential backoff (retryDelayProvider overload)
+        // -------------------------------------------------------------
+        Console.WriteLine("\n[5] RefreshAndRetryConflictResolver with Exponential Backoff (retryDelayProvider overload):");
+
+        var backoffResolver = new RefreshAndRetryConflictResolver<BankAccount>(
+            refreshDelegate: (id, ct) =>
+            {
+                var fresh = new BankAccount(id, "Emma Watson", 1900.00m, version: 5);
+                return ValueTask.FromResult<BankAccount?>(fresh);
+            },
+            maxRetries: 5,
+            retryDelayProvider: attempt => TimeSpan.FromMilliseconds(50 * Math.Pow(2, attempt - 1)));
+
+        Console.WriteLine($"    - MaxRetries:                {backoffResolver.MaxRetries}");
+        Console.WriteLine($"    - RetryDelayProvider set:    {backoffResolver.RetryDelayProvider is not null}");
+
+        // Inspect backoff at each simulated retry attempt (1-based)
+        for (int attempt = 1; attempt <= backoffResolver.MaxRetries; attempt++)
+        {
+            TimeSpan delay = backoffResolver.RetryDelayProvider!(attempt);
+            Console.WriteLine($"    - Attempt {attempt}: backoff = {delay.TotalMilliseconds:F0} ms");
+        }
     }
 }

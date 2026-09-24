@@ -13,19 +13,19 @@ public sealed class OracleLockExtensionsTests
     {
         string baseSql = "SELECT * FROM accounts WHERE id = :Id;";
 
-        baseSql.WithOracleLock(OracleLockMode.ForUpdate).Should().Be("SELECT * FROM accounts WHERE id = :Id FOR UPDATE;");
-        baseSql.WithOracleLock(OracleLockMode.ForUpdateNowait).Should().Be("SELECT * FROM accounts WHERE id = :Id FOR UPDATE NOWAIT;");
-        baseSql.WithOracleLock(OracleLockMode.ForUpdateSkipLocked).Should().Be("SELECT * FROM accounts WHERE id = :Id FOR UPDATE SKIP LOCKED;");
+        baseSql.WithOracleLock(OracleLockMode.ForUpdate).Should().Be("SELECT * FROM accounts WHERE id = :Id FOR UPDATE");
+        baseSql.WithOracleLock(OracleLockMode.ForUpdateNowait).Should().Be("SELECT * FROM accounts WHERE id = :Id FOR UPDATE NOWAIT");
+        baseSql.WithOracleLock(OracleLockMode.ForUpdateSkipLocked).Should().Be("SELECT * FROM accounts WHERE id = :Id FOR UPDATE SKIP LOCKED");
     }
 
     [Fact]
     public void WithOracleLock_ShouldTrimSemicolonsAndSpaces()
     {
         string sqlWithSpaces = "SELECT * FROM products WHERE id = :Id;   ";
-        sqlWithSpaces.WithOracleLock(OracleLockMode.ForUpdate).Should().Be("SELECT * FROM products WHERE id = :Id FOR UPDATE;");
+        sqlWithSpaces.WithOracleLock(OracleLockMode.ForUpdate).Should().Be("SELECT * FROM products WHERE id = :Id FOR UPDATE");
 
         string sqlWithoutSemicolon = "SELECT * FROM products WHERE id = :Id";
-        sqlWithoutSemicolon.WithOracleLock(OracleLockMode.ForUpdateNowait).Should().Be("SELECT * FROM products WHERE id = :Id FOR UPDATE NOWAIT;");
+        sqlWithoutSemicolon.WithOracleLock(OracleLockMode.ForUpdateNowait).Should().Be("SELECT * FROM products WHERE id = :Id FOR UPDATE NOWAIT");
     }
 
     [Theory]
@@ -54,13 +54,13 @@ public sealed class OracleLockExtensionsTests
     public void WithOracleLockWait_ValidTimeouts_ShouldAppendCorrectClauses()
     {
         "SELECT * FROM items WHERE id = :Id;".WithOracleLockWait(5)
-            .Should().Be("SELECT * FROM items WHERE id = :Id FOR UPDATE WAIT 5;");
+            .Should().Be("SELECT * FROM items WHERE id = :Id FOR UPDATE WAIT 5");
 
         "SELECT * FROM items WHERE id = :Id;   ".WithOracleLockWait(0)
-            .Should().Be("SELECT * FROM items WHERE id = :Id FOR UPDATE WAIT 0;");
+            .Should().Be("SELECT * FROM items WHERE id = :Id FOR UPDATE WAIT 0");
 
         "SELECT * FROM items WHERE id = :Id".WithOracleLockWait(10)
-            .Should().Be("SELECT * FROM items WHERE id = :Id FOR UPDATE WAIT 10;");
+            .Should().Be("SELECT * FROM items WHERE id = :Id FOR UPDATE WAIT 10");
     }
 
     [Theory]

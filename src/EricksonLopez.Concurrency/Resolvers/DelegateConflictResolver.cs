@@ -37,6 +37,8 @@ public sealed class DelegateConflictResolver<TEntity> : IConcurrencyConflictReso
         ArgumentNullException.ThrowIfNull(proposedEntity);
         ArgumentNullException.ThrowIfNull(conflict);
 
+        cancellationToken.ThrowIfCancellationRequested();
+
         ConflictResolution<TEntity> resolution = await _resolveDelegate(
             proposedEntity, currentDatabaseEntity, conflict, cancellationToken)
             .ConfigureAwait(false);

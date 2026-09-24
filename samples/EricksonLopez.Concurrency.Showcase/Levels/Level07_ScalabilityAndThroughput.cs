@@ -9,10 +9,24 @@ using EricksonLopez.Concurrency.Diagnostics;
 namespace EricksonLopez.Concurrency.Showcase.Levels;
 
 /// <summary>
-/// Level 07: Scalability and Throughput — Zero-allocation struct validation and OpenTelemetry instrumentation.
+/// Provides demonstrations of scalability, zero-allocation struct verification, and OpenTelemetry instrumentation.
 /// </summary>
 public static class Level07_ScalabilityAndThroughput
 {
+    /// <summary>
+    /// Executes the scalability and throughput demonstration.
+    /// </summary>
+    /// <remarks>
+    /// Cookbook: Level 07 — Scalability and Throughput.
+    /// Prerequisites: Level01-06.
+    /// Concepts: Zero-allocation struct verification, throughput benchmarking, OpenTelemetry instrumentation.
+    /// APIs: OptimisticConcurrencyChecker.Instance.CheckVersion(), ConcurrencyDiagnostics.ActivitySource,
+    ///        ConcurrencyDiagnostics.Meter, ConcurrencyDiagnostics.StartActivity(), RecordSuccess(),
+    ///        OperationDurationHistogram.Record().
+    /// Complexity: Advanced.
+    /// Next: Level08_CustomizationAndExtensibility for conflict resolvers.
+    /// </remarks>
+    /// <returns>A task representing the asynchronous operation.</returns>
     public static Task RunAsync()
     {
         Console.ForegroundColor = ConsoleColor.Cyan;

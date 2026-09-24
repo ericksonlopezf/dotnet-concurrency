@@ -1,5 +1,11 @@
 # ADR-003: Readonly Record Structs for Versions and Tokens
 
+## Status
+Accepted
+
+## Date
+2026-08-16
+
 - **Status**: Accepted
 - **Date**: 2026-08-16
 - **Component**: EricksonLopez.Concurrency

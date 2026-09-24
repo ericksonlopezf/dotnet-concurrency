@@ -99,6 +99,7 @@ public static class ConcurrencyResultExtensions
     /// <param name="entityId">The unique identifier of the target entity.</param>
     /// <param name="expectedVersion">The expected version constraint used in the query.</param>
     /// <returns>A successful result containing the entity if <paramref name="rowsAffected"/> is greater than zero; otherwise, a structured conflict failure.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="entity"/> is <see langword="null"/></exception>
     public static Result<TEntity> FromRowsAffected<TEntity>(
         int rowsAffected,
         TEntity entity,

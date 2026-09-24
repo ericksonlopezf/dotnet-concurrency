@@ -10,7 +10,7 @@ using EricksonLopez.Result;
 namespace EricksonLopez.Concurrency.Benchmarks;
 
 [MemoryDiagnoser]
-public class ConcurrencyBenchmarks
+public sealed class ConcurrencyBenchmarks : System.IDisposable
 {
     public sealed class BenchEntity : IVersionedEntity
     {
@@ -60,5 +60,11 @@ public class ConcurrencyBenchmarks
     {
         CasResult<BenchEntity> cas = CasResult.Succeeded(_entity, new ConcurrencyVersion(11));
         return cas.ToResult();
+    }
+
+    public void Dispose()
+    {
+        _controller.Dispose();
+        System.GC.SuppressFinalize(this);
     }
 }

@@ -156,7 +156,7 @@ public static class OracleConcurrencyErrorClassifier
             return new ConcurrencyConflict(
                 entityId: entityId,
                 entityType: entityType,
-                conflictType: ConcurrencyConflictType.SerializationFailure,
+                conflictType: ConcurrencyConflictType.Deadlock,
                 classification: ConcurrencyConflictClassification.Transient,
                 operation: operation ?? "Update",
                 message: $"Oracle deadlock detected (ORA-{exception.Number:D5}): {exception.Message}",
@@ -172,7 +172,7 @@ public static class OracleConcurrencyErrorClassifier
             return new ConcurrencyConflict(
                 entityId: entityId,
                 entityType: entityType,
-                conflictType: ConcurrencyConflictType.SerializationFailure,
+                conflictType: ConcurrencyConflictType.LockUnavailable,
                 classification: ConcurrencyConflictClassification.Transient,
                 operation: operation ?? "Update",
                 message: $"Oracle resource busy condition (ORA-{exception.Number:D5}): {exception.Message}",
@@ -204,7 +204,7 @@ public static class OracleConcurrencyErrorClassifier
             return new ConcurrencyConflict(
                 entityId: entityId,
                 entityType: entityType,
-                conflictType: ConcurrencyConflictType.Custom,
+                conflictType: ConcurrencyConflictType.AlreadyExists,
                 classification: ConcurrencyConflictClassification.StaleState,
                 operation: operation ?? "Update",
                 message: $"Oracle unique constraint violation (ORA-{exception.Number:D5}): {exception.Message}",

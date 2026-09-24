@@ -6,6 +6,7 @@ using EricksonLopez.Concurrency.Controllers;
 using EricksonLopez.Concurrency.Resolvers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 
 namespace EricksonLopez.Concurrency.DependencyInjection;
 
@@ -20,16 +21,20 @@ public static class ConcurrencyServiceCollectionExtensions
     /// <param name="services">The <see cref="IServiceCollection"/> to add services to.</param>
     /// <param name="configure">An optional action delegate to configure <see cref="ConcurrencyOptions"/>.</param>
     /// <returns>The <see cref="IServiceCollection"/> instance so that additional calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="services"/> is <see langword="null"/></exception>
     public static IServiceCollection AddEricksonLopezConcurrency(
         this IServiceCollection services,
         Action<ConcurrencyOptions>? configure = null)
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        var options = new ConcurrencyOptions();
-        configure?.Invoke(options);
+        services.AddOptions();
+        if (configure is not null)
+        {
+            services.Configure(configure);
+        }
 
-        services.TryAddSingleton(options);
+        services.TryAddSingleton(sp => sp.GetRequiredService<IOptions<ConcurrencyOptions>>().Value);
         services.TryAddSingleton<IConcurrencyChecker>(OptimisticConcurrencyChecker.Instance);
         services.TryAddSingleton<IConcurrencyController, ConcurrencyController>();
         services.TryAddTransient(typeof(IConcurrencyConflictResolver<>), typeof(RejectConflictResolver<>));
@@ -44,6 +49,7 @@ public static class ConcurrencyServiceCollectionExtensions
     /// <typeparam name="TResolver">The type of the custom conflict resolver implementation.</typeparam>
     /// <param name="services">The <see cref="IServiceCollection"/> to add the resolver to.</param>
     /// <returns>The <see cref="IServiceCollection"/> instance so that additional calls can be chained.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="services"/> is <see langword="null"/></exception>
     public static IServiceCollection AddConflictResolver<TEntity, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TResolver>(this IServiceCollection services)
         where TEntity : class
         where TResolver : class, IConcurrencyConflictResolver<TEntity>

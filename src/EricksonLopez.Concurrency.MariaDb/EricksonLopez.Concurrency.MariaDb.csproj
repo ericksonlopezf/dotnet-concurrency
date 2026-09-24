@@ -3,7 +3,7 @@
 
   <PropertyGroup>
     <Description>MariaDB concurrency dialect, error classification, and lock timeout extensions for the EricksonLopez.Concurrency ecosystem.</Description>
-    <PackageTags>$(CommonPackageTags);mariadb;deadlock;row-locking;pessimistic-locking;error-classifier;sql</PackageTags>
+    <PackageTags>$(CommonPackageTags);mariadb;mysqlconnector;sql;database;deadlock;row-locking;pessimistic-locking;error-classifier</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

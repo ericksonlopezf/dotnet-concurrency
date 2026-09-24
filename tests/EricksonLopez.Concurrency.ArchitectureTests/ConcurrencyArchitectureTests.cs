@@ -237,10 +237,19 @@ public sealed class ConcurrencyArchitectureTests
         ];
 
         var mdFiles = Directory.GetFiles(solutionRoot, "*.md", SearchOption.AllDirectories)
-            .Where(f => !f.Contains(Path.DirectorySeparatorChar + "obj" + Path.DirectorySeparatorChar) &&
-                        !f.Contains(Path.DirectorySeparatorChar + "bin" + Path.DirectorySeparatorChar) &&
-                        !f.Contains(Path.DirectorySeparatorChar + ".git" + Path.DirectorySeparatorChar) &&
-                        !f.Contains(Path.DirectorySeparatorChar + "node_modules" + Path.DirectorySeparatorChar))
+            .Where(f =>
+            {
+                string normalized = f.Replace('\\', '/');
+                return !normalized.Contains("/obj/") &&
+                       !normalized.Contains("/bin/") &&
+                       !normalized.Contains("/.git/") &&
+                       !normalized.Contains("/node_modules/") &&
+                       !normalized.Contains("/MEGA-AUDITORIA/") &&
+                       !normalized.Contains("/StrykerOutput/") &&
+                       !normalized.Contains("/artifacts/") &&
+                       !normalized.Contains("/BenchmarkDotNet.Artifacts/") &&
+                       !normalized.Contains("/benchmarks/");
+            })
             .Select(Path.GetFileName)
             .Where(name => !string.IsNullOrEmpty(name))
             .Where(name => !reservedNames.Contains(name, StringComparer.Ordinal))

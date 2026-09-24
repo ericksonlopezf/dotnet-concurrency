@@ -58,7 +58,7 @@ CasResult<BankAccount> outcome = await concurrencyController.ExecuteCasAsync(
         return ValueTask.FromResult(acc);
     });
 
-if (outcome.IsConflict)
+if (!outcome.IsSuccess)
 {
     return Result.Failure(ConcurrencyErrors.FromConflict(outcome.Conflict!));
 }

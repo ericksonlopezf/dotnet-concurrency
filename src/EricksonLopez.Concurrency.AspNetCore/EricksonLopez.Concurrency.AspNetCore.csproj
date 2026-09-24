@@ -3,7 +3,7 @@
 
   <PropertyGroup>
     <Description>ASP.NET Core integration for EricksonLopez.Concurrency providing HTTP 409 Conflict middleware, RFC 7807 ProblemDetails, ETag header helpers, and minimal API extensions.</Description>
-    <PackageTags>$(CommonPackageTags);aspnetcore;middleware;etag;if-match;problem-details;rfc7807;http-409;minimal-api</PackageTags>
+    <PackageTags>$(CommonPackageTags);aspnetcore;middleware;etag;if-match;problem-details;rfc7807;http-409;minimal-api;web-api</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

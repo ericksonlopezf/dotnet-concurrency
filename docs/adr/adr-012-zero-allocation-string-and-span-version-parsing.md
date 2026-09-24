@@ -1,5 +1,11 @@
 # ADR-012: Zero-Allocation String and Span-Based Version Parsing Protocols
 
+## Status
+Accepted
+
+## Date
+2026-08-22
+
 - **Status**: Accepted
 - **Date**: 2026-08-22
 - **Component**: EricksonLopez.Concurrency

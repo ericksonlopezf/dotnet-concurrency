@@ -8,7 +8,7 @@ using EricksonLopez.Concurrency.Controllers;
 namespace EricksonLopez.Concurrency.Benchmarks;
 
 [MemoryDiagnoser]
-public class OptimisticContentionBenchmarks
+public sealed class OptimisticContentionBenchmarks : System.IDisposable
 {
     public sealed class ContendedAccount : IVersionedEntity
     {
@@ -76,5 +76,11 @@ public class OptimisticContentionBenchmarks
         var actual = new ConcurrencyVersion(10);
 
         return checker.CheckVersion(expected, actual, "acc-1001", "ContendedAccount", out _);
+    }
+
+    public void Dispose()
+    {
+        _controller.Dispose();
+        System.GC.SuppressFinalize(this);
     }
 }

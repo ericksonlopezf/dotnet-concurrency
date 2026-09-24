@@ -7,14 +7,15 @@ using System.Threading.Tasks;
 using AwesomeAssertions;
 using EricksonLopez.Concurrency.Abstractions;
 using EricksonLopez.Concurrency.Controllers;
+using EricksonLopez.Concurrency.DependencyInjection;
 using EricksonLopez.Concurrency.Diagnostics;
 using Xunit;
 
 namespace EricksonLopez.Concurrency.Tests;
 
-public sealed class ConcurrencyControllerTests
+public sealed class ConcurrencyControllerTests : IDisposable
 {
-    private sealed class ProductAggregate : IVersionedEntity, IConcurrencyAware
+    private sealed class ProductAggregate : IMutableVersionedEntity, IConcurrencyAware
     {
         public string Id { get; init; } = string.Empty;
         public string Name { get; set; } = string.Empty;
@@ -380,4 +381,144 @@ public sealed class ConcurrencyControllerTests
             (p, ct) => ValueTask.FromResult(p));
         lastOperation.Should().Be("concurrency.execute_cas");
     }
+
+    [Fact]
+    public async Task ExecuteCasAsync_WhenLockAcquisitionTimesOut_ShouldThrowTimeoutException()
+    {
+        var options = new ConcurrencyOptions
+        {
+            DefaultMaxAcquisitionTimeout = TimeSpan.FromMilliseconds(60)
+        };
+        using var controller = new ConcurrencyController(options: options);
+        var product = new ProductAggregate { Id = "timeout_ent", Version = 1 };
+
+        var holderEntered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var holderRelease = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        var holdingTask = Task.Run(async () =>
+        {
+            await controller.ExecuteCasAsync(
+                product,
+                ExpectedVersion.Specific(1),
+                product.Id,
+                async (p, ct) =>
+                {
+                    holderEntered.SetResult();
+                    await holderRelease.Task;
+                    return p;
+                });
+        });
+
+        await holderEntered.Task;
+
+        Func<Task> competingAction = async () =>
+        {
+            await controller.ExecuteCasAsync(
+                product,
+                ExpectedVersion.Specific(1),
+                product.Id,
+                (p, ct) => ValueTask.FromResult(p));
+        };
+
+        await competingAction.Should().ThrowAsync<TimeoutException>()
+            .WithMessage("*could not be acquired within the configured timeout*");
+
+        holderRelease.SetResult();
+        await holdingTask;
+
+        // Controller must remain healthy after lock timeout
+        CasResult<ProductAggregate> recovery = await controller.ExecuteCasAsync(
+            product,
+            ExpectedVersion.Specific(product.Version),
+            product.Id,
+            (p, ct) => ValueTask.FromResult(p));
+        recovery.IsSuccess.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task ExecuteCasAsync_WhenMutationExecutionTimesOut_ShouldThrowTimeoutException()
+    {
+        var options = new ConcurrencyOptions
+        {
+            DefaultMaxExecutionTimeout = TimeSpan.FromMilliseconds(50)
+        };
+        using var controller = new ConcurrencyController(options: options);
+        var product = new ProductAggregate { Id = "exec_timeout_ent", Version = 1 };
+
+        Func<Task> act = async () =>
+        {
+            await controller.ExecuteCasAsync(
+                product,
+                ExpectedVersion.Specific(1),
+                product.Id,
+                async (p, ct) =>
+                {
+                    await Task.Delay(TimeSpan.FromMilliseconds(250), ct);
+                    return p;
+                });
+        };
+
+        await act.Should().ThrowAsync<TimeoutException>()
+            .WithMessage("*exceeded the maximum execution timeout*");
+    }
+
+    [Fact]
+    public async Task ExecuteCasAsync_WhenReentrantInvocationDetected_ShouldThrowInvalidOperationException()
+    {
+        using var controller = new ConcurrencyController();
+        var product = new ProductAggregate { Id = "reentrant_ent", Version = 1 };
+
+        Func<Task> act = async () =>
+        {
+            await controller.ExecuteCasAsync(
+                product,
+                ExpectedVersion.Specific(1),
+                product.Id,
+                async (p, ct) =>
+                {
+                    // Nested reentrant call with same entityId on same async execution flow
+                    await controller.ExecuteCasAsync(
+                        p,
+                        ExpectedVersion.Specific(1),
+                        product.Id,
+                        (nested, nestedCt) => ValueTask.FromResult(nested),
+                        cancellationToken: ct);
+                    return p;
+                });
+        };
+
+        await act.Should().ThrowAsync<InvalidOperationException>()
+            .WithMessage("*Reentrant CAS invocation detected*");
+    }
+
+    [Fact]
+    public async Task ConcurrencyController_WhenDisposed_MethodsShouldThrowObjectDisposedException()
+    {
+        var controller = new ConcurrencyController();
+        controller.Dispose();
+
+        var product = new ProductAggregate { Id = "disposed_ent", Version = 1 };
+
+        Action actVerifyVersion = () => controller.VerifyVersion(product, ExpectedVersion.Specific(1), product.Id);
+        actVerifyVersion.Should().Throw<ObjectDisposedException>();
+
+        Action actVerifyToken = () => controller.VerifyToken(product, new ConcurrencyToken("1"), product.Id);
+        actVerifyToken.Should().Throw<ObjectDisposedException>();
+
+        Func<Task> actCas = async () =>
+        {
+            await controller.ExecuteCasAsync(
+                product,
+                ExpectedVersion.Specific(1),
+                product.Id,
+                (p, ct) => ValueTask.FromResult(p));
+        };
+        await actCas.Should().ThrowAsync<ObjectDisposedException>();
+    }
+
+    public void Dispose()
+    {
+        _controller.Dispose();
+    }
 }
+

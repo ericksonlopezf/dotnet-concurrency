@@ -191,12 +191,28 @@ public static class SqlServerErrorClassifier
                 });
         }
 
+        if (IsLockTimeout(exception))
+        {
+            return new ConcurrencyConflict(
+                entityId: entityId,
+                entityType: entityType,
+                conflictType: ConcurrencyConflictType.LockUnavailable,
+                classification: ConcurrencyConflictClassification.Transient,
+                operation: operation ?? "Update",
+                message: $"SQL Server lock request timeout (Error {exception.Number}): {exception.Message}",
+                metadata: new Dictionary<string, string>
+                {
+                    ["provider"] = "SqlServer",
+                    ["errorNumber"] = exception.Number.ToString(System.Globalization.CultureInfo.InvariantCulture)
+                });
+        }
+
         if (IsUniqueViolation(exception))
         {
             return new ConcurrencyConflict(
                 entityId: entityId,
                 entityType: entityType,
-                conflictType: ConcurrencyConflictType.Custom,
+                conflictType: ConcurrencyConflictType.AlreadyExists,
                 classification: ConcurrencyConflictClassification.StaleState,
                 operation: operation ?? "Update",
                 message: $"SQL Server unique constraint violation (Error {exception.Number}): {exception.Message}",

@@ -63,7 +63,7 @@ Version enforcement must be done explicitly in the command handler using `IConcu
 
 ```csharp
 public sealed class UpdateCustomerBalanceHandler
-    : IHandler<UpdateCustomerBalanceCommand, Result<CustomerDto>>
+    : ICommandHandler<UpdateCustomerBalanceCommand, Result<CustomerDto>>
 {
     private readonly IConcurrencyController _concurrency;
     private readonly ICustomerRepository _repository;

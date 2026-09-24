@@ -348,4 +348,65 @@ public sealed class ConflictResolverTests
         var actCancelled = async () => await resolver.ResolveAsync(proposed, null, conflict, cts.Token);
         await actCancelled.Should().ThrowAsync<OperationCanceledException>();
     }
+
+    [Fact]
+    public async Task RefreshAndRetryConflictResolver_WithRetryDelayProvider_ShouldInvokeDelayOnRetries()
+    {
+        int refreshCalls = 0;
+        var delays = new System.Collections.Generic.List<int>();
+        var dbEntity = new ResolverAccount { Id = "c1", Balance = 500 };
+
+        var resolver = new RefreshAndRetryConflictResolver<ResolverAccount>(
+            refreshDelegate: (id, ct) =>
+            {
+                refreshCalls++;
+                // Succeed on 3rd attempt
+                return ValueTask.FromResult<ResolverAccount?>(refreshCalls >= 3 ? dbEntity : null);
+            },
+            maxRetries: 4,
+            retryDelayProvider: attempt =>
+            {
+                delays.Add(attempt);
+                return TimeSpan.FromMilliseconds(1);
+            });
+
+        var proposed = new ResolverAccount { Id = "c1", Balance = 50 };
+        var conflict = ConcurrencyConflict.VersionMismatch("c1", "ResolverAccount", ExpectedVersion.Specific(1), ActualVersion.From(2));
+
+        ConflictResolution<ResolverAccount> resolution = await resolver.ResolveAsync(proposed, null, conflict);
+
+        resolution.IsResolved.Should().BeTrue();
+        resolution.ResolvedEntity.Should().BeSameAs(dbEntity);
+        refreshCalls.Should().Be(3);
+        delays.Should().Equal(1, 2);
+    }
+
+    [Fact]
+    public async Task RefreshAndRetryConflictResolver_WithRetryDelayProvider_WhenExhausted_ShouldDelayMaxMinusOneTimes()
+    {
+        int refreshCalls = 0;
+        var delays = new System.Collections.Generic.List<int>();
+
+        var resolver = new RefreshAndRetryConflictResolver<ResolverAccount>(
+            refreshDelegate: (id, ct) =>
+            {
+                refreshCalls++;
+                return ValueTask.FromResult<ResolverAccount?>(null);
+            },
+            maxRetries: 3,
+            retryDelayProvider: attempt =>
+            {
+                delays.Add(attempt);
+                return TimeSpan.FromMilliseconds(1);
+            });
+
+        var proposed = new ResolverAccount { Id = "c1", Balance = 50 };
+        var conflict = ConcurrencyConflict.VersionMismatch("c1", "ResolverAccount", ExpectedVersion.Specific(1), ActualVersion.From(2));
+
+        ConflictResolution<ResolverAccount> resolution = await resolver.ResolveAsync(proposed, null, conflict);
+
+        resolution.IsResolved.Should().BeFalse();
+        refreshCalls.Should().Be(3);
+        delays.Should().Equal(1, 2);
+    }
 }
