@@ -66,7 +66,7 @@ $reservedNames = @(
 )
 
 $mdFiles = Get-ChildItem -Path $RootDirectory -Filter "*.md" -Recurse | Where-Object {
-    $_.FullName -notmatch '[\\/](bin|obj|\.git|\.vs|\.system_generated|MEGA-AUDITORIA|StrykerOutput|artifacts|BenchmarkDotNet\.Artifacts)[\\/]'
+    $_.FullName -notmatch '[\\/](bin|obj|\.git|\.vs|\.system_generated|MEGA-AUDITORIA|StrykerOutput|artifacts|BenchmarkDotNet\.Artifacts|benchmarks)[\\/]'
 }
 
 $invalidMdNames = 0

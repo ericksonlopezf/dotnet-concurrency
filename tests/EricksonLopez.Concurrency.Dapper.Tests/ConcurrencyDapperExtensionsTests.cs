@@ -289,4 +289,40 @@ public sealed class ConcurrencyDapperExtensionsTests : IDisposable
         await actNullToken.Should().ThrowAsync<ArgumentNullException>()
             .WithParameterName("expectedToken");
     }
+
+    [Fact]
+    public async Task ExecuteOptimisticAsync_WhenMultipleRowsAffected_ShouldThrowInvalidOperationException()
+    {
+        _connection.Execute("INSERT INTO products (id, name, version, token) VALUES ('prod-dup', 'Laptop', 1, 'token-v1');");
+
+        string sql = "UPDATE products SET name = 'Updated' WHERE version = @ExpectedVersion;";
+
+        var act = async () => await _connection.ExecuteOptimisticAsync(
+            sql: sql,
+            param: new { ExpectedVersion = 1 },
+            expectedVersion: ExpectedVersion.Specific(1),
+            entityId: "prod-1",
+            entityType: "Product");
+
+        var ex = await act.Should().ThrowAsync<InvalidOperationException>();
+        ex.WithMessage("Optimistic update affected 2 rows for entity 'prod-1' of type 'Product'. Expected exactly 1 row.");
+    }
+
+    [Fact]
+    public async Task ExecuteOptimisticTokenAsync_WhenMultipleRowsAffected_ShouldThrowInvalidOperationException()
+    {
+        _connection.Execute("INSERT INTO products (id, name, version, token) VALUES ('prod-dup-token', 'Laptop', 1, 'token-v1');");
+
+        string sql = "UPDATE products SET name = 'Updated' WHERE token = @ExpectedToken;";
+
+        var act = async () => await _connection.ExecuteOptimisticTokenAsync(
+            sql: sql,
+            param: new { ExpectedToken = "token-v1" },
+            expectedToken: new ConcurrencyToken("token-v1", "Custom"),
+            entityId: "prod-1",
+            entityType: "Product");
+
+        var ex = await act.Should().ThrowAsync<InvalidOperationException>();
+        ex.WithMessage("Optimistic update affected 2 rows for entity 'prod-1' of type 'Product'. Expected exactly 1 row.");
+    }
 }

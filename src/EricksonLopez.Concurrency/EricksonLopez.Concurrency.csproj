@@ -17,4 +17,11 @@
     <PackageReference Include="OpenTelemetry.Api" />
   </ItemGroup>
 
+  <ItemGroup Condition="'$(SignAssembly)' == 'true'">
+    <InternalsVisibleTo Include="EricksonLopez.Concurrency.Tests" Key="$(PublicKey)" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(SignAssembly)' != 'true'">
+    <InternalsVisibleTo Include="EricksonLopez.Concurrency.Tests" />
+  </ItemGroup>
+
 </Project>

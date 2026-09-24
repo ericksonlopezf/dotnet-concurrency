@@ -409,4 +409,83 @@ public sealed class ConflictResolverTests
         refreshCalls.Should().Be(3);
         delays.Should().Equal(1, 2);
     }
+
+    [Fact]
+    public async Task DelegateConflictResolver_WhenCancellationRequested_ShouldThrowOperationCanceledException()
+    {
+        var resolver = new DelegateConflictResolver<ResolverAccount>((p, c, conf, ct) => ValueTask.FromResult(ConflictResolution.Rejected<ResolverAccount>()));
+        var proposed = new ResolverAccount { Id = "c1", Balance = 100 };
+        var conflict = ConcurrencyConflict.VersionMismatch("c1", "ResolverAccount", ExpectedVersion.Specific(1), ActualVersion.From(2));
+
+        using var cts = new CancellationTokenSource();
+        cts.Cancel();
+
+        var act = async () => await resolver.ResolveAsync(proposed, null, conflict, cts.Token);
+        await act.Should().ThrowAsync<OperationCanceledException>();
+    }
+
+    [Fact]
+    public async Task RefreshAndRetryConflictResolver_CancellationDuringRetryLoop_ShouldThrowOperationCanceledException()
+    {
+        int attempts = 0;
+        using var cts = new CancellationTokenSource();
+        var resolver = new RefreshAndRetryConflictResolver<ResolverAccount>(
+            refreshDelegate: (id, ct) =>
+            {
+                attempts++;
+                if (attempts == 1)
+                {
+                    cts.Cancel();
+                }
+                return ValueTask.FromResult<ResolverAccount?>(null);
+            },
+            maxRetries: 3,
+            retryDelayProvider: null);
+
+        var proposed = new ResolverAccount { Id = "c1", Balance = 50 };
+        var conflict = ConcurrencyConflict.VersionMismatch("c1", "ResolverAccount", ExpectedVersion.Specific(1), ActualVersion.From(2));
+
+        var act = async () => await resolver.ResolveAsync(proposed, null, conflict, cts.Token);
+        await act.Should().ThrowAsync<OperationCanceledException>();
+        attempts.Should().Be(1);
+    }
+
+    [Fact]
+    public async Task RefreshAndRetryConflictResolver_DelayHandling_ShouldInvokeDelayAsyncOnlyWhenDelayGreaterThanZero()
+    {
+        var recordedDelays = new System.Collections.Generic.List<TimeSpan>();
+        int attempts = 0;
+
+        var resolver = new RefreshAndRetryConflictResolver<ResolverAccount>(
+            refreshDelegate: (id, ct) =>
+            {
+                attempts++;
+                return ValueTask.FromResult<ResolverAccount?>(attempts == 4 ? new ResolverAccount { Id = "c1", Balance = 500 } : null);
+            },
+            maxRetries: 4,
+            retryDelayProvider: attempt => attempt switch
+            {
+                1 => TimeSpan.FromMilliseconds(20),
+                2 => TimeSpan.Zero,
+                3 => TimeSpan.FromMilliseconds(-10),
+                _ => TimeSpan.Zero
+            })
+        {
+            DelayAsync = (delay, ct) =>
+            {
+                recordedDelays.Add(delay);
+                return Task.CompletedTask;
+            }
+        };
+
+        var proposed = new ResolverAccount { Id = "c1", Balance = 50 };
+        var conflict = ConcurrencyConflict.VersionMismatch("c1", "ResolverAccount", ExpectedVersion.Specific(1), ActualVersion.From(2));
+
+        ConflictResolution<ResolverAccount> resolution = await resolver.ResolveAsync(proposed, null, conflict);
+
+        resolution.IsResolved.Should().BeTrue();
+        attempts.Should().Be(4);
+        recordedDelays.Should().ContainSingle();
+        recordedDelays[0].Should().Be(TimeSpan.FromMilliseconds(20));
+    }
 }

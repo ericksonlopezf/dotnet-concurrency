@@ -64,7 +64,7 @@ public static class ConcurrencyDapperExtensions
             return null;
         }
 
-        if (rowsAffected > 1)
+        if (rowsAffected != 0)
         {
             throw new InvalidOperationException($"Optimistic update affected {rowsAffected} rows for entity '{entityId}' of type '{entityType}'. Expected exactly 1 row.");
         }
@@ -130,7 +130,7 @@ public static class ConcurrencyDapperExtensions
             return null;
         }
 
-        if (rowsAffected > 1)
+        if (rowsAffected != 0)
         {
             throw new InvalidOperationException($"Optimistic update affected {rowsAffected} rows for entity '{entityId}' of type '{entityType}'. Expected exactly 1 row.");
         }

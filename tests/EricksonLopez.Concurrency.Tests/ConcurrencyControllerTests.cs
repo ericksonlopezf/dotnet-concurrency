@@ -1,5 +1,6 @@
 // Copyright © Erickson Lopez. MIT License.
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using System.Threading;
@@ -325,10 +326,42 @@ public sealed class ConcurrencyControllerTests : IDisposable
         await actNullMutate.Should().ThrowAsync<ArgumentNullException>()
             .WithParameterName("mutate");
 
+        var actNullId = async () => await _controller.ExecuteCasAsync(product, ExpectedVersion.Specific(1), null!, mutate);
+        await actNullId.Should().ThrowAsync<ArgumentNullException>();
+
+        var actEmptyId = async () => await _controller.ExecuteCasAsync(product, ExpectedVersion.Specific(1), "", mutate);
+        await actEmptyId.Should().ThrowAsync<ArgumentException>();
+
+        var actWhitespaceId = async () => await _controller.ExecuteCasAsync(product, ExpectedVersion.Specific(1), "   ", mutate);
+        await actWhitespaceId.Should().ThrowAsync<ArgumentException>();
+
+        var disposedController = new ConcurrencyController();
+        disposedController.Dispose();
+        var actDisposed = async () => await disposedController.ExecuteCasAsync(product, ExpectedVersion.Specific(1), "p1", mutate);
+        var exDisposed = await actDisposed.Should().ThrowAsync<ObjectDisposedException>();
+        exDisposed.Which.ObjectName.Should().Contain(nameof(ConcurrencyController));
+
+        var recordedActivities = new List<Activity>();
+        using var listener = new ActivityListener
+        {
+            ShouldListenTo = s => s.Name == ConcurrencyDiagnostics.SourceName,
+            Sample = (ref ActivityCreationOptions<ActivityContext> _) => ActivitySamplingResult.AllDataAndRecorded,
+            ActivityStopped = a =>
+            {
+                if (a.GetTagItem("concurrency.entity_id") is "p1_cancelled")
+                {
+                    recordedActivities.Add(a);
+                }
+            }
+        };
+        ActivitySource.AddActivityListener(listener);
+
         using var cts = new CancellationTokenSource();
         cts.Cancel();
-        var actCancelled = async () => await _controller.ExecuteCasAsync(product, ExpectedVersion.Specific(1), "p1", mutate, cts.Token);
+        var actCancelled = async () => await _controller.ExecuteCasAsync(product, ExpectedVersion.Specific(1), "p1_cancelled", mutate, cts.Token);
         await actCancelled.Should().ThrowAsync<OperationCanceledException>();
+        recordedActivities.Should().BeEmpty();
+        _controller.ActiveLockCount.Should().Be(0);
     }
 
     [Fact]
@@ -397,18 +430,35 @@ public sealed class ConcurrencyControllerTests : IDisposable
 
         var holdingTask = Task.Run(async () =>
         {
-            await controller.ExecuteCasAsync(
-                product,
-                ExpectedVersion.Specific(1),
-                product.Id,
-                async (p, ct) =>
-                {
-                    holderEntered.SetResult();
-                    await holderRelease.Task;
-                    return p;
-                });
+            try
+            {
+                await controller.ExecuteCasAsync(
+                    product,
+                    ExpectedVersion.Specific(1),
+                    product.Id,
+                    async (p, ct) =>
+                    {
+                        holderEntered.TrySetResult();
+                        await holderRelease.Task;
+                        return p;
+                    });
+            }
+            catch (Exception ex)
+            {
+                holderEntered.TrySetException(ex);
+                throw;
+            }
         });
 
+        await Task.WhenAny(holderEntered.Task, holdingTask);
+        if (holdingTask.IsFaulted)
+        {
+            await holdingTask;
+        }
+        if (!holderEntered.Task.IsCompleted)
+        {
+            throw new InvalidOperationException("The holding task completed without acquiring the lock and entering the mutation delegate.");
+        }
         await holderEntered.Task;
 
         Func<Task> competingAction = async () =>
@@ -420,10 +470,16 @@ public sealed class ConcurrencyControllerTests : IDisposable
                 (p, ct) => ValueTask.FromResult(p));
         };
 
-        await competingAction.Should().ThrowAsync<TimeoutException>()
-            .WithMessage("*could not be acquired within the configured timeout*");
+        try
+        {
+            await competingAction.Should().ThrowAsync<TimeoutException>()
+                .WithMessage("*could not be acquired within the configured timeout*");
+        }
+        finally
+        {
+            holderRelease.TrySetResult();
+        }
 
-        holderRelease.SetResult();
         await holdingTask;
 
         // Controller must remain healthy after lock timeout
@@ -514,6 +570,454 @@ public sealed class ConcurrencyControllerTests : IDisposable
                 (p, ct) => ValueTask.FromResult(p));
         };
         await actCas.Should().ThrowAsync<ObjectDisposedException>();
+    }
+
+    [Fact]
+    public void Constructor_WithZeroOrNegativeStripeCount_ShouldDefaultToAtLeastOne()
+    {
+        var options = new ConcurrencyOptions { StripeCount = 0 };
+        using var controller = new ConcurrencyController(options: options);
+        var product = new ProductAggregate { Id = "p1", Version = 1 };
+        controller.VerifyVersion(product, ExpectedVersion.Specific(1), "p1").Should().BeNull();
+    }
+
+    [Fact]
+    public void VerifyVersion_And_VerifyToken_WhitespaceEntityId_ShouldThrowArgumentException()
+    {
+        var product = new ProductAggregate { Id = "p1", Version = 1 };
+
+        Action actV1 = () => _controller.VerifyVersion(product, ExpectedVersion.Specific(1), "");
+        actV1.Should().Throw<ArgumentException>().WithParameterName("entityId");
+        Action actV2 = () => _controller.VerifyVersion(product, ExpectedVersion.Specific(1), "   ");
+        actV2.Should().Throw<ArgumentException>().WithParameterName("entityId");
+
+        Action actT1 = () => _controller.VerifyToken(product, new ConcurrencyToken("1"), "");
+        actT1.Should().Throw<ArgumentException>().WithParameterName("entityId");
+        Action actT2 = () => _controller.VerifyToken(product, new ConcurrencyToken("1"), "   ");
+        actT2.Should().Throw<ArgumentException>().WithParameterName("entityId");
+    }
+
+    [Fact]
+    public async Task VerifyVersion_And_VerifyToken_DiagnosticsAndDetailedActivityTags()
+    {
+        var recordedActivities = new System.Collections.Generic.List<Activity>();
+        using var listener = new ActivityListener
+        {
+            ShouldListenTo = s => s.Name == ConcurrencyDiagnostics.SourceName,
+            Sample = (ref ActivityCreationOptions<ActivityContext> _) => ActivitySamplingResult.AllDataAndRecorded,
+            ActivityStopped = a =>
+            {
+                if (a.GetTagItem("concurrency.entity_id") is "diag-prod")
+                {
+                    recordedActivities.Add(a);
+                }
+            }
+        };
+        ActivitySource.AddActivityListener(listener);
+
+        var options = new ConcurrencyOptions
+        {
+            EnableDiagnostics = true,
+            RecordDetailedActivityTags = true
+        };
+        using var controller = new ConcurrencyController(options: options);
+        var product = new ProductAggregate { Id = "diag-prod", Version = 7 };
+
+        controller.VerifyVersion(product, ExpectedVersion.Specific(7), "diag-prod");
+        var versionActivity = recordedActivities.Find(a => a.OperationName == "concurrency.verify_version");
+        versionActivity.Should().NotBeNull();
+        versionActivity!.GetTagItem("concurrency.expected_version").Should().Be(ExpectedVersion.Specific(7).ToString());
+        versionActivity.GetTagItem("concurrency.actual_version").Should().Be("7");
+
+        var token = new ConcurrencyToken("7", "Numeric");
+        controller.VerifyToken(product, token, "diag-prod");
+        var tokenActivity = recordedActivities.Find(a => a.OperationName == "concurrency.verify_token");
+        tokenActivity.Should().NotBeNull();
+        tokenActivity!.GetTagItem("concurrency.expected_token").Should().Be("7");
+        tokenActivity.GetTagItem("concurrency.actual_token").Should().Be("7");
+
+        // Verify with EnableDiagnostics = false that NO activities are created
+        recordedActivities.Clear();
+        using var noDiagController = new ConcurrencyController(options: new ConcurrencyOptions { EnableDiagnostics = false });
+        noDiagController.VerifyVersion(product, ExpectedVersion.Specific(7), "diag-prod");
+        noDiagController.VerifyToken(product, token, "diag-prod");
+        await noDiagController.ExecuteCasAsync(product, ExpectedVersion.Specific(7), "diag-prod", (p, ct) => ValueTask.FromResult(p));
+        recordedActivities.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task VerifyVersion_And_VerifyToken_WhenThrowOnUnresolvedConflictIsTrue()
+    {
+        using var controller = new ConcurrencyController(options: new ConcurrencyOptions { ThrowOnUnresolvedConflict = true });
+        var product = new ProductAggregate { Id = "throw-prod", Version = 1 };
+
+        Action actV = () => controller.VerifyVersion(product, ExpectedVersion.Specific(2), "throw-prod");
+        actV.Should().Throw<ConcurrencyException>();
+
+        Action actT = () => controller.VerifyToken(product, new ConcurrencyToken("2"), "throw-prod");
+        actT.Should().Throw<ConcurrencyException>();
+
+        Func<Task> actCas = async () => await controller.ExecuteCasAsync(product, ExpectedVersion.Specific(2), "throw-prod", (p, ct) => ValueTask.FromResult(p));
+        await actCas.Should().ThrowAsync<ConcurrencyException>();
+    }
+
+    [Fact]
+    public async Task ExecuteCasAsync_ConcurrentInvocationsForSameEntity_ShouldCorrectlyIncrementAndDecrementRefCount()
+    {
+        var product1 = new ProductAggregate { Id = "shared_entity", Version = 1 };
+        var tcsStart = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var tcsRelease = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        var task1 = Task.Run(async () =>
+        {
+            try
+            {
+                return await _controller.ExecuteCasAsync(
+                    product1,
+                    ExpectedVersion.Specific(1),
+                    "shared_entity",
+                    async (p, ct) =>
+                    {
+                        tcsStart.TrySetResult(true);
+                        await tcsRelease.Task;
+                        return p;
+                    });
+            }
+            catch (Exception ex)
+            {
+                tcsStart.TrySetException(ex);
+                throw;
+            }
+        });
+
+        await Task.WhenAny(tcsStart.Task, task1);
+        if (task1.IsFaulted)
+        {
+            await task1;
+        }
+        if (!tcsStart.Task.IsCompleted)
+        {
+            throw new InvalidOperationException("Task1 completed without entering mutation delegate.");
+        }
+        await tcsStart.Task;
+
+        _controller.GetLockRefCount("shared_entity").Should().Be(1);
+        _controller.ActiveLockCount.Should().Be(1);
+
+        var tcsTask2Release = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var product2 = new ProductAggregate { Id = "shared_entity", Version = 2 };
+        var task2 = Task.Run(async () =>
+        {
+            return await _controller.ExecuteCasAsync(
+                product2,
+                ExpectedVersion.Specific(2),
+                "shared_entity",
+                async (p, ct) =>
+                {
+                    await tcsTask2Release.Task;
+                    return p;
+                });
+        });
+
+        for (int i = 0; i < 50; i++)
+        {
+            if (_controller.GetLockRefCount("shared_entity") == 2)
+            {
+                break;
+            }
+            await Task.Delay(10);
+        }
+
+        _controller.GetLockRefCount("shared_entity").Should().Be(2);
+
+        tcsRelease.TrySetResult(true);
+
+        var res1 = await task1;
+        res1.IsSuccess.Should().BeTrue();
+
+        // While task2 is holding the lock, it must NOT be pooled yet and must remain in dictionary
+        _controller.PooledLockCount.Should().Be(0);
+        _controller.ActiveLockCount.Should().Be(1);
+        _controller.GetLockRefCount("shared_entity").Should().Be(1);
+
+        tcsTask2Release.TrySetResult(true);
+
+        var res2 = await task2;
+        res2.IsSuccess.Should().BeTrue();
+
+        _controller.ActiveLockCount.Should().Be(0);
+        _controller.GetLockRefCount("shared_entity").Should().BeNull();
+        _controller.PooledLockCount.Should().BeGreaterThanOrEqualTo(1);
+
+        _controller.LockPool.TryPeek(out var pooledLock).Should().BeTrue();
+        pooledLock!.RefCount.Should().Be(0);
+    }
+
+    [Fact]
+    public async Task ExecuteCasAsync_WhenDisposedDuringExecution_ShouldDisposeActiveLockInReleaseLock()
+    {
+        var controller = new ConcurrencyController();
+        var product = new ProductAggregate { Id = "dispose_while_active", Version = 1 };
+        var tcsStarted = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        var casTask = Task.Run(async () =>
+        {
+            try
+            {
+                return await controller.ExecuteCasAsync(
+                    product,
+                    ExpectedVersion.Specific(1),
+                    "dispose_while_active",
+                    async (p, ct) =>
+                    {
+                        tcsStarted.TrySetResult(true);
+                        await Task.Delay(TimeSpan.FromMilliseconds(200), ct);
+                        return p;
+                    });
+            }
+            catch (Exception ex)
+            {
+                tcsStarted.TrySetException(ex);
+                throw;
+            }
+        });
+
+        await Task.WhenAny(tcsStarted.Task, casTask);
+        if (casTask.IsFaulted)
+        {
+            await casTask;
+        }
+        if (!tcsStarted.Task.IsCompleted)
+        {
+            throw new InvalidOperationException("CasTask completed without entering mutation delegate.");
+        }
+        await tcsStarted.Task;
+
+        var activeLock = controller.GetActiveLock("dispose_while_active");
+        activeLock.Should().NotBeNull();
+        controller.ActiveLockCount.Should().Be(1);
+
+        controller.Dispose();
+
+        controller.DisposeCts.IsCancellationRequested.Should().BeTrue();
+        controller.ActiveLockCount.Should().Be(0);
+
+        var act = () => casTask;
+        await act.Should().ThrowAsync<OperationCanceledException>();
+
+        controller.PooledLockCount.Should().Be(0);
+        Action actSemaphore = () => activeLock!.Semaphore.Wait(0);
+        actSemaphore.Should().Throw<ObjectDisposedException>();
+    }
+
+    private sealed class ImmutableProduct : IVersionedEntity
+    {
+        public long Version { get; init; } = 1;
+    }
+
+    [Fact]
+    public async Task ExecuteCasAsync_WhenImmutableEntityDoesNotAdvanceVersion_ShouldThrowInvalidOperationException()
+    {
+        var entity = new ImmutableProduct { Version = 1 };
+        Func<Task> act = async () =>
+        {
+            await _controller.ExecuteCasAsync(
+                entity,
+                ExpectedVersion.Specific(1),
+                "imm-1",
+                (e, ct) => ValueTask.FromResult(e));
+        };
+
+        var ex = await act.Should().ThrowAsync<InvalidOperationException>();
+        ex.WithMessage("*In-memory CAS requires version progression to prevent stale updates.*");
+    }
+
+    [Fact]
+    public async Task ExecuteCasAsync_WhenMutableEntity_ShouldMutateVersionOnEntityInstance()
+    {
+        var entity = new ProductAggregate { Id = "mut-1", Version = 5 };
+        var result = await _controller.ExecuteCasAsync(
+            entity,
+            ExpectedVersion.Specific(5),
+            "mut-1",
+            (e, ct) => ValueTask.FromResult(e));
+
+        result.IsSuccess.Should().BeTrue();
+        entity.Version.Should().Be(6);
+    }
+
+    [Fact]
+    public async Task ConcurrencyController_DisposeIdempotent_And_DisposeAsync_ShouldWork()
+    {
+        var controller = new ConcurrencyController();
+        var product = new ProductAggregate { Id = "p-pool", Version = 1 };
+        var res = await controller.ExecuteCasAsync(
+            product,
+            ExpectedVersion.Specific(1),
+            "p-pool",
+            (p, ct) => ValueTask.FromResult(p));
+        res.IsSuccess.Should().BeTrue();
+
+        controller.Dispose();
+        controller.Dispose();
+
+        var controller2 = new ConcurrencyController();
+        await controller2.DisposeAsync();
+        Action act = () => controller2.VerifyVersion(product, ExpectedVersion.Specific(1), "p-pool");
+        act.Should().Throw<ObjectDisposedException>();
+    }
+
+    [Fact]
+    public async Task ConcurrencyController_WhenStripeCountIsZeroOrNegative_ShouldClampToOne()
+    {
+        var options = new ConcurrencyOptions { StripeCount = 0 };
+        using var controller = new ConcurrencyController(options);
+        var product = new ProductAggregate { Id = "stripe_zero", Version = 1 };
+
+        var result = await controller.ExecuteCasAsync(
+            product,
+            ExpectedVersion.Specific(1),
+            "stripe_zero",
+            (p, ct) => ValueTask.FromResult(p));
+
+        result.IsSuccess.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task ExecuteCasAsync_WhenToctouConflictOccurs_ShouldRecordConflictAndHandleAccordingToOptions()
+    {
+        var product = new ProductAggregate { Id = "toctou_1", Version = 1 };
+        var recordedActivities = new List<Activity>();
+        using var listener = new ActivityListener
+        {
+            ShouldListenTo = s => s.Name == ConcurrencyDiagnostics.SourceName,
+            Sample = (ref ActivityCreationOptions<ActivityContext> _) => ActivitySamplingResult.AllDataAndRecorded,
+            ActivityStopped = a =>
+            {
+                if (a.GetTagItem("concurrency.entity_id") is "toctou_1")
+                {
+                    recordedActivities.Add(a);
+                }
+            }
+        };
+        ActivitySource.AddActivityListener(listener);
+
+        var result = await _controller.ExecuteCasAsync(
+            product,
+            ExpectedVersion.Specific(1),
+            "toctou_1",
+            (p, ct) =>
+            {
+                p.Version = 999;
+                return ValueTask.FromResult(p);
+            });
+
+        result.IsSuccess.Should().BeFalse();
+        result.Conflict.Should().NotBeNull();
+        result.Conflict!.ActualVersion!.Value.Version.Value.Should().Be(999);
+        var act = recordedActivities.Find(a => a.OperationName == "concurrency.execute_cas");
+        act.Should().NotBeNull();
+        act!.GetTagItem("concurrency.conflict").Should().Be(true);
+
+        using var throwingController = new ConcurrencyController(options: new ConcurrencyOptions { ThrowOnUnresolvedConflict = true });
+        var product2 = new ProductAggregate { Id = "toctou_2", Version = 1 };
+        Func<Task> actThrow = async () => await throwingController.ExecuteCasAsync(
+            product2,
+            ExpectedVersion.Specific(1),
+            "toctou_2",
+            (p, ct) =>
+            {
+                p.Version = 999;
+                return ValueTask.FromResult(p);
+            });
+
+        var ex = await actThrow.Should().ThrowAsync<ConcurrencyException>();
+        ex.Which.Conflict.Should().NotBeNull();
+        ex.Which.Conflict!.ActualVersion!.Value.Version.Value.Should().Be(999);
+    }
+
+    [Fact]
+    public async Task ExecuteCasAsync_SequentialCallsForSameEntity_ShouldRestoreReentrancyNode()
+    {
+        var product = new ProductAggregate { Id = "seq_ent", Version = 1 };
+        var res1 = await _controller.ExecuteCasAsync(
+            product,
+            ExpectedVersion.Specific(1),
+            "seq_ent",
+            (p, ct) => ValueTask.FromResult(p));
+        res1.IsSuccess.Should().BeTrue();
+
+        var res2 = await _controller.ExecuteCasAsync(
+            product,
+            ExpectedVersion.Specific(2),
+            "seq_ent",
+            (p, ct) => ValueTask.FromResult(p));
+        res2.IsSuccess.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task ExecuteCasAsync_NestedCallsForDifferentEntities_ShouldRestoreReentrancyNodeOnCompletion()
+    {
+        var product1 = new ProductAggregate { Id = "parent_ent", Version = 1 };
+        var product2 = new ProductAggregate { Id = "child_ent", Version = 1 };
+
+        var res = await _controller.ExecuteCasAsync(
+            product1,
+            ExpectedVersion.Specific(1),
+            "parent_ent",
+            async (p, ct) =>
+            {
+                // First call to child_ent from inside parent_ent mutate
+                var childRes1 = await _controller.ExecuteCasAsync(
+                    product2,
+                    ExpectedVersion.Specific(1),
+                    "child_ent",
+                    (c, ct2) => ValueTask.FromResult(c),
+                    ct);
+                childRes1.IsSuccess.Should().BeTrue();
+
+                // Sequential second call to child_ent inside parent_ent mutate must SUCCEED
+                // because child_ent was popped from _activeEntityLocks in finally block!
+                var childRes2 = await _controller.ExecuteCasAsync(
+                    product2,
+                    ExpectedVersion.Specific(2),
+                    "child_ent",
+                    (c, ct2) => ValueTask.FromResult(c),
+                    ct);
+                childRes2.IsSuccess.Should().BeTrue();
+
+                return p;
+            });
+
+        res.IsSuccess.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task Dispose_ShouldClearDictionaries_DisposePooledLocks_AndDisposeCts()
+    {
+        var controller = new ConcurrencyController();
+        var product = new ProductAggregate { Id = "disp_test", Version = 1 };
+
+        var res = await controller.ExecuteCasAsync(
+            product,
+            ExpectedVersion.Specific(1),
+            "disp_test",
+            (p, ct) => ValueTask.FromResult(p));
+        res.IsSuccess.Should().BeTrue();
+
+        controller.PooledLockCount.Should().BeGreaterThanOrEqualTo(1);
+        controller.LockPool.TryPeek(out var pooledLock).Should().BeTrue();
+        pooledLock.Should().NotBeNull();
+
+        controller.Dispose();
+
+        controller.ActiveLockCount.Should().Be(0);
+        controller.PooledLockCount.Should().Be(0);
+        Action actLock = () => pooledLock!.Semaphore.Wait(0);
+        actLock.Should().Throw<ObjectDisposedException>();
+
+        Action actCts = () => { var _ = controller.DisposeCts.Token; };
+        actCts.Should().Throw<ObjectDisposedException>();
     }
 
     public void Dispose()

@@ -267,6 +267,13 @@ public sealed class SqlServerErrorClassifierTests
         conflict.Classification.Should().Be(ConcurrencyConflictClassification.Transient);
         conflict.Operation.Should().Be("CustomLockOp");
         conflict.Message.Should().Contain("SQL Server lock request timeout (Error 1222)");
+        conflict.Metadata.Should().ContainKey("provider").WhoseValue.Should().Be("SqlServer");
+        conflict.Metadata.Should().ContainKey("errorNumber").WhoseValue.Should().Be("1222");
+
+        ConcurrencyConflict? conflictDefaultOp = SqlServerErrorClassifier.ToConcurrencyConflict(sqlEx, "account_1", "Account");
+        conflictDefaultOp!.Operation.Should().Be("Update");
+        conflictDefaultOp.Metadata["provider"].Should().Be("SqlServer");
+        conflictDefaultOp.Metadata["errorNumber"].Should().Be("1222");
     }
 
     [Fact]

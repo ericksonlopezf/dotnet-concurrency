@@ -207,12 +207,9 @@ public sealed class ConcurrencyController : IConcurrencyController, IDisposable,
             throw new InvalidOperationException($"Reentrant CAS invocation detected for entity '{entityId}'. Nested calls to ExecuteCasAsync for the same entity id on the same asynchronous execution context lead to deadlocks and are not permitted.");
         }
 
-        var previousLocks = _activeEntityLocks.Value;
-        _activeEntityLocks.Value = new ReentrancyNode(entityId, previousLocks);
+        _activeEntityLocks.Value = new ReentrancyNode(entityId, _activeEntityLocks.Value);
 
-        try
-        {
-            string entityType = typeof(TEntity).Name;
+        string entityType = typeof(TEntity).Name;
             using Activity? activity = _options.EnableDiagnostics
                 ? ConcurrencyDiagnostics.StartActivity("concurrency.execute_cas", entityType, entityId)
                 : null;
@@ -229,8 +226,6 @@ public sealed class ConcurrencyController : IConcurrencyController, IDisposable,
                 }
                 lockTaken = true;
 
-                linkedAcquisitionCts.Token.ThrowIfCancellationRequested();
-
                 var currentVersion = new ConcurrencyVersion(entity.Version);
                 if (!_checker.CheckVersion(expected, currentVersion, entityId, entityType, out ConcurrencyConflict? conflict))
                 {
@@ -241,11 +236,7 @@ public sealed class ConcurrencyController : IConcurrencyController, IDisposable,
                         activity.SetTag("concurrency.conflict_type", nameof(ConcurrencyConflictType.VersionMismatch));
                     }
 
-                    ConcurrencyConflict effectiveConflict = conflict ?? ConcurrencyConflict.VersionMismatch(
-                        entityId,
-                        entityType,
-                        expected,
-                        actual: new ActualVersion(currentVersion));
+                    ConcurrencyConflict effectiveConflict = conflict;
 
                     if (_options.ThrowOnUnresolvedConflict)
                     {
@@ -261,7 +252,7 @@ public sealed class ConcurrencyController : IConcurrencyController, IDisposable,
                 using var executionTimeoutCts = new CancellationTokenSource(_options.DefaultMaxExecutionTimeout);
                 using var executionLinkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _disposeCts.Token, executionTimeoutCts.Token);
                 
-                TEntity mutated;
+                TEntity mutated = entity;
                 try
                 {
                     mutated = await mutate(entity, executionLinkedCts.Token).ConfigureAwait(false);
@@ -293,14 +284,7 @@ public sealed class ConcurrencyController : IConcurrencyController, IDisposable,
                     return CasResult.Conflicted<TEntity>(toctouConflict);
                 }
 
-                if (mutated is IMutableVersionedEntity mutable)
-                {
-                    mutable.Version = nextVersion.Value;
-                }
-                else if (mutated.Version != nextVersion.Value)
-                {
-                    throw new InvalidOperationException($"Entity of type '{entityType}' does not implement '{nameof(IMutableVersionedEntity)}' and the mutation delegate did not advance the entity version to '{nextVersion.Value}'. In-memory CAS requires version progression to prevent stale updates.");
-                }
+                ApplyVersionProgression(mutated, nextVersion, entityType);
 
                 ConcurrencyDiagnostics.RecordSuccess(activity, entityType);
 
@@ -315,16 +299,9 @@ public sealed class ConcurrencyController : IConcurrencyController, IDisposable,
                 ReleaseLock(entityId, entityLock);
             }
         }
-        finally
-        {
-            _activeEntityLocks.Value = previousLocks;
-        }
-    }
 
     private RefCountedLock AcquireLock(string entityId)
     {
-        ObjectDisposedException.ThrowIf(_isDisposed, this);
-
         int stripeIndex = GetStripeIndex(entityId);
         object stripeLock = _stripes[stripeIndex];
         var dictionary = _dictionaries[stripeIndex];
@@ -373,16 +350,21 @@ public sealed class ConcurrencyController : IConcurrencyController, IDisposable,
             }
             else
             {
-                entityLock.Reset();
-                if (_isDisposed)
-                {
-                    entityLock.Dispose();
-                }
-                else
-                {
-                    _lockPool.Enqueue(entityLock);
-                }
+                _lockPool.Enqueue(entityLock);
             }
+        }
+    }
+
+    private static void ApplyVersionProgression<TEntity>(TEntity mutated, ConcurrencyVersion nextVersion, string entityType)
+        where TEntity : class, IVersionedEntity
+    {
+        if (mutated is IMutableVersionedEntity mutable)
+        {
+            mutable.Version = nextVersion.Value;
+        }
+        else if (mutated.Version != nextVersion.Value)
+        {
+            throw new InvalidOperationException($"Entity of type '{entityType}' does not implement '{nameof(IMutableVersionedEntity)}' and the mutation delegate did not advance the entity version to '{nextVersion.Value}'. In-memory CAS requires version progression to prevent stale updates.");
         }
     }
 
@@ -427,4 +409,44 @@ public sealed class ConcurrencyController : IConcurrencyController, IDisposable,
         Dispose();
         return default;
     }
+
+    internal int ActiveLockCount
+    {
+        get
+        {
+            int count = 0;
+            for (int i = 0; i < _stripes.Length; i++)
+            {
+                lock (_stripes[i])
+                {
+                    count += _dictionaries[i].Count;
+                }
+            }
+            return count;
+        }
+    }
+
+    internal int PooledLockCount => _lockPool.Count;
+
+    internal int? GetLockRefCount(string entityId)
+    {
+        int stripeIndex = GetStripeIndex(entityId);
+        lock (_stripes[stripeIndex])
+        {
+            return _dictionaries[stripeIndex].TryGetValue(entityId, out var l) ? l.RefCount : null;
+        }
+    }
+
+    internal RefCountedLock? GetActiveLock(string entityId)
+    {
+        int stripeIndex = GetStripeIndex(entityId);
+        lock (_stripes[stripeIndex])
+        {
+            return _dictionaries[stripeIndex].TryGetValue(entityId, out var l) ? l : null;
+        }
+    }
+
+    internal CancellationTokenSource DisposeCts => _disposeCts;
+
+    internal ConcurrentQueue<RefCountedLock> LockPool => _lockPool;
 }

@@ -58,8 +58,20 @@ public sealed class ConcurrencyOptionsAndDITests
     {
         IServiceCollection nullServices = null!;
         Action act = () => nullServices.AddEricksonLopezConcurrency();
-        act.Should().Throw<ArgumentNullException>()
-            .WithParameterName("services");
+        var ex = act.Should().Throw<ArgumentNullException>()
+            .WithParameterName("services").Which;
+        ex.StackTrace.Should().NotContain("AddOptions");
+    }
+
+    [Theory]
+    [InlineData(1, 256)]
+    [InlineData(4, 256)]
+    [InlineData(32, 256)]
+    [InlineData(64, 512)]
+    [InlineData(128, 1024)]
+    public void CalculateDefaultStripeCount_ShouldEnforceMinimumAndScaleWithProcessors(int processors, int expected)
+    {
+        ConcurrencyOptions.CalculateDefaultStripeCount(processors).Should().Be(expected);
     }
 
     [Fact]

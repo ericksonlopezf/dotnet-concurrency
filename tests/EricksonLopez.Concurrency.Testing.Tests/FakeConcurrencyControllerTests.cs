@@ -448,4 +448,27 @@ public sealed class FakeConcurrencyControllerTests
         casResult.IsSuccess.Should().BeTrue();
         casResult.NewVersion.Should().Be(ConcurrencyVersion.From(2));
     }
+
+    private sealed class MutableOrderAggregate : IMutableVersionedEntity
+    {
+        public string Id { get; init; } = string.Empty;
+        public long Version { get; set; }
+    }
+
+    [Fact]
+    public async Task ExecuteCasAsync_WhenEntityImplementsIMutableVersionedEntity_ShouldMutateVersionOnEntity()
+    {
+        var fake = new FakeConcurrencyController();
+        var order = new MutableOrderAggregate { Id = "ord-1", Version = 5 };
+
+        var result = await fake.ExecuteCasAsync(
+            order,
+            ExpectedVersion.Specific(5),
+            "ord-1",
+            (e, ct) => ValueTask.FromResult(e));
+
+        result.IsSuccess.Should().BeTrue();
+        order.Version.Should().Be(6);
+        result.NewVersion.Should().Be(ConcurrencyVersion.From(6));
+    }
 }

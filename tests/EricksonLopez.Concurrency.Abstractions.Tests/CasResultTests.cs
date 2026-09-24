@@ -65,4 +65,22 @@ public sealed class CasResultTests
         empty.NewVersion.Should().BeNull();
         empty.Conflict.Should().BeNull();
     }
+
+    [Fact]
+    public void CasResult_IsInitialized_ShouldReflectWhetherConflictOrEntityIsPresent()
+    {
+        var defaultResult = default(CasResult<SampleEntity>);
+        defaultResult.IsInitialized.Should().BeFalse();
+
+        var empty = new CasResult<SampleEntity>(null, null, null);
+        empty.IsInitialized.Should().BeFalse();
+
+        var entity = new SampleEntity { Id = "e1" };
+        var succeeded = CasResult.Succeeded(entity, new ConcurrencyVersion(1));
+        succeeded.IsInitialized.Should().BeTrue();
+
+        var conflict = ConcurrencyConflict.Deleted("e1", nameof(SampleEntity));
+        var conflicted = CasResult.Conflicted<SampleEntity>(conflict);
+        conflicted.IsInitialized.Should().BeTrue();
+    }
 }
