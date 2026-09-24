@@ -241,11 +241,7 @@ public sealed class ConcurrencyController : IConcurrencyController, IDisposable,
                         activity.SetTag("concurrency.conflict_type", nameof(ConcurrencyConflictType.VersionMismatch));
                     }
 
-                    ConcurrencyConflict effectiveConflict = conflict ?? ConcurrencyConflict.VersionMismatch(
-                        entityId,
-                        entityType,
-                        expected,
-                        actual: new ActualVersion(currentVersion));
+                    ConcurrencyConflict effectiveConflict = conflict;
 
                     if (_options.ThrowOnUnresolvedConflict)
                     {
@@ -293,14 +289,7 @@ public sealed class ConcurrencyController : IConcurrencyController, IDisposable,
                     return CasResult.Conflicted<TEntity>(toctouConflict);
                 }
 
-                if (mutated is IMutableVersionedEntity mutable)
-                {
-                    mutable.Version = nextVersion.Value;
-                }
-                else if (mutated.Version != nextVersion.Value)
-                {
-                    throw new InvalidOperationException($"Entity of type '{entityType}' does not implement '{nameof(IMutableVersionedEntity)}' and the mutation delegate did not advance the entity version to '{nextVersion.Value}'. In-memory CAS requires version progression to prevent stale updates.");
-                }
+                ApplyVersionProgression(mutated, nextVersion, entityType);
 
                 ConcurrencyDiagnostics.RecordSuccess(activity, entityType);
 
@@ -374,15 +363,21 @@ public sealed class ConcurrencyController : IConcurrencyController, IDisposable,
             else
             {
                 entityLock.Reset();
-                if (_isDisposed)
-                {
-                    entityLock.Dispose();
-                }
-                else
-                {
-                    _lockPool.Enqueue(entityLock);
-                }
+                _lockPool.Enqueue(entityLock);
             }
+        }
+    }
+
+    private static void ApplyVersionProgression<TEntity>(TEntity mutated, ConcurrencyVersion nextVersion, string entityType)
+        where TEntity : class, IVersionedEntity
+    {
+        if (mutated is IMutableVersionedEntity mutable)
+        {
+            mutable.Version = nextVersion.Value;
+        }
+        else if (mutated.Version != nextVersion.Value)
+        {
+            throw new InvalidOperationException($"Entity of type '{entityType}' does not implement '{nameof(IMutableVersionedEntity)}' and the mutation delegate did not advance the entity version to '{nextVersion.Value}'. In-memory CAS requires version progression to prevent stale updates.");
         }
     }
 

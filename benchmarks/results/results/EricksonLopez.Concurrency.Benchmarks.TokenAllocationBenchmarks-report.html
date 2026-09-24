@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='utf-8' />
+<title>EricksonLopez.Concurrency.Benchmarks.TokenAllocationBenchmarks-20260920-073603</title>
+
+<style type="text/css">
+	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
+	td, th { padding: 6px 13px; border: 1px solid #ddd; text-align: right; }
+	tr { background-color: #fff; border-top: 1px solid #ccc; }
+	tr:nth-child(even) { background: #f8f8f8; }
+</style>
+</head>
+<body>
+<pre><code>
+BenchmarkDotNet v0.15.8, Linux Ubuntu 24.04.5 LTS (Noble Numbat)
+AMD EPYC 7763 3.15GHz, 1 CPU, 4 logical and 2 physical cores
+.NET SDK 10.0.401
+  [Host]    : .NET 10.0.12 (10.0.12, 10.0.1226.42308), X64 RyuJIT x86-64-v3
+  .NET 10.0 : .NET 10.0.12 (10.0.12, 10.0.1226.42308), X64 RyuJIT x86-64-v3
+</code></pre>
+<pre><code></code></pre>
+
+<table>
+<thead><tr><th>Method                 </th><th>Job</th><th>Runtime</th><th>Mean</th><th>Error</th><th>StdDev</th><th>Median</th><th>Ratio</th><th>RatioSD</th><th>Gen0</th><th>Allocated</th><th>Alloc Ratio</th>
+</tr>
+</thead><tbody><tr><td>CreateStructVersion</td><td>.NET 10.0</td><td>.NET 10.0</td><td>0.0002 ns</td><td>0.0006 ns</td><td>0.0005 ns</td><td>0.0000 ns</td><td>?</td><td>?</td><td>-</td><td>-</td><td>?</td>
+</tr><tr><td>CreateStructToken</td><td>.NET 10.0</td><td>.NET 10.0</td><td>1.1799 ns</td><td>0.0029 ns</td><td>0.0026 ns</td><td>1.1797 ns</td><td>?</td><td>?</td><td>-</td><td>-</td><td>?</td>
+</tr><tr><td>CreateExpectedVersionSpecific</td><td>.NET 10.0</td><td>.NET 10.0</td><td>0.0005 ns</td><td>0.0007 ns</td><td>0.0006 ns</td><td>0.0004 ns</td><td>?</td><td>?</td><td>-</td><td>-</td><td>?</td>
+</tr><tr><td>TryParseSpanVersion</td><td>.NET 10.0</td><td>.NET 10.0</td><td>14.1848 ns</td><td>0.0335 ns</td><td>0.0297 ns</td><td>14.1850 ns</td><td>?</td><td>?</td><td>-</td><td>-</td><td>?</td>
+</tr><tr><td>TryParseStringVersion</td><td>.NET 10.0</td><td>.NET 10.0</td><td>16.2165 ns</td><td>0.1586 ns</td><td>0.1484 ns</td><td>16.2747 ns</td><td>?</td><td>?</td><td>-</td><td>-</td><td>?</td>
+</tr><tr><td>FormatVersionToString</td><td>.NET 10.0</td><td>.NET 10.0</td><td>14.0170 ns</td><td>0.0952 ns</td><td>0.0890 ns</td><td>14.0460 ns</td><td>?</td><td>?</td><td>0.0029</td><td>48 B</td><td>?</td>
+</tr><tr><td>CompareTokensValueEquality</td><td>.NET 10.0</td><td>.NET 10.0</td><td>1.8836 ns</td><td>0.0043 ns</td><td>0.0038 ns</td><td>1.8838 ns</td><td>?</td><td>?</td><td>-</td><td>-</td><td>?</td>
+</tr><tr><td>CheckExpectedMatchesActual</td><td>.NET 10.0</td><td>.NET 10.0</td><td>0.3750 ns</td><td>0.0022 ns</td><td>0.0018 ns</td><td>0.3752 ns</td><td>?</td><td>?</td><td>-</td><td>-</td><td>?</td>
+</tr><tr><td>CreateStructVersion</td><td>.NET 8.0</td><td>.NET 8.0</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>?</td><td>?</td><td>NA</td><td>NA</td><td>?</td>
+</tr><tr><td>CreateStructToken</td><td>.NET 8.0</td><td>.NET 8.0</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>?</td><td>?</td><td>NA</td><td>NA</td><td>?</td>
+</tr><tr><td>CreateExpectedVersionSpecific</td><td>.NET 8.0</td><td>.NET 8.0</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>?</td><td>?</td><td>NA</td><td>NA</td><td>?</td>
+</tr><tr><td>TryParseSpanVersion</td><td>.NET 8.0</td><td>.NET 8.0</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>?</td><td>?</td><td>NA</td><td>NA</td><td>?</td>
+</tr><tr><td>TryParseStringVersion</td><td>.NET 8.0</td><td>.NET 8.0</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>?</td><td>?</td><td>NA</td><td>NA</td><td>?</td>
+</tr><tr><td>FormatVersionToString</td><td>.NET 8.0</td><td>.NET 8.0</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>?</td><td>?</td><td>NA</td><td>NA</td><td>?</td>
+</tr><tr><td>CompareTokensValueEquality</td><td>.NET 8.0</td><td>.NET 8.0</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>?</td><td>?</td><td>NA</td><td>NA</td><td>?</td>
+</tr><tr><td>CheckExpectedMatchesActual</td><td>.NET 8.0</td><td>.NET 8.0</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>?</td><td>?</td><td>NA</td><td>NA</td><td>?</td>
+</tr><tr><td>CreateStructVersion</td><td>.NET 9.0</td><td>.NET 9.0</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>?</td><td>?</td><td>NA</td><td>NA</td><td>?</td>
+</tr><tr><td>CreateStructToken</td><td>.NET 9.0</td><td>.NET 9.0</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>?</td><td>?</td><td>NA</td><td>NA</td><td>?</td>
+</tr><tr><td>CreateExpectedVersionSpecific</td><td>.NET 9.0</td><td>.NET 9.0</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>?</td><td>?</td><td>NA</td><td>NA</td><td>?</td>
+</tr><tr><td>TryParseSpanVersion</td><td>.NET 9.0</td><td>.NET 9.0</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>?</td><td>?</td><td>NA</td><td>NA</td><td>?</td>
+</tr><tr><td>TryParseStringVersion</td><td>.NET 9.0</td><td>.NET 9.0</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>?</td><td>?</td><td>NA</td><td>NA</td><td>?</td>
+</tr><tr><td>FormatVersionToString</td><td>.NET 9.0</td><td>.NET 9.0</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>?</td><td>?</td><td>NA</td><td>NA</td><td>?</td>
+</tr><tr><td>CompareTokensValueEquality</td><td>.NET 9.0</td><td>.NET 9.0</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>?</td><td>?</td><td>NA</td><td>NA</td><td>?</td>
+</tr><tr><td>CheckExpectedMatchesActual</td><td>.NET 9.0</td><td>.NET 9.0</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>?</td><td>?</td><td>NA</td><td>NA</td><td>?</td>
+</tr></tbody></table>
+</body>
+</html>

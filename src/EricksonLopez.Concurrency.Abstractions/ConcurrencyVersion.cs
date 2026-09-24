@@ -196,13 +196,22 @@ public readonly record struct ConcurrencyVersion : IComparable<ConcurrencyVersio
         TryParse(s, CultureInfo.InvariantCulture, out result);
 
     /// <summary>
+    /// Parses a span of characters into a <see cref="ConcurrencyVersion"/> using invariant culture.
+    /// </summary>
+    /// <param name="s">The span of characters to parse.</param>
+    /// <returns>The parsed <see cref="ConcurrencyVersion"/>.</returns>
+    /// <exception cref="FormatException"><paramref name="s"/> is not in the correct format or represents a negative value</exception>
+    public static ConcurrencyVersion Parse(ReadOnlySpan<char> s) =>
+        Parse(s, CultureInfo.InvariantCulture);
+
+    /// <summary>
     /// Parses a span of characters into a <see cref="ConcurrencyVersion"/>.
     /// </summary>
     /// <param name="s">The span of characters to parse.</param>
     /// <param name="provider">An object that provides culture-specific formatting information.</param>
     /// <returns>The parsed <see cref="ConcurrencyVersion"/>.</returns>
     /// <exception cref="FormatException"><paramref name="s"/> is not in the correct format or represents a negative value</exception>
-    public static ConcurrencyVersion Parse(ReadOnlySpan<char> s, IFormatProvider? provider = null)
+    public static ConcurrencyVersion Parse(ReadOnlySpan<char> s, IFormatProvider? provider)
     {
         if (TryParse(s, provider, out ConcurrencyVersion result))
         {
@@ -213,6 +222,16 @@ public readonly record struct ConcurrencyVersion : IComparable<ConcurrencyVersio
     }
 
     /// <summary>
+    /// Parses a string into a <see cref="ConcurrencyVersion"/> using invariant culture.
+    /// </summary>
+    /// <param name="s">The string to parse.</param>
+    /// <returns>The parsed <see cref="ConcurrencyVersion"/>.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="s"/> is <see langword="null"/></exception>
+    /// <exception cref="FormatException"><paramref name="s"/> is not in the correct format or represents a negative value</exception>
+    public static ConcurrencyVersion Parse(string s) =>
+        Parse(s, CultureInfo.InvariantCulture);
+
+    /// <summary>
     /// Parses a string into a <see cref="ConcurrencyVersion"/>.
     /// </summary>
     /// <param name="s">The string to parse.</param>
@@ -220,7 +239,7 @@ public readonly record struct ConcurrencyVersion : IComparable<ConcurrencyVersio
     /// <returns>The parsed <see cref="ConcurrencyVersion"/>.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="s"/> is <see langword="null"/></exception>
     /// <exception cref="FormatException"><paramref name="s"/> is not in the correct format or represents a negative value</exception>
-    public static ConcurrencyVersion Parse(string s, IFormatProvider? provider = null)
+    public static ConcurrencyVersion Parse(string s, IFormatProvider? provider)
     {
         ArgumentNullException.ThrowIfNull(s);
         return Parse(s.AsSpan(), provider);

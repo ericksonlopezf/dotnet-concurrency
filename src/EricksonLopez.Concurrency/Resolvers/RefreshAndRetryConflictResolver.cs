@@ -103,32 +103,9 @@ public sealed class RefreshAndRetryConflictResolver<TEntity> : IConcurrencyConfl
         }
 
         TEntity? latestState = currentDatabaseEntity;
-        
-        if (latestState is null)
+        if (latestState is null && !string.IsNullOrEmpty(conflict.EntityId))
         {
-            for (int attempt = 1; attempt <= _maxRetries; attempt++)
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-
-                if (!string.IsNullOrEmpty(conflict.EntityId))
-                {
-                    latestState = await _refreshDelegate(conflict.EntityId, cancellationToken).ConfigureAwait(false);
-                }
-
-                if (latestState is not null)
-                {
-                    break;
-                }
-
-                if (attempt < _maxRetries && _retryDelayProvider is not null)
-                {
-                    TimeSpan delay = _retryDelayProvider(attempt);
-                    if (delay > TimeSpan.Zero)
-                    {
-                        await Task.Delay(delay, cancellationToken).ConfigureAwait(false);
-                    }
-                }
-            }
+            latestState = await RefreshLatestStateAsync(conflict.EntityId, cancellationToken).ConfigureAwait(false);
         }
 
         if (latestState is null)
@@ -152,5 +129,32 @@ public sealed class RefreshAndRetryConflictResolver<TEntity> : IConcurrencyConfl
             nameof(ConflictResolutionStrategy.RefreshAndRetry));
 
         return ConflictResolution.RefreshedAndRetried(resolvedState, $"State refreshed from storage and reconciled with strategy {ConflictResolutionStrategy.RefreshAndRetry}.");
+    }
+
+    private async ValueTask<TEntity?> RefreshLatestStateAsync(
+        string entityId,
+        CancellationToken cancellationToken)
+    {
+        for (int attempt = 1; attempt <= _maxRetries; attempt++)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            TEntity? state = await _refreshDelegate(entityId, cancellationToken).ConfigureAwait(false);
+            if (state is not null)
+            {
+                return state;
+            }
+
+            if (attempt < _maxRetries && _retryDelayProvider is not null)
+            {
+                TimeSpan delay = _retryDelayProvider(attempt);
+                if (delay > TimeSpan.Zero)
+                {
+                    await Task.Delay(delay, cancellationToken).ConfigureAwait(false);
+                }
+            }
+        }
+
+        return null;
     }
 }
