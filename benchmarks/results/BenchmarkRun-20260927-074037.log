@@ -1,0 +1,25 @@
+// Validating benchmarks:
+// Benchmark ConcurrencyBenchmarks.DirectVersionComparison: .NET 8.0(Runtime=.NET 8.0, Toolchain=CsProjCore)
+//    * Benchmarked method `DirectVersionComparison` is within a sealed class, Declaring type must be unsealed.
+
+// Benchmark ConcurrencyBenchmarks.CheckerCheckVersion: .NET 8.0(Runtime=.NET 8.0, Toolchain=CsProjCore)
+//    * Benchmarked method `CheckerCheckVersion` is within a sealed class, Declaring type must be unsealed.
+
+// Benchmark ConcurrencyBenchmarks.CheckerCheckToken: .NET 8.0(Runtime=.NET 8.0, Toolchain=CsProjCore)
+//    * Benchmarked method `CheckerCheckToken` is within a sealed class, Declaring type must be unsealed.
+
+// Benchmark ConcurrencyBenchmarks.ControllerExecuteCasAsync: .NET 8.0(Runtime=.NET 8.0, Toolchain=CsProjCore)
+//    * Benchmarked method `ControllerExecuteCasAsync` is within a sealed class, Declaring type must be unsealed.
+
+// Benchmark ConcurrencyBenchmarks.ResultConversion: .NET 8.0(Runtime=.NET 8.0, Toolchain=CsProjCore)
+//    * Benchmarked method `ResultConversion` is within a sealed class, Declaring type must be unsealed.
+
+// Benchmark OptimisticContentionBenchmarks.SingleWorkerUncontendedCas: .NET 8.0(Runtime=.NET 8.0, Toolchain=CsProjCore)
+//    * Benchmarked method `SingleWorkerUncontendedCas` is within a sealed class, Declaring type must be unsealed.
+
+// Benchmark OptimisticContentionBenchmarks.ParallelContentionFourWorkers: .NET 8.0(Runtime=.NET 8.0, Toolchain=CsProjCore)
+//    * Benchmarked method `ParallelContentionFourWorkers` is within a sealed class, Declaring type must be unsealed.
+
+// Benchmark OptimisticContentionBenchmarks.VersionPreconditionMismatchEvaluation: .NET 8.0(Runtime=.NET 8.0, Toolchain=CsProjCore)
+//    * Benchmarked method `VersionPreconditionMismatchEvaluation` is within a sealed class, Declaring type must be unsealed.
+
