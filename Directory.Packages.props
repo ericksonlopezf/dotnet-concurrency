@@ -10,16 +10,16 @@
     <PackageVersion Include="EricksonLopez.Result" Version="3.0.0" />
     <PackageVersion Include="EricksonLopez.Mediator" Version="2.0.0" />
     <!-- Microsoft Extensions & OpenTelemetry -->
-    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.12" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.15" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.12" />
     <PackageVersion Include="Microsoft.Extensions.Options" Version="10.0.12" />
-    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.12" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.15" />
     <PackageVersion Include="OpenTelemetry.Api" Version="1.19.1" />
     <!-- Data & Providers -->
     <PackageVersion Include="Dapper" Version="2.1.89" />
     <PackageVersion Include="Npgsql" Version="10.0.3" />
     <PackageVersion Include="Microsoft.Data.SqlClient" Version="7.1.0" />
-    <PackageVersion Include="MySqlConnector" Version="2.6.2" />
+    <PackageVersion Include="MySqlConnector" Version="3.0.0" />
     <PackageVersion Include="Oracle.ManagedDataAccess.Core" Version="23.26.301" />
     <PackageVersion Include="Microsoft.Data.Sqlite" Version="10.0.12" />
     <!-- Testing & Benchmarks -->
